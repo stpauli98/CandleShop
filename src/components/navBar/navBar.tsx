@@ -60,7 +60,7 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Shopping Cart */}
+          {/* Desktop Shopping Cart */}
           <div className="hidden sm:flex items-center ml-4">
             <button 
               onClick={() => setIsCartOpen(true)}
@@ -79,7 +79,7 @@ export default function Navbar() {
           <button
             onClick={() => setIsOpen(!isOpen)}
             type="button"
-            className="sm:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-purple-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors duration-300"
+            className="sm:hidden relative inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-purple-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors duration-300"
             aria-controls="mobile-menu"
             aria-expanded={isOpen}
           >
@@ -87,7 +87,14 @@ export default function Navbar() {
             {isOpen ? (
               <X className="block h-6 w-6" aria-hidden="true" />
             ) : (
-              <Menu className="block h-6 w-6" aria-hidden="true" />
+              <div className="relative">
+                <Menu className="block h-6 w-6" aria-hidden="true" />
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                    {cartItemCount}
+                  </span>
+                )}
+              </div>
             )}
           </button>
         </div>
@@ -132,13 +139,16 @@ export default function Navbar() {
               </Link>
             ))}
             <button 
-              onClick={() => setIsCartOpen(true)}
-              className="flex items-center px-4 py-3 text-lg font-medium text-gray-500 hover:text-purple-600 hover:bg-purple-50 transition-colors duration-300"
+              onClick={() => {
+                setIsCartOpen(true);
+                setIsOpen(false);
+              }}
+              className="relative flex items-center w-full px-4 py-3 text-lg font-medium text-gray-500 hover:text-purple-600 hover:bg-purple-50 transition-colors duration-300"
             >
               <ShoppingCart className="h-6 w-6 mr-3" />
               Korpa
               {cartItemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                <span className="absolute top-3 left-8 bg-purple-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
                   {cartItemCount}
                 </span>
               )}

@@ -1,6 +1,6 @@
-import { useLocalStorage } from './useLocalStorage';
+import { useEffect, useState, useRef } from 'react';
 import { toast } from 'react-hot-toast';
-import { useEffect, useState } from 'react';
+import { useCookieStorage } from './useCookieStorage';
 
 interface Product {
     id: string;
@@ -19,8 +19,9 @@ export interface CartItem extends Product {
 }
 
 export function useShoppingCart() {
-    const [cart, setCart] = useLocalStorage<CartItem[]>('shopping-cart', []);
+    const [cart, setCart] = useCookieStorage<CartItem[]>('shopping-cart', []);
     const [cartItemCount, setCartItemCount] = useState(0);
+    const isUpdating = useRef(false);
 
     // Ažuriraj cartItemCount kad se cart promijeni
     useEffect(() => {
@@ -28,22 +29,23 @@ export function useShoppingCart() {
         setCartItemCount(count);
     }, [cart]);
 
-    // Slušaj storage promjene
+    // Slušaj cookie promjene
     useEffect(() => {
-        const handleStorageChange = () => {
-            const storedCart = localStorage.getItem('shopping-cart');
-            if (storedCart) {
-                const parsedCart = JSON.parse(storedCart) as CartItem[];
-                const count = parsedCart.reduce((total, item) => total + item.quantity, 0);
-                setCartItemCount(count);
+        const handleStorageChange = (e: CustomEvent<CartItem[]>) => {
+            const newCart = e.detail;
+            if (!isUpdating.current) {
+                setCart(newCart);
             }
         };
 
-        window.addEventListener('local-storage', handleStorageChange);
-        return () => window.removeEventListener('local-storage', handleStorageChange);
-    }, []);
+        window.addEventListener('cookie-storage', handleStorageChange as EventListener);
+        return () => window.removeEventListener('cookie-storage', handleStorageChange as EventListener);
+    }, [setCart]);
 
     const addToCart = (product: Product) => {
+        if (isUpdating.current) return;
+        isUpdating.current = true;
+
         setCart(currentCart => {
             const existingItem = currentCart.find(item => item.id === product.id);
             
@@ -59,26 +61,40 @@ export function useShoppingCart() {
             toast.success('Proizvod dodan u korpu');
             return [...currentCart, { ...product, quantity: 1 }];
         });
+
+        isUpdating.current = false;
     };
 
     const removeFromCart = (productId: string) => {
+        if (isUpdating.current) return;
+        isUpdating.current = true;
+
         setCart(currentCart => {
             toast.success('Proizvod uklonjen iz korpe');
             return currentCart.filter(item => item.id !== productId);
         });
+
+        isUpdating.current = false;
     };
 
     const updateQuantity = (productId: string, newQuantity: number) => {
-        if (newQuantity < 1) return;
+        if (newQuantity < 1 || isUpdating.current) return;
+        isUpdating.current = true;
+
         setCart(currentCart =>
             currentCart.map(item =>
                 item.id === productId ? { ...item, quantity: newQuantity } : item
             )
         );
+
+        isUpdating.current = false;
     };
 
     const clearCart = () => {
+        if (isUpdating.current) return;
+        isUpdating.current = true;
         setCart([]);
+        isUpdating.current = false;
     };
 
     return {
@@ -87,7 +103,6 @@ export function useShoppingCart() {
         addToCart,
         removeFromCart,
         updateQuantity,
-        clearCart,
-        setCart
+        clearCart
     };
 }

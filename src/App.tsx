@@ -1,11 +1,9 @@
-import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import NavBar from "./components/navBar/navBar";
 import LandingPage from "./components/LandingPage";
 
 function App() {
   return (
-    <BrowserRouter>
       <div className="min-h-screen bg-gray-50">
         <NavBar />
         <Routes>
@@ -16,7 +14,6 @@ function App() {
           <Route path="/dekoracije" element={<div>Dekoracije</div>} />
         </Routes>
       </div>
-    </BrowserRouter>
   );
 }
 
