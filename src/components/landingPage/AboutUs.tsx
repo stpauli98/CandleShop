@@ -23,22 +23,23 @@ export default function AboutUs() {
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">O nama</h2>
-            <p className="text-lg text-gray-600 mb-4">
+        <div>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center md:text-left">O nama</h2>
+            <p className="text-lg text-gray-600 mb-4 text-center md:text-left">
               Dobrodošli u našu malu radionicu svijeća, gdje svaka svijeća ima svoju priču. 
               Naša strast prema izradi svijeća počela je kao hobi, a prerasla je u predanu 
-              misiju stvaranja proizvoda koji donose toplinu i ugođaj u vaše domove.
+              misiju stvaranja jedinstvenih, ručno rađenih svijeća.
             </p>
-            <p className="text-lg text-gray-600 mb-4">
-              Koristimo samo najkvalitetnije materijale i prirodne sastojke, 
-              pažljivo birajući svaki miris i dizajn. Svaka svijeća je ručno 
-              izrađena s ljubavlju i pažnjom prema detaljima.
+            <p className="text-lg text-gray-600 mb-4 text-center md:text-left">
+              Svaka naša svijeća je pažljivo izrađena s ljubavlju i pažnjom prema detaljima. 
+              Koristimo samo najkvalitetnije materijale, od prirodnog sojinog voska do 
+              pažljivo odabranih esencijalnih ulja, kako bismo stvorili savršenu atmosferu 
+              u vašem domu.
             </p>
-            <p className="text-lg text-gray-600">
-              Naša je želja da vam pomognemo stvoriti savršenu atmosferu u vašem 
-              domu, bilo da tražite opuštajući miris za večernji odmor ili 
-              svečanu svijeću za posebne prilike.
+            <p className="text-lg text-gray-600 text-center md:text-left">
+              Vjerujemo da svijeće mogu transformirati svaki prostor i stvoriti poseban 
+              ugođaj. Bilo da tražite savršen poklon ili želite unijeti toplinu u svoj 
+              dom, naše svijeće su izrađene za vas.
             </p>
           </div>
           <div className="relative rounded-lg shadow-lg h-[500px] overflow-hidden">

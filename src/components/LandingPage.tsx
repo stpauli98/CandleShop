@@ -4,16 +4,20 @@ import AboutUs from './landingPage/AboutUs'
 import Testimonials from './landingPage/Testimonials'
 import CallToAction from './landingPage/CallToAction'
 import Advantages from './landingPage/Advantages'
+import Footer from './landingPage/Footer'
+import FrequentlyAskedQuestions from './landingPage/FrequentlyAskedQuestions'
 
 export default function LandingPage() {
   return (
     <main>
       <HeroSection />
       <FeaturedProducts />
-      <AboutUs />
       <Advantages />
+      <AboutUs />
+      <FrequentlyAskedQuestions />
       <Testimonials />
       {/* <CallToAction /> */}
+      <Footer />
     </main>
   )
 }
