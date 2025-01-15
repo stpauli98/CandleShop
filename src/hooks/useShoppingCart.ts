@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { toast } from 'react-hot-toast';
-import { useCookieStorage } from './useCookieStorage';
+import { useLocalStorage } from './useLocalStorage';
 
 interface Product {
     id: string;
@@ -19,7 +19,7 @@ export interface CartItem extends Product {
 }
 
 export function useShoppingCart() {
-    const [cart, setCart] = useCookieStorage<CartItem[]>('shopping-cart', []);
+    const [cart, setCart] = useLocalStorage<CartItem[]>('shopping-cart', []);
     const [cartItemCount, setCartItemCount] = useState(0);
     const isUpdating = useRef(false);
 
@@ -29,17 +29,16 @@ export function useShoppingCart() {
         setCartItemCount(count);
     }, [cart]);
 
-    // Slušaj cookie promjene
+    // Slušaj localStorage promjene
     useEffect(() => {
-        const handleStorageChange = (e: CustomEvent<CartItem[]>) => {
-            const newCart = e.detail;
-            if (!isUpdating.current) {
-                setCart(newCart);
+        const handleStorageChange = (e: StorageEvent) => {
+            if (e.key === 'shopping-cart' && !isUpdating.current) {
+                setCart(JSON.parse(e.newValue ?? ''));
             }
         };
 
-        window.addEventListener('cookie-storage', handleStorageChange as EventListener);
-        return () => window.removeEventListener('cookie-storage', handleStorageChange as EventListener);
+        window.addEventListener('storage', handleStorageChange);
+        return () => window.removeEventListener('storage', handleStorageChange);
     }, [setCart]);
 
     const addToCart = (product: Product) => {
