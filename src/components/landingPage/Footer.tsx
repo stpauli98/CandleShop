@@ -4,21 +4,25 @@ import { Link } from 'react-router-dom';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-gradient-to-b from-gray-800 to-gray-900 text-white py-12">
-      <div className="container mx-auto px-4">
+    <footer className="bg-gradient-to-b from-purple-50 to-orange-50 text-gray-800 py-12">
+      <div className="max-w-7xl mx-auto px-4">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           {/* Company Info */}
           <div className="text-center md:text-left">
-            <h2 className="text-2xl font-bold mb-4">Šarena Čarolija</h2>
-            <p className="text-gray-300 mb-4">Unesite toplinu u svoj dom sa našim ručno rađenim svijećama</p>
-            <div className="flex flex-col space-y-2 text-gray-300">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-orange-400 bg-clip-text text-transparent mb-4">
+              Šarena Čarolija
+            </h2>
+            <p className="text-gray-700 mb-4">
+              Unesite toplinu u svoj dom sa našim ručno rađenim svijećama
+            </p>
+            <div className="flex flex-col space-y-2 text-gray-700">
               <div className="flex items-center justify-center md:justify-start">
-                <FaMapMarkerAlt className="mr-2" />
+                <FaMapMarkerAlt className="mr-2 text-purple-500" />
                 <span>Gradiška, Bosna i Hercegovina</span>
               </div>
               <div className="flex items-center justify-center md:justify-start">
-                <FaClock className="mr-2" />
+                <FaClock className="mr-2 text-purple-500" />
                 <span>Pon - Pet: 09:00 - 17:00</span>
               </div>
             </div>
@@ -26,18 +30,20 @@ const Footer: React.FC = () => {
 
           {/* Quick Links */}
           <div className="text-center">
-            <h3 className="text-xl font-semibold mb-4">Brzi Linkovi</h3>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              Brzi Linkovi
+            </h3>
             <nav className="flex flex-col space-y-2">
-              <Link to="/proizvodi" className="text-gray-300 hover:text-white transition-colors">
+              <Link to="/proizvodi" className="text-gray-700 hover:text-purple-600 transition-colors">
                 Proizvodi
               </Link>
-              <Link to="/o-nama" className="text-gray-300 hover:text-white transition-colors">
+              <Link to="/o-nama" className="text-gray-700 hover:text-purple-600 transition-colors">
                 O nama
               </Link>
-              <Link to="/kontakt" className="text-gray-300 hover:text-white transition-colors">
+              <Link to="/kontakt" className="text-gray-700 hover:text-purple-600 transition-colors">
                 Kontakt
               </Link>
-              <Link to="/faq" className="text-gray-300 hover:text-white transition-colors">
+              <Link to="/faq" className="text-gray-700 hover:text-purple-600 transition-colors">
                 Česta pitanja
               </Link>
             </nav>
@@ -45,31 +51,45 @@ const Footer: React.FC = () => {
 
           {/* Contact & Social */}
           <div className="text-center md:text-right">
-            <h3 className="text-xl font-semibold mb-4">Kontaktirajte nas</h3>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              Kontaktirajte nas
+            </h3>
             <div className="flex flex-col space-y-2 mb-6">
-              <a href="mailto:sarena.carolija2025@gmail.com" className="flex items-center justify-center md:justify-end text-gray-300 hover:text-white transition-colors">
-                <FaEnvelope className="mr-2" />
+              <a
+                href="mailto:sarena.carolija2025@gmail.com"
+                className="flex items-center justify-center md:justify-end text-gray-700 hover:text-purple-600 transition-colors"
+              >
+                <FaEnvelope className="mr-2 text-purple-500" />
                 sarena.carolija2025@gmail.com
               </a>
-              <a href="tel:+38765905254" className="flex items-center justify-center md:justify-end text-gray-300 hover:text-white transition-colors">
-                <FaPhone className="mr-2" />
+              <a
+                href="tel:+38765905254"
+                className="flex items-center justify-center md:justify-end text-gray-700 hover:text-purple-600 transition-colors"
+              >
+                <FaPhone className="mr-2 text-purple-500" />
                 +387 65 905 254
               </a>
             </div>
-            <div className="space-y-4">
-              <p className="text-sm text-gray-300">Zapratite nas na društvenim mrežama i podijelite sa nama vaše ideje</p>
+            <div>
+              <p className="text-sm text-gray-600 mb-4">
+                Zapratite nas na društvenim mrežama i podijelite sa nama vaše ideje
+              </p>
               <div className="flex justify-center md:justify-end space-x-4">
-                <a href="https://www.facebook.com/sarena.carolija" 
-                   target="_blank" 
-                   rel="noopener noreferrer" 
-                   className="bg-gray-700 p-2 rounded-full hover:bg-gray-600 transition-colors">
-                  <FaFacebook size={20} />
+                <a
+                  href="https://www.facebook.com/sarena.carolija"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-purple-100 p-2 rounded-full hover:bg-purple-200 transition-colors"
+                >
+                  <FaFacebook size={20} className="text-purple-600" />
                 </a>
-                <a href="https://www.instagram.com/sarena_carolijaa_/" 
-                   target="_blank" 
-                   rel="noopener noreferrer" 
-                   className="bg-gray-700 p-2 rounded-full hover:bg-gray-600 transition-colors">
-                  <FaInstagram size={20} />
+                <a
+                  href="https://www.instagram.com/sarena_carolijaa_/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-purple-100 p-2 rounded-full hover:bg-purple-200 transition-colors"
+                >
+                  <FaInstagram size={20} className="text-purple-600" />
                 </a>
               </div>
             </div>
@@ -77,16 +97,22 @@ const Footer: React.FC = () => {
         </div>
 
         {/* Divider */}
-        <div className="border-t border-gray-700 pt-8">
+        <div className="border-t border-gray-300 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-600">
               &copy; {new Date().getFullYear()} Šarena Čarolija. Sva prava zadržana.
             </p>
             <div className="flex space-x-4 mt-4 md:mt-0">
-              <Link to="/privacy" className="text-sm text-gray-400 hover:text-white transition-colors">
+              <Link
+                to="/privacy"
+                className="text-sm text-gray-600 hover:text-purple-600 transition-colors"
+              >
                 Privatnost
               </Link>
-              <Link to="/terms" className="text-sm text-gray-400 hover:text-white transition-colors">
+              <Link
+                to="/terms"
+                className="text-sm text-gray-600 hover:text-purple-600 transition-colors"
+              >
                 Uslovi korištenja
               </Link>
             </div>

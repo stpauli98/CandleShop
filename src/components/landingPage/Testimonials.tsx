@@ -1,11 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
 
 interface Testimonial {
-  id: number
-  name: string
-  role: string
-  content: string
-  imageUrl: string
+  id: number;
+  name: string;
+  role: string;
+  content: string;
+  imageUrl: string;
 }
 
 const testimonials: Testimonial[] = [
@@ -67,7 +67,6 @@ const testimonials: Testimonial[] = [
   }
 ];
 
-
 export default function Testimonials() {
   const [isHovered, setIsHovered] = useState(false);
   const sliderRef = useRef<HTMLDivElement>(null);
@@ -118,7 +117,7 @@ export default function Testimonials() {
   }, [isDragging]);
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-gradient-to-b from-purple-50 to-orange-50">
       <style>
         {`
           @keyframes scroll {
@@ -151,12 +150,14 @@ export default function Testimonials() {
         `}
       </style>
       
-      <h2 className="text-3xl font-bold text-center mb-12">Što kažu naši kupci</h2>
+      <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-orange-400 bg-clip-text text-transparent">
+        Što kažu naši kupci
+      </h2>
       
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute left-0 top-0 h-full w-[100px] md:w-[200px] bg-gradient-to-r from-gray-50 via-gray-50/80 to-transparent z-10" />
-          <div className="absolute right-0 top-0 h-full w-[100px] md:w-[200px] bg-gradient-to-l from-gray-50 via-gray-50/80 to-transparent z-10" />
+          <div className="absolute left-0 top-0 h-full w-[100px] md:w-[200px] bg-gradient-to-r from-purple-50 via-purple-50/80 to-transparent z-10" />
+          <div className="absolute right-0 top-0 h-full w-[100px] md:w-[200px] bg-gradient-to-l from-purple-50 via-purple-50/80 to-transparent z-10" />
         </div>
 
         <div 

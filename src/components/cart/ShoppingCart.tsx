@@ -1,6 +1,7 @@
 import { X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useShoppingCart } from '../../hooks/useShoppingCart';
+import { formatCurrency } from '../../utilities/formatCurency'
 
 interface ShoppingCartProps {
     isOpen: boolean;
@@ -80,7 +81,7 @@ export default function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                                             <X className="h-5 w-5" />
                                         </button>
                                         <span className="font-medium">
-                                            {((Number(item.novaCijena || item.cijena) || 0) * item.quantity).toFixed(2)} KM
+                                            {formatCurrency((Number(item.novaCijena || item.cijena) || 0) * item.quantity)}
                                         </span>
                                     </div>
                                 </div>
@@ -89,7 +90,7 @@ export default function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                         <div className="mt-6 border-t pt-4">
                             <div className="flex justify-between items-center mb-4">
                                 <span className="text-lg font-medium">Ukupno:</span>
-                                <span className="text-xl font-bold">{calculateTotal().toFixed(2)} KM</span>
+                                <span className="text-xl font-bold">{formatCurrency(calculateTotal())}</span>
                             </div>
                             <button
                                 onClick={() => {

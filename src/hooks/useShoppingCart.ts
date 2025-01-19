@@ -57,7 +57,7 @@ export function useShoppingCart() {
                 );
             }
             
-            toast.success('Proizvod dodan u korpu');
+            //toast.success('Proizvod dodan u korpu');
             return [...currentCart, { ...product, quantity: 1 }];
         });
 
