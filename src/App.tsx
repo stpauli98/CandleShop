@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import NavBar from "./components/navBar/navBar";
 import LandingPage from "./components/LandingPage";
 import Svijece from "./pages/svijece/Svijece";
@@ -15,6 +15,7 @@ function App() {
           <Route path="/mirisne-svijece" element={<MirisneSvijece />} />
           <Route path="/mirisni-voskovi" element={<MirisniVoskovi />} />
           <Route path="/dekoracije" element={<div>Dekoracije</div>} />
+          <Route path="*" element={<Navigate to= "/" />} /> // Redirect to the landing page in case of unknown route
         </Routes>
       </div>
   );
