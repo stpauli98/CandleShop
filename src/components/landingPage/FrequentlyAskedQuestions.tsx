@@ -6,6 +6,10 @@ import {
   AccordionTrigger,
 } from '../../components/ui/accordion';
 
+interface FAQProps {
+  path?: string;
+}
+
 const faqs = [
   {
     question: 'Koliko dugo gore vaše svijeće?',
@@ -29,9 +33,9 @@ const faqs = [
   },
 ];
 
-const FrequentlyAskedQuestions: React.FC = () => {
+const FrequentlyAskedQuestions: React.FC<FAQProps> = ({ path }) => {
   return (
-    <section className="bg-gradient-to-b from-purple-50 to-orange-50 py-16">
+    <section id={path?.replace('/', '')} className="bg-gradient-to-b from-purple-50 to-orange-50 py-16">
       <div className="w-[90%] max-w-[1200px] mx-auto">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-purple-600 to-orange-400 bg-clip-text text-transparent">

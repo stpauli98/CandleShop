@@ -9,12 +9,12 @@ import FrequentlyAskedQuestions from './landingPage/FrequentlyAskedQuestions'
 
 export default function LandingPage() {
   return (
-    <main>
+    <main style={{ position: 'relative' }}>
       <HeroSection />
       <FeaturedProducts />
       <Advantages />
       <AboutUs />
-      <FrequentlyAskedQuestions />
+      <FrequentlyAskedQuestions path="/faq" />
       <Testimonials />
       {/* <CallToAction /> */}
       <Footer />

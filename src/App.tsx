@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import NavBar from "./components/navBar/navBar";
 import LandingPage from "./components/LandingPage";
 import Svijece from "./pages/svijece/Svijece";
@@ -6,6 +7,11 @@ import MirisneSvijece from "./pages/mirisneSvijece/MirisneSvijece";
 import MirisniVoskovi from "./pages/mirisniVoskovi/MirisniVoskovi";
 
 function App() {
+  useEffect(() => {
+    // Scroll to top na refresh
+    window.history.scrollRestoration = 'manual';
+    window.scrollTo(0, 0);
+  }, [])
   return (
       <div className="min-h-screen bg-gray-50">
         <NavBar />

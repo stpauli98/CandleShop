@@ -1,8 +1,30 @@
 import React from 'react';
 import { FaFacebook, FaInstagram, FaEnvelope, FaPhone, FaMapMarkerAlt, FaClock } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Footer: React.FC = () => {
+  const navigate = useNavigate();
+
+  const scrollToFAQ = () => {
+    // If we're not on the home page, first navigate there
+    if (window.location.pathname !== '/') {
+      navigate('/');
+      // Wait for navigation to complete before scrolling
+      setTimeout(() => {
+        const faqSection = document.getElementById('faq');
+        if (faqSection) {
+          faqSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      // If we're already on the home page, just scroll
+      const faqSection = document.getElementById('faq');
+      if (faqSection) {
+        faqSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
   return (
     <footer className="bg-gradient-to-b from-purple-50 to-orange-50 text-gray-800 py-12">
       <div className="max-w-7xl mx-auto px-4">
@@ -40,11 +62,14 @@ const Footer: React.FC = () => {
               <Link to="/o-nama" className="text-gray-700 hover:text-purple-600 transition-colors">
                 O nama
               </Link>
+              <button 
+                onClick={scrollToFAQ}
+                className="text-gray-700 hover:text-purple-600 transition-colors"
+              >
+                Česta pitanja
+              </button>
               <Link to="/kontakt" className="text-gray-700 hover:text-purple-600 transition-colors">
                 Kontakt
-              </Link>
-              <Link to="/faq" className="text-gray-700 hover:text-purple-600 transition-colors">
-                Česta pitanja
               </Link>
             </nav>
           </div>
