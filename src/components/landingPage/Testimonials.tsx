@@ -14,56 +14,56 @@ const testimonials: Testimonial[] = [
     name: "Ana Marić",
     role: "Redovni kupac",
     content: "Svijeće su prekrasne i mirisi su nevjerovatni. Svaka koju sam kupila je bila savršena za stvaranje ugodne atmosfere u mom domu.",
-    imageUrl: "/testimonials/ana.jpg"
+    imageUrl: "https://i.imgur.com/WFOtnWN.jpeg"
   },
   {
     id: 2,
-    name: "Marko Kovač",
+    name: "Miloš Kovač",
     role: "Ljubitelj svijeća",
     content: "Kvaliteta ovih svijeća je izvanredna. Dugo gore i miris se lijepo širi kroz cijelu prostoriju. Definitivno ću opet kupovati.",
-    imageUrl: "/testimonials/marko.jpg"
+    imageUrl: "https://i.imgur.com/ZiYEejB.jpeg"
   },
   {
     id: 3,
     name: "Sara Novak",
     role: "Interior dizajner",
     content: "Kao dizajner interijera, često preporučujem ove svijeće svojim klijentima. Kvaliteta i dizajn su na najvišem nivou.",
-    imageUrl: "/testimonials/sara.jpg"
+    imageUrl: "https://i.imgur.com/WFOtnWN.jpeg"
   },
   {
     id: 4,
     name: "Ivana Petrović",
     role: "Poklon entuzijasta",
     content: "Kupila sam svijeće kao poklone za prijatelje i porodicu. Svi su oduševljeni i pitaju me gdje sam ih našla!",
-    imageUrl: "/testimonials/ivana.jpg"
+    imageUrl: "https://i.imgur.com/nJN9g28.jpeg"
   },
   {
     id: 5,
     name: "Luka Matić",
     role: "Ljubitelj prirodnih proizvoda",
     content: "Cijenim što su svijeće napravljene od prirodnih sastojaka. Bez štetnih hemikalija i mirisi su autentični.",
-    imageUrl: "/testimonials/luka.jpg"
+    imageUrl: "https://i.imgur.com/ZiYEejB.jpeg"
   },
   {
     id: 6,
     name: "Maja Horvat",
     role: "Vlasnica salona",
     content: "Koristim ove svijeće u svom salonu i klijenti ih obožavaju. Pomažu u stvaranju opuštajuće atmosfere.",
-    imageUrl: "/testimonials/maja.jpg"
+    imageUrl: "https://i.imgur.com/nJN9g28.jpeg"
   },
   {
     id: 7,
     name: "Tomislav Vuković",
     role: "Student",
     content: "Ove svijeće su savršene za opuštanje tokom studiranja. Miris lavande mi pomaže da se fokusiram.",
-    imageUrl: "/testimonials/tomislav.jpg"
+    imageUrl: "https://i.imgur.com/ZiYEejB.jpeg"
   },
   {
     id: 8,
     name: "Jelena Krstić",
     role: "Majka",
     content: "Djeca i ja obožavamo ove svijeće. Posebno su praktične za opuštajuće večeri kod kuće.",
-    imageUrl: "/testimonials/jelena.jpg"
+    imageUrl: "https://i.imgur.com/WFOtnWN.jpeg"
   }
 ];
 

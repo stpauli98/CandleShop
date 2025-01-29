@@ -27,7 +27,7 @@ function App() {
           <Route path="/mirisni-voskovi" element={<MirisniVoskovi />} />
           <Route path="/dekoracije" element={<Dekoracija />} />
           <Route path="/admin-panel" element={<AdminPanel />} />
-          <Route path="*" element={<Navigate to= "/" />} /> // Redirect to the landing page in case of unknown route
+          <Route path="*" element={<Navigate to= "/" />} />  {/*Redirect to the landing page in case of unknown route*/}
         </Routes>
       </div>
   );
