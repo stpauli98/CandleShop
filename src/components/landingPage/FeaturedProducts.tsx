@@ -5,7 +5,7 @@ import { useShoppingCart } from '../../hooks/useShoppingCart';
 import { toast, Toaster } from 'react-hot-toast';
 import { formatCurrency } from '../../utilities/formatCurency';
 import { getDocs } from 'firebase/firestore';
-import { candleCollection } from '../../lib/controller';
+import { omiljeniProizvodi } from '../../lib/controller';
 
 interface Product {
   id: string;
@@ -26,7 +26,7 @@ const FeaturedProducts: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const querySnapshot = await getDocs(candleCollection);
+        const querySnapshot = await getDocs(omiljeniProizvodi);
         const productsData = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),

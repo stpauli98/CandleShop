@@ -7,6 +7,7 @@ import Advantages from './landingPage/Advantages'
 import Footer from './landingPage/Footer'
 import FrequentlyAskedQuestions from './landingPage/FrequentlyAskedQuestions'
 
+
 export default function LandingPage() {
   return (
     <main style={{ position: 'relative' }}>

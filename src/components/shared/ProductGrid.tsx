@@ -4,7 +4,7 @@ import { ShoppingCart } from 'lucide-react'
 import { useShoppingCart } from '../../hooks/useShoppingCart'
 import { toast, Toaster } from 'react-hot-toast'
 import { formatCurrency } from '../../utilities/formatCurency'
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, getDocs, CollectionReference, DocumentData } from 'firebase/firestore'
 import { db } from '../../lib/firebase'
 
 interface Product {
@@ -22,7 +22,7 @@ interface ProductGridProps {
     category: string;
     bgColor?: string;
     buttonColor?: string;
-    collectionName: string;
+    collectionName: CollectionReference<DocumentData>;
 }
 
 export default function ProductGrid({ 
@@ -38,7 +38,7 @@ export default function ProductGrid({
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const querySnapshot = await getDocs(collection(db, collectionName))
+                const querySnapshot = await getDocs(collectionName)
                 const productsData = querySnapshot.docs
                     .map(doc => ({ 
                         id: doc.id, 
@@ -61,7 +61,7 @@ export default function ProductGrid({
         }
 
         fetchProducts()
-    }, [category])
+    }, [category, collectionName])
 
     const handleAddToCart = (product: Product) => {
         const productWithDiscount = {

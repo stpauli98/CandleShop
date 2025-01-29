@@ -2,10 +2,11 @@ import ProductDescription from '../../components/shared/ProductDescription'
 import ProductGrid from '../../components/shared/ProductGrid'
 import { svijeceData } from './svijeceData'
 import Footer from '../../components/landingPage/Footer'
+import { svijece } from '../../lib/controller'
 
 export default function Svijece() {
   return (
-    <div>
+    <div className="mt-16">
       <ProductDescription {...svijeceData} />
       <div className={svijeceData.bgColor + " w-full"}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -13,7 +14,7 @@ export default function Svijece() {
             category="svijece"
             bgColor={svijeceData.bgColor}
             buttonColor={svijeceData.textColor}
-            collectionName="SvijecePage"
+            collectionName={svijece}
           />
         </div>
       </div>

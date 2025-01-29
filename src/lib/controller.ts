@@ -3,4 +3,8 @@ import { app } from "./firebase";
 
 export const firestore = getFirestore(app);
 
-export const candleCollection = collection(firestore, "svijece");
+export const omiljeniProizvodi = collection(firestore, "omiljeniProizvodi");
+export const svijece = collection(firestore, "svijece");
+export const mirisneSvijece = collection(firestore, "mirisneSvijece");
+export const mirisniVoskovi = collection(firestore, "mirisniVoskovi");
+export const dekoracije = collection(firestore, "dekoracije");

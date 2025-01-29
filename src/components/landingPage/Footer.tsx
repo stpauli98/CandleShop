@@ -71,6 +71,9 @@ const Footer: React.FC = () => {
               <Link to="/kontakt" className="text-gray-700 hover:text-purple-600 transition-colors">
                 Kontakt
               </Link>
+              <Link to="/admin-panel" className="text-gray-700 hover:text-purple-600 transition-colors">
+                Admin panel
+              </Link>
             </nav>
           </div>
 

@@ -18,6 +18,12 @@
     "jsxImportSource": "react",
     "types": ["react"],
 
+    /* Path Aliases */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
