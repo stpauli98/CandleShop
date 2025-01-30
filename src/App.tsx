@@ -1,13 +1,14 @@
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import NavBar from "./components/navBar/navBar";
-import LandingPage from "./components/LandingPage";
+import LandingPage from "./components/landingPage/LandingPage";
 import Svijece from "./pages/svijece/Svijece";
 import MirisneSvijece from "./pages/mirisneSvijece/MirisneSvijece";
 import MirisniVoskovi from "./pages/mirisniVoskovi/MirisniVoskovi";
 import Dekoracija from "./pages/dekoracija/Dekoracija";
-import AdminPanel from "./adminPanel/AdminPanel";
-import AdminLogin from "./adminPanel/AdminLogin";
+import AdminPanel from "./components/adminPanel/AdminPanel";
+import AdminLogin from "./components/adminPanel/AdminLogin";
+import PrivacyPolicy from "./components/PrivacyPolicy";
 
 function App() {
   const location = useLocation();
@@ -30,7 +31,8 @@ function App() {
         <Route path="/svijece" element={<Svijece />} />
         <Route path="/mirisne-svijece" element={<MirisneSvijece />} />
         <Route path="/mirisni-voskovi" element={<MirisniVoskovi />} />
-        <Route path="/dekoracije" element={<Dekoracija />} />
+        <Route path="/dekoracija" element={<Dekoracija />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

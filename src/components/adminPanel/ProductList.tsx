@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { omiljeniProizvodi, svijece, mirisneSvijece, mirisniVoskovi, dekoracije } from '../lib/controller'
+import { omiljeniProizvodi, svijece, mirisneSvijece, mirisniVoskovi, dekoracije } from '../../lib/controller'
 
 const collections = {
   "Omiljeni proizvodi": omiljeniProizvodi,

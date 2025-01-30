@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth"
-import { auth } from "../lib/firebase"
+import { auth } from "../../lib/firebase"
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("")

@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { doc, setDoc, deleteDoc } from "firebase/firestore"
-import { db } from "../lib/firebase"
+import { db } from "../../lib/firebase"
 import type { Product } from "./types"
 
 import Button from "@/components/ui/button"

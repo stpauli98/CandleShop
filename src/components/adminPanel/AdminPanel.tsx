@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from "react"
-import { ProductForm } from "../adminPanel/ProductForm"
-import { ProductList } from "../adminPanel/ProductList"
-import type { Product } from "../adminPanel/types"
-import { omiljeniProizvodi } from '../lib/controller'
+import { ProductForm } from "./ProductForm"
+import { ProductList } from "./ProductList"
+import type { Product } from "./types"
+import { omiljeniProizvodi } from '../../lib/controller'
 import { useNavigate } from 'react-router-dom'
 import { onAuthStateChanged, signOut } from "firebase/auth"
-import { auth } from "../lib/firebase"
+import { auth } from "../../lib/firebase"
 
 const collections = {
-  "Omiljeni proizvodi": omiljeniProizvodi,
-  "Svijeće": "svijece",
-  "Mirisne svijeće": "mirisneSvijece",
-  "Mirisni voskovi": "mirisniVoskovi",
-  "Dekoracije": "dekoracije"
+  "Omiljeni proizvodi": omiljeniProizvodi
 } as const
 
 export default function AdminPanel() {

@@ -56,10 +56,7 @@ const Footer: React.FC = () => {
               Brzi Linkovi
             </h3>
             <nav className="flex flex-col space-y-2">
-              <Link to="/proizvodi" className="text-gray-700 hover:text-purple-600 transition-colors">
-                Proizvodi
-              </Link>
-              <Link to="/o-nama" className="text-gray-700 hover:text-purple-600 transition-colors">
+              <Link to="/about-us" className="text-gray-700 hover:text-purple-600 transition-colors">
                 O nama
               </Link>
               <button 
@@ -68,10 +65,7 @@ const Footer: React.FC = () => {
               >
                 Česta pitanja
               </button>
-              <Link to="/kontakt" className="text-gray-700 hover:text-purple-600 transition-colors">
-                Kontakt
-              </Link>
-              <Link to="/admin-login" className="text-gray-700 hover:text-purple-600 transition-colors">
+              <Link to="/admin-login" className="text-gray-200 hover:text-purple-200 transition-colors">
                 Admin panel
               </Link>
             </nav>
@@ -132,7 +126,7 @@ const Footer: React.FC = () => {
             </p>
             <div className="flex space-x-4 mt-4 md:mt-0">
               <Link
-                to="/privacy"
+                to="/privacy-policy"
                 className="text-sm text-gray-600 hover:text-purple-600 transition-colors"
               >
                 Privatnost
