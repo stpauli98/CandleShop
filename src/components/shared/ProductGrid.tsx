@@ -6,6 +6,9 @@ import { toast, Toaster } from 'react-hot-toast'
 import { formatCurrency } from '../../utilities/formatCurency'
 import { collection, getDocs, CollectionReference, DocumentData } from 'firebase/firestore'
 import { db } from '../../lib/firebase'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+
+const mirisi = ["jagoda", "kruška", "vanilija", "lavanda", "kokos", "malina"] as const;
 
 interface Product {
     id: string;
@@ -16,6 +19,7 @@ interface Product {
     popust?: number;
     dostupnost?: boolean;
     kategorija?: string;
+    selectedMiris?: string;
 }
 
 interface ProductGridProps {
@@ -48,7 +52,7 @@ export default function ProductGrid({
                         opis: doc.data().opis || "",
                         slika: doc.data().slika || "",
                         popust: doc.data().popust ? Number(doc.data().popust) : undefined,
-                        dostupnost: doc.data().dostupnost === "true",
+                        dostupnost: doc.data().dostupnost ?? true,
                         kategorija: doc.data().kategorija || ""
                     } as Product))
                     .filter(product => product.kategorija === category)
@@ -64,6 +68,10 @@ export default function ProductGrid({
     }, [category, collectionName])
 
     const handleAddToCart = (product: Product) => {
+        if (!product.selectedMiris) {
+            toast.error("Molimo izaberite miris");
+            return;
+        }
         const productWithDiscount = {
             ...product,
             cijena: product.popust 
@@ -71,6 +79,7 @@ export default function ProductGrid({
                 : product.cijena
         }
         addToCart(productWithDiscount)
+        toast.success("Proizvod dodat u korpu")
     }
 
     if (loading) {
@@ -97,7 +106,7 @@ export default function ProductGrid({
                             <img
                                 src={product.slika}
                                 alt={product.naziv}
-                                className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+                                className={`w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105 ${!product.dostupnost ? 'grayscale' : ''}`}
                             />
                             {product.popust && (
                                 <div className="absolute top-2 left-2">
@@ -106,10 +115,39 @@ export default function ProductGrid({
                                     </span>
                                 </div>
                             )}
+                            {!product.dostupnost && (
+                                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                                    <span className="text-white text-xl font-bold">Nije više dostupno</span>
+                                </div>
+                            )}
                         </div>
                         <div className="p-4">
                             <h3 className="text-lg font-semibold text-gray-900 mb-2">{product.naziv}</h3>
                             <p className="text-gray-600 text-sm mb-4">{product.opis}</p>
+                            {product.dostupnost && (
+                                <div className="mb-4">
+                                    <Select 
+                                        onValueChange={(value) => {
+                                            const updatedProducts = products.map(p => 
+                                                p.id === product.id ? {...p, selectedMiris: value} : p
+                                            );
+                                            setProducts(updatedProducts);
+                                        }}
+                                        value={product.selectedMiris}
+                                    >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Izaberite miris" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {mirisi.map((miris) => (
+                                                <SelectItem key={miris} value={miris}>
+                                                    {miris.charAt(0).toUpperCase() + miris.slice(1)}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            )}
                             <div className="flex justify-between items-end">
                                 <div>
                                     {product.popust && product.cijena ? (
@@ -129,7 +167,12 @@ export default function ProductGrid({
                                 </div>
                                 <button
                                     onClick={() => handleAddToCart(product)}
-                                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg bg-amber-600 text-white hover:bg-amber-700 transition-colors`}
+                                    disabled={!product.dostupnost}
+                                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
+                                        product.dostupnost 
+                                        ? 'bg-amber-600 text-white hover:bg-amber-700' 
+                                        : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                                    } transition-colors`}
                                 >
                                     <ShoppingCart className="w-5 h-5" />
                                     <span className="font-medium">

@@ -12,6 +12,7 @@ interface Product {
     popust?: number;
     dostupnost?: boolean;
     kategorija?: string;
+    selectedMiris?: string;
 }
 
 export interface CartItem extends Product {
@@ -46,43 +47,49 @@ export function useShoppingCart() {
         isUpdating.current = true;
 
         setCart(currentCart => {
-            const existingItem = currentCart.find(item => item.id === product.id);
+            // Proizvod je isti ako ima isti ID i isti miris
+            const existingItem = currentCart.find(item => 
+                item.id === product.id && item.selectedMiris === product.selectedMiris
+            );
             
             if (existingItem) {
                 toast.success('Količina proizvoda povećana');
                 return currentCart.map(item =>
-                    item.id === product.id
+                    (item.id === product.id && item.selectedMiris === product.selectedMiris)
                         ? { ...item, quantity: item.quantity + 1 }
                         : item
                 );
             }
             
-            //toast.success('Proizvod dodan u korpu');
             return [...currentCart, { ...product, quantity: 1 }];
         });
 
         isUpdating.current = false;
     };
 
-    const removeFromCart = (productId: string) => {
+    const removeFromCart = (productId: string, selectedMiris?: string) => {
         if (isUpdating.current) return;
         isUpdating.current = true;
 
         setCart(currentCart => {
             toast.success('Proizvod uklonjen iz korpe');
-            return currentCart.filter(item => item.id !== productId);
+            return currentCart.filter(item => 
+                !(item.id === productId && item.selectedMiris === selectedMiris)
+            );
         });
 
         isUpdating.current = false;
     };
 
-    const updateQuantity = (productId: string, newQuantity: number) => {
+    const updateQuantity = (productId: string, newQuantity: number, selectedMiris?: string) => {
         if (newQuantity < 1 || isUpdating.current) return;
         isUpdating.current = true;
 
         setCart(currentCart =>
             currentCart.map(item =>
-                item.id === productId ? { ...item, quantity: newQuantity } : item
+                (item.id === productId && item.selectedMiris === selectedMiris)
+                    ? { ...item, quantity: newQuantity }
+                    : item
             )
         );
 

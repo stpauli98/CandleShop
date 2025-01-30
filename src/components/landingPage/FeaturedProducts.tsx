@@ -6,6 +6,9 @@ import { toast, Toaster } from 'react-hot-toast';
 import { formatCurrency } from '../../utilities/formatCurency';
 import { getDocs } from 'firebase/firestore';
 import { omiljeniProizvodi } from '../../lib/controller';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+
+const mirisi = ["jagoda", "kruška", "vanilija", "lavanda", "kokos", "malina"] as const;
 
 interface Product {
   id: string;
@@ -16,6 +19,7 @@ interface Product {
   popust?: number;
   dostupnost?: boolean;
   kategorija?: string;
+  selectedMiris?: string;
 }
 
 const FeaturedProducts: React.FC = () => {
@@ -35,7 +39,7 @@ const FeaturedProducts: React.FC = () => {
           opis: doc.data().opis || "",
           slika: doc.data().slika || "",
           popust: doc.data().popust ? Number(doc.data().popust) : undefined,
-          dostupnost: doc.data().dostupnost === "true",
+          dostupnost: doc.data().dostupnost ?? true,
           kategorija: doc.data().kategorija || ""
         } as Product)).slice(0, 6);
 
@@ -51,6 +55,10 @@ const FeaturedProducts: React.FC = () => {
   }, []);
 
   const handleAddToCart = (product: Product) => {
+    if (!product.selectedMiris) {
+      toast.error("Molimo izaberite miris");
+      return;
+    }
     const productWithDiscount = {
       ...product,
       cijena: product.popust
@@ -112,6 +120,30 @@ const FeaturedProducts: React.FC = () => {
                     {product.naziv}
                   </h3>
                   <p className="text-gray-600 text-sm mb-4">{product.opis}</p>
+                  {product.dostupnost && (
+                    <div className="mb-4">
+                      <Select 
+                        onValueChange={(value) => {
+                          const updatedProducts = products.map(p => 
+                            p.id === product.id ? {...p, selectedMiris: value} : p
+                          );
+                          setProducts(updatedProducts);
+                        }}
+                        value={product.selectedMiris}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Izaberite miris" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {mirisi.map((miris) => (
+                            <SelectItem key={miris} value={miris}>
+                              {miris.charAt(0).toUpperCase() + miris.slice(1)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
                   <div className="flex justify-between items-end">
                     <div>
                       {product.popust && product.cijena ? (
@@ -131,11 +163,16 @@ const FeaturedProducts: React.FC = () => {
                     </div>
                     <button
                       onClick={() => handleAddToCart(product)}
-                      className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors"
+                      disabled={!product.dostupnost}
+                      className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
+                        product.dostupnost 
+                          ? 'bg-purple-600 text-white hover:bg-purple-700' 
+                          : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                      } transition-colors`}
                     >
                       <ShoppingCart className="w-5 h-5" />
                       <span className="font-medium">
-                        {cart.find(item => item.id === product.id)?.quantity || 'Dodaj'}
+                        {cart.find(item => item.id === product.id && item.selectedMiris === product.selectedMiris)?.quantity || 'Dodaj'}
                       </span>
                     </button>
                   </div>

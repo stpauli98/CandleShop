@@ -57,16 +57,21 @@ export default function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                                     </div>
                                     <div className="flex-grow">
                                         <h3 className="font-medium">{item.naziv}</h3>
+                                        {item.selectedMiris && (
+                                            <p className="text-sm text-gray-600 mt-1">
+                                                Miris: {item.selectedMiris.charAt(0).toUpperCase() + item.selectedMiris.slice(1)}
+                                            </p>
+                                        )}
                                         <div className="flex items-center gap-2 mt-2">
                                             <button
-                                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                                onClick={() => updateQuantity(item.id, item.quantity - 1, item.selectedMiris)}
                                                 className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300 transition-colors"
                                             >
                                                 -
                                             </button>
                                             <span className="w-8 text-center">{item.quantity}</span>
                                             <button
-                                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                onClick={() => updateQuantity(item.id, item.quantity + 1, item.selectedMiris)}
                                                 className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300 transition-colors"
                                             >
                                                 +
@@ -75,7 +80,7 @@ export default function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                                     </div>
                                     <div className="flex flex-col items-end justify-between">
                                         <button
-                                            onClick={() => removeFromCart(item.id)}
+                                            onClick={() => removeFromCart(item.id, item.selectedMiris)}
                                             className="text-red-500 hover:text-red-700 transition-colors"
                                         >
                                             <X className="h-5 w-5" />
