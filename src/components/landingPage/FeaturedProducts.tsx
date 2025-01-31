@@ -66,8 +66,16 @@ const FeaturedProducts: React.FC = () => {
         : product.cijena
     };
    
+    // Check if product with same ID and fragrance already exists in cart
+    const existingItem = cart.find(item => 
+      item.id === product.id && item.selectedMiris === product.selectedMiris
+    );
+
     addToCart(productWithDiscount);
-    toast.success(`${product.naziv} dodan u korpu!`);
+    
+    if (!existingItem) {
+      toast.success(`${product.naziv} dodan u korpu!`);
+    }
   };
 
   if (loading) {
