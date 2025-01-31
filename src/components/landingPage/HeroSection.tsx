@@ -49,7 +49,7 @@ export default function HeroSection() {
                                     Pretvorite svoj dom u oazu mira i magije
                                 </h1>
                                 <p className="text-lg md:text-xl text-gray-200 leading-relaxed max-w-md mx-auto md:mx-0 mt-11">
-                                    Naše ručno izrađene svijeće su više od dekoracije – one unose toplinu, mir i ljubav u svaki trenutak.
+                                    Naše ručno izrađene svijeće su više od dekoracije –- one unose toplinu, mir i ljubav u svaki trenutak.
                                 </p>
                             </motion.div>
                         </div>
