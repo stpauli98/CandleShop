@@ -2,19 +2,33 @@
 # https://github.com/firebase/firebase-tools
 
 name: Deploy to Firebase Hosting on merge
+
 on:
   push:
     branches:
       - main
+
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - run: npm run dev
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
         with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CANDLESHOP_865E9 }}
-          channelId: live
-          projectId: candleshop-865e9
+          node-version: 18  # Možeš proveriti koju verziju koristiš
+
+      - name: Install dependencies
+        run: npm install  # 🛠️ Osigurava da `node_modules` bude prisutan
+
+      - name: Build project
+        run: npm run build  # 🔨 Ispravna komanda za produkcijski build
+
+      - name: Deploy to Firebase Hosting
+        run: firebase deploy --only hosting
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
