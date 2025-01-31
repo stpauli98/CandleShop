@@ -25,7 +25,7 @@ const navItems = [
   { name: 'Svijeće', href: '/svijece', icon: Flame },
   { name: 'Mirisne svijeće', href: '/mirisne-svijece', icon: Home },
   { name: 'Mirisni voskovi', href: '/mirisni-voskovi', icon: Droplet },
-  { name: 'Dekoracije', href: '/dekoracije', icon: Sparkles },
+  { name: 'Dekoracije', href: '/dekoracija', icon: Sparkles },
 ]
 
 const scrollToFAQ = () => {
