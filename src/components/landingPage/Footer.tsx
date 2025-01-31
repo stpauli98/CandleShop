@@ -53,7 +53,7 @@ const Footer: React.FC = () => {
           {/* Quick Links */}
           <div className="text-center">
             <h3 className="text-xl font-semibold text-gray-800 mb-4">
-              Brzi Linkovi
+              Brzi Linkoviii
             </h3>
             <nav className="flex flex-col space-y-2">
               <Link to="/about-us" className="text-gray-700 hover:text-purple-600 transition-colors">
