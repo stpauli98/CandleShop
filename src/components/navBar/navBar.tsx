@@ -176,13 +176,6 @@ export default function Navbar() {
                 {item.name}
               </Link>
             ))}
-            <Link
-              to="/admin-login"
-              className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
-              onClick={() => setIsOpen(false)}
-            >
-              Admin Login
-            </Link>
             {/* Shopping Cart za mobilni */}
             <button
               onClick={() => {
