@@ -27,7 +27,7 @@ function ScrollImages({ onScrollComplete, onImagesLoaded }: ScrollImagesProps) {
         const paths: string[] = [];
         for (let i = 1; i <= 299; i++) {
             const paddedNumber = i.toString().padStart(4, '0');
-            paths.push(`/src/assets/scrollImages/output_${paddedNumber}.webp`);
+            paths.push(`/assets/scrollImages/output_${paddedNumber}.webp`);
         }
         return paths;
     }, []);
