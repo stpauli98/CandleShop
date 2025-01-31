@@ -48,7 +48,7 @@ export default function HeroSection() {
                                 <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight text-white">
                                     Pretvorite svoj dom u oazu mira i magije
                                 </h1>
-                                <p className="text-lg md:text-xl text-gray-200 leading-relaxed max-w-md mx-auto md:mx-0">
+                                <p className="text-lg md:text-xl text-gray-200 leading-relaxed max-w-md mx-auto md:mx-0 mt-10">
                                     Naše ručno izrađene svijeće su više od dekoracije – one unose toplinu, mir i ljubav u svaki trenutak.
                                 </p>
                             </motion.div>
