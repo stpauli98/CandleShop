@@ -181,14 +181,14 @@ function ScrollImages({ onScrollComplete, onImagesLoaded }: ScrollImagesProps) {
             {!isAllImagesLoaded && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="text-white text-xl">
-                        Loading images... {Math.round((imagesLoaded / imagePaths.length) * 100)}%
+                        Učitavanje slika... {Math.round((imagesLoaded / imagePaths.length) * 100)}%
                     </div>
                 </div>
             )}
             {isAnyImageBroken && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="text-red-500 text-xl">
-                        Error loading images.
+                        Greska pri ucitavanju slika.
                     </div>
                 </div>
             )}
