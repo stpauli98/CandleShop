@@ -1,4 +1,4 @@
-export const mirisneSvijeceData = {
+export const scentedCandlesData = {
     title: "Mirisne Svijeće Šarena Čarolija",
     description:
       "Unesite toplinu i magiju u svoj dom s našim ručno izrađenim mirisnim svijećama. Napravljene od 100% prirodnih materijala, svaka svijeća nudi dugotrajno, čisto gorenje i opojne mirisne note koje opuštaju i osvežavaju prostor. Izaberite kvalitet i jedinstvenost koje samo mi možemo pružiti.",

@@ -1,4 +1,4 @@
-export const MirisniVoskoviData = {
+export const scentedWaxesData = {
     title: "Mirisni Vosak Šarena Čarolija",
     description:
       "Pretvorite svaki trenutak u čaroliju uz naš mirisni vosak. Ručno izrađen od prirodnih sastojaka, naš vosak pruža intenzivan i dugotrajan miris, osiguravajući da vaš prostor uvek odiše svežinom i toplinom. Savršeno za opuštanje ili stvaranje ugodne atmosfere kod kuće.",

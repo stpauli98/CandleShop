@@ -16,14 +16,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { omiljeniProizvodi, svijece, mirisneSvijece, mirisniVoskovi, dekoracije } from '../../lib/controller'
+import { favoriteProducts, candles, scentedCandles, scentedWaxes, decorations } from '../../lib/controller'
 
 const collections = {
-  "Omiljeni proizvodi": omiljeniProizvodi,
-  "Svijeće": svijece,
-  "Mirisne svijeće": mirisneSvijece,
-  "Mirisni voskovi": mirisniVoskovi,
-  "Dekoracije": dekoracije
+  "Omiljeni proizvodi": favoriteProducts,
+  "Svijeće": candles,
+  "Mirisne svijeće": scentedCandles,
+  "Mirisni voskovi": scentedWaxes,
+  "Dekoracije": decorations
 } as const
 
 type ProductListProps = {

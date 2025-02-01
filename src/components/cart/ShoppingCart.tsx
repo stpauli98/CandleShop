@@ -1,7 +1,7 @@
 import { X } from 'lucide-react';
-import { toast } from 'react-hot-toast';
 import { useShoppingCart } from '../../hooks/useShoppingCart';
 import { formatCurrency } from '../../utilities/formatCurency'
+import { Link } from 'react-router-dom';
 
 interface ShoppingCartProps {
     isOpen: boolean;
@@ -97,17 +97,13 @@ export default function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                                 <span className="text-lg font-medium">Ukupno:</span>
                                 <span className="text-xl font-bold">{formatCurrency(calculateTotal())}</span>
                             </div>
-                            <button
-                                onClick={() => {
-                                    // TODO: Implementirati checkout funkcionalnost
-                                    toast.success('Narudžba uspješno poslana!');
-                                    clearCart();
-                                    onClose();
-                                }}
-                                className="w-full bg-amber-600 text-white py-3 rounded-lg hover:bg-amber-700 transition-colors"
+                            <Link
+                                to="/placanje"
+                                onClick={onClose}
+                                className="block w-full bg-amber-600 text-white py-3 text-center rounded-lg hover:bg-amber-700 transition-colors"
                             >
                                 Naruči
-                            </button>
+                            </Link>
                         </div>
                     </>
                 )}

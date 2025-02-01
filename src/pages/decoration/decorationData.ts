@@ -1,4 +1,4 @@
-export const dekoracijeData = {
+export const decorationData = {
     title: "Dekorativne Svijeće, Mirisni Voskovi i Sapuni",
     description:
       "Dodajte elegantan i mirisan dodir svom domu uz naše ručno izrađene dekoracije od svijeća, malih mirisnih voskova i prirodnih sapuna. Svaki komad je pažljivo izrađen kako bi unio ljepotu, toplinu i opuštajuću aromu u vaš prostor. Izaberite unikatne proizvode koji su podjednako vizuelno privlačni i funkcionalni.",

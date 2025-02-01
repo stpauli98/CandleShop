@@ -1,20 +1,20 @@
 import ProductDescription from "../../components/sharedComponents/ProductDescription.tsx";
 import ProductGrid from "../../components/sharedComponents/ProductGrid.tsx";
-import { dekoracijeData } from "./dekoracijaData.ts";
-import Footer from "../../components/landingPage/Footer";
-import { dekoracije } from '../../lib/controller';
+import { decorationData } from "./decorationData.ts";
+import Footer from "../../components/landingPage/Footer.tsx";
+import { decorations } from '../../lib/controller.ts';
 
 export default function Dekoracija() {
   return (
     <div className="mt-16">
-      <ProductDescription {...dekoracijeData} />
-      <div className={dekoracijeData.bgColor + " w-full"}>
+      <ProductDescription {...decorationData} />
+      <div className={decorationData.bgColor + " w-full"}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <ProductGrid 
             category="dekoracije"
-            bgColor={dekoracijeData.bgColor}
-            buttonColor={dekoracijeData.textColor}
-            collectionName={dekoracije}
+            bgColor={decorationData.bgColor}
+            buttonColor={decorationData.textColor}
+            collectionName={decorations}
           />
         </div>
       </div>

@@ -1,4 +1,4 @@
-export const svijeceData = {
+export const candlesData = {
   title: "Naše Svijeće",
   description: "Naše ručno izrađene svijeće su rezultat pažljivog odabira najkvalitetnijih materijala i predanog rada. Svaka svijeća je jedinstveno umjetničko djelo, izrađeno s ljubavlju i pažnjom prema detaljima.",
   features: [

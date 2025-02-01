@@ -2,18 +2,22 @@ import React, { useState, useEffect } from "react"
 import { ProductForm } from "./ProductForm"
 import { ProductList } from "./ProductList"
 import type { Product } from "./types"
-import { omiljeniProizvodi } from '../../lib/controller'
+import { candles, decorations, favoriteProducts, scentedCandles, scentedWaxes } from "../../lib/controller"
 import { useNavigate } from 'react-router-dom'
 import { onAuthStateChanged, signOut } from "firebase/auth"
 import { auth } from "../../lib/firebase"
 
 const collections = {
-  "Omiljeni proizvodi": omiljeniProizvodi
+  "Omiljeni proizvodi": favoriteProducts,
+  "Svijeće": candles,
+  "Mirisne svijeće": scentedCandles,
+  "Mirisni voskovi": scentedWaxes,
+  "Dekoracije": decorations
 } as const
 
 export default function AdminPanel() {
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>()
-  const [selectedCategory, setSelectedCategory] = useState<string>(omiljeniProizvodi.path.split('/').pop()!)
+  const [selectedCategory, setSelectedCategory] = useState<string>(candles.path.split('/').pop()!)
   const [loading, setLoading] = useState(true)
   const [authenticated, setAuthenticated] = useState(false)
   const navigate = useNavigate()

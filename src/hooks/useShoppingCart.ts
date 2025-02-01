@@ -103,12 +103,20 @@ export function useShoppingCart() {
         isUpdating.current = false;
     };
 
+    const calculateTotal = () => {
+        return cart.reduce((total, item) => {
+            const price = item.novaCijena || item.cijena || '0';
+            return total + (Number(price) * item.quantity);
+        }, 0);
+    };
+
     return {
         cart,
         cartItemCount,
         addToCart,
         removeFromCart,
         updateQuantity,
-        clearCart
+        clearCart,
+        calculateTotal
     };
 }
