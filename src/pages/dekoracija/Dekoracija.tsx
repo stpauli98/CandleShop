@@ -1,5 +1,5 @@
-import ProductDescription from "../../components/shared/ProductDescription";
-import ProductGrid from "../../components/shared/ProductGrid";
+import ProductDescription from "../../components/sharedComponents/ProductDescription.tsx";
+import ProductGrid from "../../components/sharedComponents/ProductGrid.tsx";
 import { dekoracijeData } from "./dekoracijaData.ts";
 import Footer from "../../components/landingPage/Footer";
 import { dekoracije } from '../../lib/controller';

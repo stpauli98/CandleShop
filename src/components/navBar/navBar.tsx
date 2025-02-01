@@ -28,13 +28,6 @@ const navItems = [
   { name: 'Dekoracije', href: '/dekoracija', icon: Sparkles },
 ]
 
-const scrollToFAQ = () => {
-  const faqSection = document.getElementById('faq');
-  if (faqSection) {
-    faqSection.scrollIntoView({ behavior: 'smooth' });
-  }
-};
-
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [isCartOpen, setIsCartOpen] = useState(false)

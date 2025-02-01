@@ -1,5 +1,5 @@
-import ProductDescription from '../../components/shared/ProductDescription'
-import ProductGrid from '../../components/shared/ProductGrid'
+import ProductDescription from '../../components/sharedComponents/ProductDescription'
+import ProductGrid from '../../components/sharedComponents/ProductGrid'
 import { svijeceData } from './svijeceData'
 import Footer from '../../components/landingPage/Footer'
 import { svijece } from '../../lib/controller'

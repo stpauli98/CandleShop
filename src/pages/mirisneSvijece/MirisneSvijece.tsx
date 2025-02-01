@@ -1,5 +1,5 @@
-import ProductDescription from "../../components/shared/ProductDescription";
-import ProductGrid from "../../components/shared/ProductGrid";
+import ProductDescription from "../../components/sharedComponents/ProductDescription";
+import ProductGrid from "../../components/sharedComponents/ProductGrid";
 import { mirisneSvijeceData } from "./mirisneSvijeceData";
 import Footer from "../../components/landingPage/Footer";
 import { mirisneSvijece } from '../../lib/controller';
