@@ -7,6 +7,7 @@ import { formatCurrency } from '../../utilities/formatCurency'
 import { collection, getDocs, CollectionReference, DocumentData } from 'firebase/firestore'
 import { db } from '../../lib/firebase'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ImageModal } from './ImageModal'
 
 const mirisi = ["jagoda", "kruška", "vanilija", "lavanda", "kokos", "malina"] as const;
 
@@ -38,6 +39,7 @@ export default function ProductGrid({
     const [products, setProducts] = useState<Product[]>([])
     const { cart, addToCart } = useShoppingCart()
     const [loading, setLoading] = useState(true)
+    const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -106,7 +108,12 @@ export default function ProductGrid({
                             <img
                                 src={product.slika}
                                 alt={product.naziv}
-                                className={`w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105 ${!product.dostupnost ? 'grayscale' : ''}`}
+                                onClick={() => {
+                                    if (product.slika) {
+                                        setSelectedImage(product.slika)
+                                    }
+                                }}
+                                className={`w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105 ${!product.dostupnost ? 'grayscale' : ''} cursor-pointer`}
                             />
                             {product.popust && (
                                 <div className="absolute top-2 left-2">
@@ -184,6 +191,11 @@ export default function ProductGrid({
                     </motion.div>
                 ))}
             </div>
+            <ImageModal
+                imageUrl={selectedImage || ''}
+                isOpen={!!selectedImage}
+                onClose={() => setSelectedImage(null)}
+            />
         </>
     )
 }

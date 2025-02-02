@@ -10,7 +10,7 @@ import AdminPanel from "./components/adminPanel/AdminPanel";
 import AdminLogin from "./components/adminPanel/AdminLogin";
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import PaymentInput from "./components/payment/PaymentInput";
-import {OrderConfirmation} from "./components/payment/OrderConfirmation";
+import OrderConfirmation from "./components/payment/OrderConfirmation";
 
 function App() {
   const location = useLocation();
@@ -24,7 +24,9 @@ function App() {
     <div className="min-h-screen bg-gray-50">
       {location.pathname !== '/admin-panel' &&
        location.pathname !== '/admin-login' &&
-       location.pathname !== '/placanje' && <NavBar />}
+       location.pathname !== '/placanje' &&
+       location.pathname !== '/order-confirmation' 
+        && <NavBar />}
       
       <Routes>
         <Route path="/admin-login" element={<AdminLogin />} />

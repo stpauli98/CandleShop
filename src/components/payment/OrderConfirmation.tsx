@@ -3,18 +3,19 @@ import Button from "../ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card"
 import { useNavigate, useLocation } from "react-router-dom"
 import { formatCurrency } from "../../utilities/formatCurency"
-
-interface CartItem {
-  id: string
-  naziv?: string
-  cijena?: string
-  novaCijena?: string
-  quantity: number
-}
+import { useShoppingCart } from "@/hooks/useShoppingCart"
+import { useEffect } from "react"
 
 interface Order {
   orderNumber: string
-  items: CartItem[]
+  items: Array<{
+    id: string
+    naziv?: string
+    cijena?: string
+    novaCijena?: string
+    quantity: number
+    selectedMiris?: string
+  }>
   total: number
   paymentMethod: string
   shippingAddress: string
@@ -27,9 +28,15 @@ interface OrderConfirmationProps {
   order: Order
 }
 
-export function OrderConfirmation({ order }: OrderConfirmationProps) {
+export default function OrderConfirmation({ order }: OrderConfirmationProps) {
   const navigate = useNavigate()
   const location = useLocation()
+  const { clearCart } = useShoppingCart()
+  
+  useEffect(() => {
+    // Clear cart only once when component mounts
+    clearCart()
+  }, []) // Empty dependency array since we only want this to run once
 
   if (!order) {
     return (
@@ -70,7 +77,7 @@ export function OrderConfirmation({ order }: OrderConfirmationProps) {
               {order.items.map((item, index) => (
                 <li key={index} className="py-2 flex justify-between">
                   <span>
-                    {item.naziv} (x{item.quantity})
+                    {item.naziv} {item.selectedMiris && `(${item.selectedMiris})`} x{item.quantity}
                   </span>
                   <span>{formatCurrency(Number(item.novaCijena || item.cijena) * item.quantity)}</span>
                 </li>
