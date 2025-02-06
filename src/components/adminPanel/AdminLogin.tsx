@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth"
 import { auth } from "../../lib/firebase"
+import { Link } from "react-router-dom"
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("")
@@ -102,6 +103,12 @@ export default function AdminLogin() {
             >
               {loading ? "Učitavanje..." : "Uloguj se"}
             </button>
+            <Link
+              to="/"
+              className="mt-3 group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+            >
+              Nazad
+            </Link>
           </div>
         </form>
       </div>
