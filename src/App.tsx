@@ -45,9 +45,7 @@ function App() {
         <Route 
           path="/order-confirmation" 
           element={
-            <OrderConfirmation 
-              order={location.state?.order || {}}
-            />
+            <OrderConfirmation />
           } 
         />  
         <Route path="*" element={<Navigate to="/" />} />

@@ -12,6 +12,8 @@ import { Label } from "../ui/label"
 import { Input } from "../ui/input"
 import { useShoppingCart } from '../../hooks/useShoppingCart'
 import { formatCurrency } from '../../utilities/formatCurency'
+import { createOrder } from '../../lib/firebase/orders'
+import { sendOrderConfirmationEmail } from '../../lib/email/orderConfirmation'
 
 const paymentFormSchema = z.object({
   paymentMethod: z.enum(["pouzecem"]),
@@ -52,14 +54,21 @@ export default function PaymentInput() {
   const onSubmit = async (data: PaymentFormSchema) => {
     setIsLoading(true)
     try {
-      // Simulacija procesiranja narudžbe
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      const total = calculateTotal();
+      const shippingCost = total >= 50 ? 0 : 5;
       
       // Kreiranje objekta narudžbe
-      const order = {
+      const orderData = {
         orderNumber: `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-        items: cart,
-        total: calculateTotal(),
+        items: cart.map(item => ({
+          id: item.id,
+          naziv: item.naziv,
+          cijena: item.cijena,
+          kolicina: item.quantity || 1,
+          selectedMiris: item.selectedMiris
+        })),
+        total,
+        shippingCost,
         paymentMethod: data.paymentMethod,
         shippingInfo: {
           firstName: data.firstName,
@@ -71,15 +80,24 @@ export default function PaymentInput() {
           phone: data.phone,
           additionalInfo: data.additionalInfo
         },
-        orderDate: new Date().toISOString(),
-        orderStatus: 'processing',
         customerEmail: data.email
-      }
+      };
 
-      console.log("Order processed:", order)
-      clearCart()
+      // Spremanje narudžbe u Firebase
+      const orderId = await createOrder(orderData);
+      
+      // Slanje email potvrde
+      await sendOrderConfirmationEmail({
+        ...orderData,
+        status: 'pending',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        id: orderId
+      });
+
+      clearCart();
       navigate("/order-confirmation", { 
-        state: { order } 
+        state: { order: orderData } 
       })
     } catch (error) {
       console.error("Error processing order:", error)

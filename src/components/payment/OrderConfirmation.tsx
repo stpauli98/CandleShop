@@ -11,32 +11,34 @@ interface Order {
   items: Array<{
     id: string
     naziv?: string
-    cijena?: string
-    novaCijena?: string
-    quantity: number
+    cijena?: number
+    kolicina: number
     selectedMiris?: string
   }>
   total: number
+  shippingCost: number
   paymentMethod: string
-  shippingAddress: string
-  orderDate: string
-  orderStatus: string
-  customerEmail?: string
+  shippingInfo: {
+    firstName: string
+    lastName: string
+    street: string
+    houseNumber: string
+    city: string
+    postalCode: string
+    phone: string
+    additionalInfo?: string
+  }
+  customerEmail: string
 }
 
 interface OrderConfirmationProps {
   order: Order
 }
 
-export default function OrderConfirmation({ order }: OrderConfirmationProps) {
+export default function OrderConfirmation() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { clearCart } = useShoppingCart()
-  
-  useEffect(() => {
-    // Clear cart only once when component mounts
-    clearCart()
-  }, []) // Empty dependency array since we only want this to run once
+  const order = location.state?.order as Order
 
   if (!order) {
     return (
@@ -77,32 +79,50 @@ export default function OrderConfirmation({ order }: OrderConfirmationProps) {
               {order.items.map((item, index) => (
                 <li key={index} className="py-2 flex justify-between">
                   <span>
-                    {item.naziv} {item.selectedMiris && `(${item.selectedMiris})`} x{item.quantity}
+                    {item.naziv} {item.selectedMiris && `(${item.selectedMiris})`} x{item.kolicina}
                   </span>
-                  <span>{formatCurrency(Number(item.novaCijena || item.cijena) * item.quantity)}</span>
+                  <span>{formatCurrency(Number(item.cijena) * item.kolicina)}</span>
                 </li>
               ))}
             </ul>
-            <div className="flex justify-between font-semibold">
-              <span>Ukupno:</span>
-              <span>{formatCurrency(order.total)}</span>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-2">Način Plaćanja:</h3>
-              <p>{order.paymentMethod === 'card' ? 'Kreditna kartica' : 
-                  order.paymentMethod === 'cashOnDelivery' ? 'Plaćanje pri preuzimanju' :
-                  order.paymentMethod === 'paypal' ? 'PayPal' : 'Apple Pay'}</p>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-2">Adresa za Dostavu:</h3>
-              <p>{order.shippingAddress}</p>
-            </div>
-            {order.customerEmail && (
-              <div>
-                <h3 className="font-semibold mb-2">Email:</h3>
-                <p>{order.customerEmail}</p>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span>Međuzbroj:</span>
+                <span>{formatCurrency(order.total)}</span>
               </div>
-            )}
+              <div className="flex justify-between">
+                <span>Dostava:</span>
+                <span>{order.shippingCost === 0 ? 'Besplatno' : formatCurrency(order.shippingCost)}</span>
+              </div>
+              <div className="flex justify-between font-semibold text-lg border-t pt-2">
+                <span>Ukupno za plaćanje:</span>
+                <span>{formatCurrency(order.total + order.shippingCost)}</span>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+              <div>
+                <h3 className="font-semibold mb-2">Način Plaćanja:</h3>
+                <p className="text-gray-700">Plaćanje pouzećem</p>
+              </div>
+              <div>
+                <h3 className="font-semibold mb-2">Kontakt Informacije:</h3>
+                <p className="text-gray-700">Tel: {order.shippingInfo.phone}</p>
+                <p className="text-gray-700">Email: {order.customerEmail}</p>
+              </div>
+              <div className="md:col-span-2">
+                <h3 className="font-semibold mb-2">Adresa za Dostavu:</h3>
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <p className="text-gray-700">{order.shippingInfo.firstName} {order.shippingInfo.lastName}</p>
+                  <p className="text-gray-700">{order.shippingInfo.street} {order.shippingInfo.houseNumber}</p>
+                  <p className="text-gray-700">{order.shippingInfo.postalCode} {order.shippingInfo.city}</p>
+                  {order.shippingInfo.additionalInfo && (
+                    <p className="mt-2 text-gray-600 text-sm">
+                      Napomena: {order.shippingInfo.additionalInfo}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </CardContent>
         <CardFooter className="flex flex-col space-y-2">

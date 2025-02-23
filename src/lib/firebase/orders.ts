@@ -2,6 +2,7 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 
 export interface Order {
+    id?: string;
     orderNumber: string;
     items: Array<{
         id: string;
@@ -29,7 +30,7 @@ export interface Order {
     updatedAt: Date;
 }
 
-export const createOrder = async (orderData: Omit<Order, 'createdAt' | 'updatedAt' | 'status'>) => {
+export const createOrder = async (orderData: Omit<Order, 'createdAt' | 'updatedAt' | 'status' | 'id'>) => {
     try {
         const ordersRef = collection(db, 'orders');
         const orderWithTimestamps = {
