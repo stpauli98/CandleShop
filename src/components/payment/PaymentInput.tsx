@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { useNavigate } from "react-router-dom"
+import toast from "react-hot-toast"
 import  Button  from "../ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form"
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group"
@@ -99,10 +100,27 @@ export default function PaymentInput() {
       navigate("/order-confirmation", { 
         state: { order: orderData } 
       })
-    } catch (error) {
-      console.error("Error processing order:", error)
+    } catch (error: any) {
+      console.error("Error processing order:", error);
+      
+      // Ako je Firebase greška, prikaži specifičnu poruku
+      if (error.name === 'FirebaseError') {
+        toast.error(error.message, {
+          duration: 5000,
+          icon: '⚠️',
+          style: {
+            background: '#FEF2F2',
+            color: '#991B1B',
+            border: '1px solid #FCA5A5'
+          }
+        });
+      } else {
+        toast.error("Došlo je do greške prilikom procesiranja narudžbe.", {
+          duration: 3000
+        });
+      }
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 

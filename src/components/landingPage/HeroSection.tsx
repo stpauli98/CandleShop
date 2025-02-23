@@ -51,49 +51,35 @@ export default function HeroSection() {
                                 <p className="text-lg md:text-xl text-gray-200 leading-relaxed max-w-md mx-auto md:mx-0 mt-11">
                                     Naše ručno izrađene svijeće su više od dekoracije – one unose toplinu, mir i ljubav u svaki trenutak.
                                 </p>
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20, x: 0 }}
-                                    animate={{ opacity: 1, y: 0, x: 0 }}
-                                    transition={{ duration: 1.5, delay: 0.3 }}
-                                    className="pt-6"
-                                >
-                                    <Button 
-                                        size="lg"
-                                        asLink="/proizvodi"
-                                        className="w-full md:w-auto hover:scale-105 transition-transform duration-300"
-                                    >
-                                        Istražite kolekciju
-                                    </Button>
-                                </motion.div>
+
                             </motion.div>
                         </div>
                     </div>
 
-                    {/* Donje dugme */}
-                    <div className="absolute bottom-0 w-full pb-12 md:pb-16">
+                    {/* Scroll Indicator */}
+                    <div className="absolute bottom-0 w-full pb-16 md:pb-20">
                         <motion.div 
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 1, delay: 1.5 }}
                             className="container mx-auto px-6 flex flex-col items-center"
                         >
-                            {/* Scroll Indicator */}
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ 
-                                    opacity: [0, 1],
-                                    y: [0, 10, 0]
+                                    opacity: [0.3, 1],
+                                    y: [0, 15, 0]
                                 }}
                                 transition={{
-                                    duration: 1.5,
+                                    duration: 2,
                                     repeat: Infinity,
-                                    delay: 2
+                                    ease: "easeInOut"
                                 }}
-                                className="text-white flex flex-col items-center"
+                                className="bg-white/10 backdrop-blur-sm rounded-2xl py-6 px-8 flex flex-col items-center shadow-2xl"
                             >
-                                <span className="text-sm mb-2">Skrolaj prema dole</span>
+                                <span className="text-2xl font-medium mb-4 text-white tracking-wide">Skrolaj prema dolje</span>
                                 <svg 
-                                    className="w-6 h-6" 
+                                    className="w-12 h-12 text-white" 
                                     fill="none" 
                                     stroke="currentColor" 
                                     viewBox="0 0 24 24"

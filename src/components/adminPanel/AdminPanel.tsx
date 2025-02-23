@@ -51,6 +51,7 @@ export default function AdminPanel() {
   const handleAddNewProduct = () => {
     setSelectedProduct(undefined)
     setFormMode('create')
+    setActiveTab('form') // Prebaci na formu kada se klikne dugme
   }
 
   const handleProductSubmit = async (success: boolean) => {
