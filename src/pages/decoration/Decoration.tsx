@@ -2,7 +2,7 @@ import ProductDescription from "../../components/sharedComponents/ProductDescrip
 import ProductGrid from "../../components/sharedComponents/ProductGrid.tsx";
 import { decorationData } from "./decorationData.ts";
 import Footer from "../../components/landingPage/Footer.tsx";
-import { decorations } from '../../lib/controller.ts';
+import { collections } from '../../lib/controller.ts';
 
 export default function Dekoracija() {
   return (
@@ -14,7 +14,7 @@ export default function Dekoracija() {
             category="dekoracije"
             bgColor={decorationData.bgColor}
             buttonColor={decorationData.textColor}
-            collectionName={decorations}
+            collectionName={collections.dekoracije()}
           />
         </div>
       </div>

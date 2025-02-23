@@ -6,10 +6,28 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+ui-debug.log*
+firebase-debug.log*
 
+# Dependencies
 node_modules
+.pnp
+.pnp.js
+
+# Production
 dist
 dist-ssr
+build
+
+# Testing
+coverage
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 *.local
 
 # Editor directories and files
@@ -22,3 +40,21 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Firebase
+.firebase/
+.firebaserc
+
+# TypeScript
+*.tsbuildinfo
+
+# Vite
+.vite
+
+# System Files
+Thumbs.db
+
+# Google Cloud SDK
+google-cloud-sdk/
+google-cloud-cli-*.tar.gz
+*.tar.gz

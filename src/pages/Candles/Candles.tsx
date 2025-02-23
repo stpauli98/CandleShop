@@ -2,7 +2,7 @@ import ProductDescription from '../../components/sharedComponents/ProductDescrip
 import ProductGrid from '../../components/sharedComponents/ProductGrid'
 import { candlesData } from './candlesData'
 import Footer from '../../components/landingPage/Footer'
-import { candles } from '../../lib/controller'
+import { collections } from '../../lib/controller'
 
 export default function Candles() {
   return (
@@ -14,7 +14,7 @@ export default function Candles() {
             category="svijece"
             bgColor={candlesData.bgColor}
             buttonColor={candlesData.textColor}
-            collectionName={candles}
+            collectionName={collections.svijece()}
           />
         </div>
       </div>

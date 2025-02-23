@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { Toaster } from "react-hot-toast";
 import NavBar from "./components/navBar/navBar";
 import LandingPage from "./components/landingPage/LandingPage";
 import Candles from "./pages/Candles/Candles";
@@ -22,6 +23,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Toaster position="top-center" />
       {location.pathname !== '/admin-panel' &&
        location.pathname !== '/admin-login' &&
        location.pathname !== '/placanje' &&

@@ -5,7 +5,7 @@ import { useShoppingCart } from '../../hooks/useShoppingCart';
 import { toast, Toaster } from 'react-hot-toast';
 import { formatCurrency } from '../../utilities/formatCurency';
 import { getDocs } from 'firebase/firestore';
-import { favoriteProducts } from '../../lib/controller';
+import { collections } from '../../lib/controller';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const mirisi = ["jagoda", "kruška", "vanilija", "lavanda", "kokos", "malina"] as const;
@@ -30,7 +30,7 @@ const FeaturedProducts: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const querySnapshot = await getDocs(favoriteProducts);
+        const querySnapshot = await getDocs(collections.omiljeniProizvodi());
         const productsData = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
