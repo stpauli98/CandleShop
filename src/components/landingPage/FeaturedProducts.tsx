@@ -7,6 +7,7 @@ import { formatCurrency } from '../../utilities/formatCurency';
 import { getDocs } from 'firebase/firestore';
 import { collections } from '../../lib/controller';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ImageModal } from '../sharedComponents/ImageModal';
 
 const mirisi = ["jagoda", "kruška", "vanilija", "lavanda", "kokos", "malina"] as const;
 
@@ -26,6 +27,7 @@ const FeaturedProducts: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const { cart, addToCart } = useShoppingCart();
   const [loading, setLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -101,6 +103,13 @@ const FeaturedProducts: React.FC = () => {
         <div className="mt-10">
           <Toaster position="top-center" />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {selectedImage && (
+              <ImageModal
+                imageUrl={selectedImage}
+                isOpen={true}
+                onClose={() => setSelectedImage(null)}
+              />
+            )}
             {products.map(product => (
               <motion.div
                 key={product.id}
@@ -113,7 +122,8 @@ const FeaturedProducts: React.FC = () => {
                   <img
                     src={product.slika}
                     alt={product.naziv}
-                    className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+                    onClick={() => product.slika && setSelectedImage(product.slika)}
+                    className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer"
                   />
                   {product.popust && (
                     <div className="absolute top-2 left-2">

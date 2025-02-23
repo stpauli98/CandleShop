@@ -96,6 +96,13 @@ export default function ProductGrid({
         <>
             <Toaster position="top-center" />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {selectedImage && (
+                    <ImageModal
+                        imageUrl={selectedImage}
+                        isOpen={true}
+                        onClose={() => setSelectedImage(null)}
+                    />
+                )}
                 {products.map((product) => (
                     <motion.div
                         key={product.id}
