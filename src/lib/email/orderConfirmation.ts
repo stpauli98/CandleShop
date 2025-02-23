@@ -14,7 +14,7 @@ export const sendOrderConfirmationEmail = async (order: Order) => {
         ${order.shippingInfo.postalCode} ${order.shippingInfo.city}
         
         Naručeni proizvodi:
-        ${order.items.map(item => `- ${item.naziv} (${item.selectedMiris}) x${item.kolicina}`).join('\\n')}
+        ${order.items.map(item => `- ${item.naziv} (${item.selectedMiris}, ${item.selectedBoja}) x${item.kolicina}`).join('\\n')}
         
         Ukupno: ${order.total} KM
         Dostava: ${order.shippingCost} KM

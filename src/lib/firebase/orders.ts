@@ -10,6 +10,7 @@ export interface Order {
         cijena?: string;
         kolicina: number;
         selectedMiris?: string;
+        selectedBoja?: string;
     }>;
     total: number;
     shippingCost: number;

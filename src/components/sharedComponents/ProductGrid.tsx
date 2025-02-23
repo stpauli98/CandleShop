@@ -5,11 +5,10 @@ import { useShoppingCart } from '../../hooks/useShoppingCart'
 import { toast, Toaster } from 'react-hot-toast'
 import { formatCurrency } from '../../utilities/formatCurency'
 import { collection, getDocs, CollectionReference, DocumentData } from 'firebase/firestore'
-import { db } from '../../lib/firebase'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ImageModal } from './ImageModal'
 
-const mirisi = ["jagoda", "kruška", "vanilija", "lavanda", "kokos", "malina"] as const;
+import { getFragrances, getColors } from '../../lib/firebase/fragrancesAndColors';
 
 interface Product {
     id: string;
@@ -21,6 +20,7 @@ interface Product {
     dostupnost?: boolean;
     kategorija?: string;
     selectedMiris?: string;
+    selectedBoja?: string;
 }
 
 interface ProductGridProps {
@@ -40,6 +40,28 @@ export default function ProductGrid({
     const { cart, addToCart } = useShoppingCart()
     const [loading, setLoading] = useState(true)
     const [selectedImage, setSelectedImage] = useState<string | null>(null)
+    const [mirisi, setMirisi] = useState<string[]>([])
+    const [boje, setBoje] = useState<string[]>([])
+
+    // Učitaj mirise i boje
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const [fragrances, colors] = await Promise.all([
+                    getFragrances(),
+                    getColors()
+                ]);
+                setMirisi(fragrances);
+                setBoje(colors);
+            } catch (error) {
+                console.error('Error loading data:', error);
+                toast.error('Greška pri učitavanju podataka');
+            }
+        };
+
+        loadData();
+    }, []);
+
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -57,7 +79,10 @@ export default function ProductGrid({
                         dostupnost: doc.data().dostupnost ?? true,
                         kategorija: doc.data().kategorija || ""
                     } as Product))
-                    .filter(product => product.kategorija === category)
+                    // Ne filtriramo po kategoriji ako je featured
+                    .filter(product => category === 'featured' ? true : product.kategorija === category)
+                    // Limitiramo broj proizvoda na 6 ako je featured
+                    .slice(0, category === 'featured' ? 6 : undefined)
                 setProducts(productsData)
                 setLoading(false)
             } catch (error) {
@@ -70,8 +95,8 @@ export default function ProductGrid({
     }, [category, collectionName])
 
     const handleAddToCart = (product: Product) => {
-        if (!product.selectedMiris) {
-            toast.error("Molimo izaberite miris");
+        if (!product.selectedMiris || !product.selectedBoja) {
+            toast.error("Molimo izaberite miris i boju");
             return;
         }
         const productWithDiscount = {
@@ -139,27 +164,51 @@ export default function ProductGrid({
                             <h3 className="text-lg font-semibold text-gray-900 mb-2">{product.naziv}</h3>
                             <p className="text-gray-600 text-sm mb-4">{product.opis}</p>
                             {product.dostupnost && (
-                                <div className="mb-4">
-                                    <Select 
-                                        onValueChange={(value) => {
-                                            const updatedProducts = products.map(p => 
-                                                p.id === product.id ? {...p, selectedMiris: value} : p
-                                            );
-                                            setProducts(updatedProducts);
-                                        }}
-                                        value={product.selectedMiris}
-                                    >
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Izaberite miris" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {mirisi.map((miris) => (
-                                                <SelectItem key={miris} value={miris}>
-                                                    {miris.charAt(0).toUpperCase() + miris.slice(1)}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                <div className="space-y-4 mb-4">
+                                    <div>
+                                        <Select 
+                                            onValueChange={(value) => {
+                                                const updatedProducts = products.map(p => 
+                                                    p.id === product.id ? {...p, selectedMiris: value} : p
+                                                );
+                                                setProducts(updatedProducts);
+                                            }}
+                                            value={product.selectedMiris}
+                                        >
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Izaberite miris" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {mirisi.map((miris) => (
+                                                    <SelectItem key={miris} value={miris}>
+                                                        {miris.charAt(0).toUpperCase() + miris.slice(1)}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div>
+                                        <Select 
+                                            onValueChange={(value) => {
+                                                const updatedProducts = products.map(p => 
+                                                    p.id === product.id ? {...p, selectedBoja: value} : p
+                                                );
+                                                setProducts(updatedProducts);
+                                            }}
+                                            value={product.selectedBoja}
+                                        >
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Izaberite boju" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {boje.map((boja) => (
+                                                    <SelectItem key={boja} value={boja}>
+                                                        {boja.charAt(0).toUpperCase() + boja.slice(1)}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
                                 </div>
                             )}
                             <div className="flex justify-between items-end">

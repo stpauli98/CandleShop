@@ -14,6 +14,7 @@ interface Order {
     cijena?: number
     kolicina: number
     selectedMiris?: string
+    selectedBoja?: string
   }>
   total: number
   shippingCost: number
@@ -79,7 +80,10 @@ export default function OrderConfirmation() {
               {order.items.map((item, index) => (
                 <li key={index} className="py-2 flex justify-between">
                   <span>
-                    {item.naziv} {item.selectedMiris && `(${item.selectedMiris})`} x{item.kolicina}
+                    {item.naziv} {item.selectedMiris && item.selectedBoja ? 
+                      `(${item.selectedMiris}, ${item.selectedBoja})` : 
+                      item.selectedMiris ? `(${item.selectedMiris})` : 
+                      item.selectedBoja ? `(${item.selectedBoja})` : ''} x{item.kolicina}
                   </span>
                   <span>{formatCurrency(Number(item.cijena) * item.kolicina)}</span>
                 </li>

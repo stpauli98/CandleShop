@@ -66,7 +66,8 @@ export default function PaymentInput() {
           naziv: item.naziv,
           cijena: item.cijena,
           kolicina: item.quantity || 1,
-          selectedMiris: item.selectedMiris
+          selectedMiris: item.selectedMiris,
+          selectedBoja: item.selectedBoja
         })),
         total,
         shippingCost,

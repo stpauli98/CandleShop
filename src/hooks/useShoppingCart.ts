@@ -13,6 +13,7 @@ interface Product {
     dostupnost?: boolean;
     kategorija?: string;
     selectedMiris?: string;
+    selectedBoja?: string;
 }
 
 export interface CartItem extends Product {
@@ -47,15 +48,19 @@ export function useShoppingCart() {
         isUpdating.current = true;
 
         setCart(currentCart => {
-            // Proizvod je isti ako ima isti ID i isti miris
+            // Proizvod je isti ako ima isti ID, miris i boju
             const existingItem = currentCart.find(item => 
-                item.id === product.id && item.selectedMiris === product.selectedMiris
+                item.id === product.id && 
+                item.selectedMiris === product.selectedMiris &&
+                item.selectedBoja === product.selectedBoja
             );
             
             if (existingItem) {
                 toast.success('Količina proizvoda povećana');
                 return currentCart.map(item =>
-                    (item.id === product.id && item.selectedMiris === product.selectedMiris)
+                    (item.id === product.id && 
+                     item.selectedMiris === product.selectedMiris &&
+                     item.selectedBoja === product.selectedBoja)
                         ? { ...item, quantity: item.quantity + 1 }
                         : item
                 );
@@ -67,27 +72,31 @@ export function useShoppingCart() {
         isUpdating.current = false;
     };
 
-    const removeFromCart = (productId: string, selectedMiris?: string) => {
+    const removeFromCart = (productId: string, selectedMiris?: string, selectedBoja?: string) => {
         if (isUpdating.current) return;
         isUpdating.current = true;
 
         setCart(currentCart => {
             toast.success('Proizvod uklonjen iz korpe');
             return currentCart.filter(item => 
-                !(item.id === productId && item.selectedMiris === selectedMiris)
+                !(item.id === productId && 
+                  item.selectedMiris === selectedMiris &&
+                  item.selectedBoja === selectedBoja)
             );
         });
 
         isUpdating.current = false;
     };
 
-    const updateQuantity = (productId: string, newQuantity: number, selectedMiris?: string) => {
+    const updateQuantity = (productId: string, newQuantity: number, selectedMiris?: string, selectedBoja?: string) => {
         if (newQuantity < 1 || isUpdating.current) return;
         isUpdating.current = true;
 
         setCart(currentCart =>
             currentCart.map(item =>
-                (item.id === productId && item.selectedMiris === selectedMiris)
+                (item.id === productId && 
+                 item.selectedMiris === selectedMiris &&
+                 item.selectedBoja === selectedBoja)
                     ? { ...item, quantity: newQuantity }
                     : item
             )

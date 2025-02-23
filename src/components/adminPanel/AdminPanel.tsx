@@ -7,6 +7,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth"
 import { auth } from "../../lib/firebase"
 import { toast } from "react-hot-toast"
 import Button from "@/components/ui/button"
+import ColorAndFragranceInput from "./ColorAndFragrancelnput"
 
 const displayNames = {
   "omiljeniProizvodi": "Omiljeni proizvodi",
@@ -164,37 +165,46 @@ export default function AdminPanel() {
           </div>
 
           {/* Responsive Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Product List */}
-            <div className={`${activeTab === 'form' ? 'hidden sm:block' : ''}`}>
-              <div className="hidden sm:flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold">Lista proizvoda</h2>
+          {/* Main Grid Layout */}
+          <div className="space-y-6">
+            {/* Products Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Product List */}
+              <div className={`${activeTab === 'form' ? 'hidden sm:block' : ''}`}>
+                <div className="hidden sm:flex justify-between items-center mb-4">
+                  <h2 className="text-lg font-semibold">Lista proizvoda</h2>
+                </div>
+                <ProductList 
+                  onEdit={(product) => {
+                    handleProductEdit(product)
+                    setActiveTab('form')
+                  }} 
+                  selectedProduct={selectedProduct}
+                  selectedCategory={selectedCategory}
+                  onCategoryChange={handleCategoryChange}
+                />
               </div>
-              <ProductList 
-                onEdit={(product) => {
-                  handleProductEdit(product)
-                  setActiveTab('form')
-                }} 
-                selectedProduct={selectedProduct}
-                selectedCategory={selectedCategory}
-                onCategoryChange={handleCategoryChange}
-              />
+
+              {/* Product Form */}
+              <div className={`${activeTab === 'list' ? 'hidden sm:block' : ''}`}>
+                <h2 className="text-lg font-semibold mb-4 hidden sm:block">
+                  {formMode === 'create' ? 'Dodaj novi proizvod' : 'Uredi proizvod'}
+                </h2>
+                <ProductForm 
+                  mode={formMode}
+                  product={selectedProduct} 
+                  onSubmit={(success) => {
+                    handleProductSubmit(success)
+                    if (success) setActiveTab('list')
+                  }}
+                  selectedCategory={selectedCategory}
+                />
+              </div>
             </div>
 
-            {/* Product Form */}
-            <div className={`${activeTab === 'list' ? 'hidden sm:block' : ''}`}>
-              <h2 className="text-lg font-semibold mb-4 hidden sm:block">
-                {formMode === 'create' ? 'Dodaj novi proizvod' : 'Uredi proizvod'}
-              </h2>
-              <ProductForm 
-                mode={formMode}
-                product={selectedProduct} 
-                onSubmit={(success) => {
-                  handleProductSubmit(success)
-                  if (success) setActiveTab('list')
-                }}
-                selectedCategory={selectedCategory}
-              />
+            {/* Colors and Fragrances Section */}
+            <div className="border-t pt-6">
+              <ColorAndFragranceInput />
             </div>
           </div>
         </div>

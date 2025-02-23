@@ -2,6 +2,7 @@ import { X } from 'lucide-react';
 import { useShoppingCart } from '../../hooks/useShoppingCart';
 import { formatCurrency } from '../../utilities/formatCurency'
 import { Link } from 'react-router-dom';
+import { getFragrances, getColors } from '../../lib/firebase/fragrancesAndColors';
 
 interface ShoppingCartProps {
     isOpen: boolean;
@@ -62,16 +63,21 @@ export default function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                                                 Miris: {item.selectedMiris.charAt(0).toUpperCase() + item.selectedMiris.slice(1)}
                                             </p>
                                         )}
+                                        {item.selectedBoja && (
+                                            <p className="text-sm text-gray-600 mt-1">
+                                                Boja: {item.selectedBoja.charAt(0).toUpperCase() + item.selectedBoja.slice(1)}
+                                            </p>
+                                        )}
                                         <div className="flex items-center gap-2 mt-2">
                                             <button
-                                                onClick={() => updateQuantity(item.id, item.quantity - 1, item.selectedMiris)}
+                                                onClick={() => updateQuantity(item.id, item.quantity - 1, item.selectedMiris, item.selectedBoja)}
                                                 className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300 transition-colors"
                                             >
                                                 -
                                             </button>
                                             <span className="w-8 text-center">{item.quantity}</span>
                                             <button
-                                                onClick={() => updateQuantity(item.id, item.quantity + 1, item.selectedMiris)}
+                                                onClick={() => updateQuantity(item.id, item.quantity + 1, item.selectedMiris, item.selectedBoja)}
                                                 className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300 transition-colors"
                                             >
                                                 +
@@ -80,7 +86,7 @@ export default function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                                     </div>
                                     <div className="flex flex-col items-end justify-between">
                                         <button
-                                            onClick={() => removeFromCart(item.id, item.selectedMiris)}
+                                            onClick={() => removeFromCart(item.id, item.selectedMiris, item.selectedBoja)}
                                             className="text-red-500 hover:text-red-700 transition-colors"
                                         >
                                             <X className="h-5 w-5" />
@@ -97,6 +103,15 @@ export default function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                                 <span className="text-lg font-medium">Ukupno:</span>
                                 <span className="text-xl font-bold">{formatCurrency(calculateTotal())}</span>
                             </div>
+                            {calculateTotal() < 50 ? (
+                                <div className="mb-4 p-3 bg-amber-50 rounded-lg text-amber-800 text-sm">
+                                    Dodajte još {formatCurrency(50 - calculateTotal())} za besplatnu dostavu!
+                                </div>
+                            ) : (
+                                <div className="mb-4 p-3 bg-green-50 rounded-lg text-green-800 text-sm">
+                                    Čestitamo! Ostvarili ste besplatnu dostavu! 🎉
+                                </div>
+                            )}
                             <Link
                                 to="/placanje"
                                 onClick={onClose}
