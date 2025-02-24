@@ -89,7 +89,7 @@ const CustomerGroupsTable = () => {
                                         setIsModalOpen(true);
                                     }}
                                 >
-                                    Povijest narudžbi
+                                    Pogledaj sve narudžbe
                                 </button>
                             </td>
                         </tr>

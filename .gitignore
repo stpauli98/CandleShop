@@ -58,3 +58,5 @@ Thumbs.db
 google-cloud-sdk/
 google-cloud-cli-*.tar.gz
 *.tar.gz
+
+.firebase/hosting.ZGIzdA.cache

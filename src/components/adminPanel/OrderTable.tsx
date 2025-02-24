@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Order, getOrders } from '../../lib/firebase/orders';
+import OrderDetailsModal from './OrderDetailsModal';
 
 interface OrderTableProps {}
 
@@ -7,6 +8,8 @@ const OrderTable: React.FC<OrderTableProps> = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -29,7 +32,6 @@ const OrderTable: React.FC<OrderTableProps> = () => {
   if (error) return <div className="p-4 text-red-500">{error}</div>;
   if (orders.length === 0) return <div className="p-4">No orders found</div>;
 
-
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full bg-white border border-gray-300">
@@ -49,21 +51,19 @@ const OrderTable: React.FC<OrderTableProps> = () => {
           {orders.map((order) => (
             <tr key={order.orderNumber} className="hover:bg-gray-50">
               <td className="py-2 px-4 border-b">{order.orderNumber}</td>
-              <td className="py-2 px-4 border-b">
-                {order.shippingInfo.firstName} {order.shippingInfo.lastName}
-              </td>
+              <td className="py-2 px-4 border-b">{order.shippingInfo.firstName} {order.shippingInfo.lastName}</td>
               <td className="py-2 px-4 border-b">{order.customerEmail}</td>
-              <td className="py-2 px-4 border-b">
-                {order.shippingInfo.street} {order.shippingInfo.houseNumber}, {order.shippingInfo.city}{" "}
-                {order.shippingInfo.postalCode}
-              </td>
+              <td className="py-2 px-4 border-b">{order.shippingInfo.street} {order.shippingInfo.houseNumber}, {order.shippingInfo.city} {order.shippingInfo.postalCode}</td>
               <td className="py-2 px-4 border-b">{order.shippingInfo.phone}</td>
               <td className="py-2 px-4 border-b">{order.total.toFixed(2)} KM</td>
               <td className="py-2 px-4 border-b">{order.paymentMethod}</td>
               <td className="py-2 px-4 border-b">
                 <button
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-                  onClick={() => alert(`Detalji za narudžbu ${order.orderNumber}`)}
+                  onClick={() => {
+                    setSelectedOrder(order);
+                    setIsModalOpen(true);
+                  }}
                 >
                   Prikaži
                 </button>
@@ -72,9 +72,18 @@ const OrderTable: React.FC<OrderTableProps> = () => {
           ))}
         </tbody>
       </table>
+
+      {/* Modal za prikaz detalja */}
+      <OrderDetailsModal
+        order={selectedOrder}
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedOrder(null);
+        }}
+      />
     </div>
-  )
-}
+  );
+};
 
-export default OrderTable
-
+export default OrderTable;
