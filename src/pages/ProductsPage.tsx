@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 import ProductCard from '../components/ui/ProductCard';
 import { Product } from '../types/product';
 
@@ -18,8 +20,22 @@ export default function ProductsPage() {
     const location = useLocation();
 
     useEffect(() => {
-        // TODO: Fetch products from Firebase
-        setLoading(false);
+        const fetchProducts = async () => {
+            try {
+                const querySnapshot = await getDocs(collection(db, 'products'));
+                const productsData = querySnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                })) as Product[];
+                setProducts(productsData);
+            } catch (error) {
+                console.error('Error loading products:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProducts();
     }, []);
 
     useEffect(() => {

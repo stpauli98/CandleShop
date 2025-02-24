@@ -4,7 +4,7 @@ import ProductGrid from '../sharedComponents/ProductGrid';
 
 const FeaturedProducts: React.FC = () => {
   return (
-    <div className="py-12 bg-gradient-to-b from-purple-50 to-orange-50">
+    <div id="featured-products" className="py-12 bg-gradient-to-b from-purple-50 to-orange-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">

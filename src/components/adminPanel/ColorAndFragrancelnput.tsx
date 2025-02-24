@@ -53,7 +53,11 @@ const ColorAndFragranceInput: React.FC = () => {
       toast.success(`${newItemType === 'color' ? 'Boja' : 'Miris'} uspješno dodan`);
     } catch (error) {
       console.error('Error adding item:', error);
-      toast.error('Greška pri dodavanju stavke');
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('Greška pri dodavanju stavke');
+      }
     }
   }
 

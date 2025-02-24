@@ -1,5 +1,15 @@
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, getDocs, query, orderBy, Timestamp } from 'firebase/firestore';
 import { db } from '../firebase';
+
+export interface CustomerInfo {
+    customerEmail: string;
+    phone: string;
+    firstName: string;
+    lastName: string;
+    orders: Order[];
+    totalOrders: number;
+    totalSpent: number;
+}
 
 export interface Order {
     id?: string;
@@ -73,5 +83,76 @@ export const createOrder = async (orderData: Omit<Order, 'createdAt' | 'updatedA
             'Došlo je do greške prilikom spremanja narudžbe. Molimo pokušajte ponovno.',
             error
         );
+    }
+};
+
+export interface CustomerInfo {
+    customerEmail: string;
+    phone: string;
+    firstName: string;
+    lastName: string;
+    orders: Order[];
+    totalOrders: number;
+    totalSpent: number;
+}
+
+export const getOrders = async (): Promise<Order[]> => {
+    try {
+        const ordersRef = collection(db, 'orders');
+        const q = query(ordersRef, orderBy('createdAt', 'desc'));
+        const querySnapshot = await getDocs(q);
+        
+        return querySnapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                ...data,
+                createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : new Date(),
+                updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : new Date()
+            } as Order;
+        });
+    } catch (error) {
+        if (error instanceof Error && error.message.includes('permission')) {
+            throw new FirebaseError(
+                'Pristup Firebase bazi je blokiran. Molimo isključite ad blocker za ovu stranicu i pokušajte ponovno.',
+                error
+            );
+        }
+        throw new FirebaseError('Error fetching orders', error);
+    }
+};
+
+export const getCustomerGroups = async (): Promise<CustomerInfo[]> => {
+    try {
+        const orders = await getOrders();
+        const customerMap = new Map<string, CustomerInfo>();
+
+        orders.forEach(order => {
+            // Create a unique key combining email and phone
+            const key = `${order.customerEmail.toLowerCase()}_${order.shippingInfo.phone}`;
+
+            if (!customerMap.has(key)) {
+                customerMap.set(key, {
+                    customerEmail: order.customerEmail,
+                    phone: order.shippingInfo.phone,
+                    firstName: order.shippingInfo.firstName,
+                    lastName: order.shippingInfo.lastName,
+                    orders: [],
+                    totalOrders: 0,
+                    totalSpent: 0
+                });
+            }
+
+            const customerInfo = customerMap.get(key)!;
+            customerInfo.orders.push(order);
+            customerInfo.totalOrders += 1;
+            customerInfo.totalSpent += order.total;
+        });
+
+        // Convert Map to array and sort by total orders
+        return Array.from(customerMap.values())
+            .sort((a, b) => b.totalOrders - a.totalOrders);
+    } catch (error) {
+        throw new FirebaseError('Error fetching customer groups', error);
     }
 };

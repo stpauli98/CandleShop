@@ -63,11 +63,11 @@ export default function PaymentInput() {
         orderNumber: `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
         items: cart.map(item => ({
           id: item.id,
-          naziv: item.naziv,
-          cijena: item.cijena,
+          naziv: item.naziv || '',
+          cijena: item.cijena || '',
           kolicina: item.quantity || 1,
-          selectedMiris: item.selectedMiris,
-          selectedBoja: item.selectedBoja
+          selectedMiris: item.selectedMiris || '',
+          selectedBoja: item.selectedBoja || ''
         })),
         total,
         shippingCost,
@@ -106,15 +106,39 @@ export default function PaymentInput() {
       
       // Ako je Firebase greška, prikaži specifičnu poruku
       if (error.name === 'FirebaseError') {
-        toast.error(error.message, {
-          duration: 5000,
-          icon: '⚠️',
-          style: {
-            background: '#FEF2F2',
-            color: '#991B1B',
-            border: '1px solid #FCA5A5'
-          }
-        });
+        if (error.message.includes('permission')) {
+          toast.error(
+            <div className="space-y-2">
+              <p className="font-medium">Pristup Firebase bazi je blokiran</p>
+              <p className="text-sm">Molimo vas da:</p>
+              <ol className="list-decimal list-inside text-sm space-y-1">
+                <li>Isključite ad blocker za ovu stranicu</li>
+                <li>Dodajte izuzetke za *.firebaseapp.com i *.googleapis.com</li>
+                <li>Osvježite stranicu i pokušajte ponovno</li>
+              </ol>
+            </div>,
+            {
+              duration: 10000,
+              icon: '⚠️',
+              style: {
+                background: '#FEF2F2',
+                color: '#991B1B',
+                border: '1px solid #FCA5A5',
+                maxWidth: '400px'
+              }
+            }
+          );
+        } else {
+          toast.error(error.message, {
+            duration: 5000,
+            icon: '⚠️',
+            style: {
+              background: '#FEF2F2',
+              color: '#991B1B',
+              border: '1px solid #FCA5A5'
+            }
+          });
+        }
       } else {
         toast.error("Došlo je do greške prilikom procesiranja narudžbe.", {
           duration: 3000

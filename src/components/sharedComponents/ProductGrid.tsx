@@ -95,8 +95,12 @@ export default function ProductGrid({
     }, [category, collectionName])
 
     const handleAddToCart = (product: Product) => {
-        if (!product.selectedMiris || !product.selectedBoja) {
-            toast.error("Molimo izaberite miris i boju");
+        const missingSelections = [];
+        if (!product.selectedMiris) missingSelections.push('miris');
+        if (!product.selectedBoja) missingSelections.push('boju');
+        
+        if (missingSelections.length > 0) {
+            toast.error(`Molimo izaberite ${missingSelections.join(' i ')}`);
             return;
         }
         const productWithDiscount = {

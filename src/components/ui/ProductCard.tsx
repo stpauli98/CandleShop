@@ -1,12 +1,15 @@
 import { motion } from 'framer-motion';
 import { Product } from '../../types/product';
 import { Link } from 'react-router-dom';
+import { useShoppingCart } from '../../hooks/useShoppingCart';
+import Button from './button';
 
 interface ProductCardProps {
     product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+    const { addToCart } = useShoppingCart();
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -67,6 +70,16 @@ export default function ProductCard({ product }: ProductCardProps) {
                     )}
                 </div>
             </Link>
+            <Button 
+                onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    addToCart(product);
+                }}
+                className="w-full mt-4 bg-purple-600 hover:bg-purple-700 text-white"
+            >
+                Dodaj u košaricu
+            </Button>
         </motion.div>
     );
 }

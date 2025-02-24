@@ -64,7 +64,13 @@ export default function HeroSection() {
                             transition={{ duration: 1, delay: 1.5 }}
                             className="container mx-auto px-6 flex flex-col items-center"
                         >
-                            <motion.div
+                            <motion.button
+                                onClick={() => {
+                                    document.getElementById('featured-products')?.scrollIntoView({ 
+                                        behavior: 'smooth',
+                                        block: 'start'
+                                    });
+                                }}
                                 initial={{ opacity: 0 }}
                                 animate={{ 
                                     opacity: [0.3, 1],
@@ -75,11 +81,13 @@ export default function HeroSection() {
                                     repeat: Infinity,
                                     ease: "easeInOut"
                                 }}
-                                className="bg-white/10 backdrop-blur-sm rounded-2xl py-6 px-8 flex flex-col items-center shadow-2xl"
+                                className="bg-white/10 backdrop-blur-sm rounded-2xl py-6 px-8 flex flex-col items-center shadow-2xl hover:bg-white/20 transition-all cursor-pointer group"
                             >
-                                <span className="text-2xl font-medium mb-4 text-white tracking-wide">Skrolaj prema dolje</span>
+                                <span className="text-2xl font-medium mb-4 text-white tracking-wide group-hover:text-purple-200 transition-colors">
+                                    Skrolaj prema dole
+                                </span>
                                 <svg 
-                                    className="w-12 h-12 text-white" 
+                                    className="w-12 h-12 text-white group-hover:text-purple-200 transition-colors" 
                                     fill="none" 
                                     stroke="currentColor" 
                                     viewBox="0 0 24 24"
@@ -91,7 +99,7 @@ export default function HeroSection() {
                                         d="M19 14l-7 7m0 0l-7-7m7 7V3"
                                     />
                                 </svg>
-                            </motion.div>
+                            </motion.button>
                         </motion.div>
                     </div>
                 </div>

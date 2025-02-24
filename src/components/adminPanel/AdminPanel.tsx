@@ -8,6 +8,8 @@ import { auth } from "../../lib/firebase"
 import { toast } from "react-hot-toast"
 import Button from "@/components/ui/button"
 import ColorAndFragranceInput from "./ColorAndFragrancelnput"
+import OrderTable from "./OrderTable"
+import CustomerGroupsTable from "./CustomerGroupsTable"
 
 const displayNames = {
   "omiljeniProizvodi": "Omiljeni proizvodi",
@@ -19,7 +21,7 @@ const displayNames = {
 
 type CategoryId = keyof typeof displayNames
 
-type ActiveTab = 'list' | 'form'
+type ActiveTab = 'list' | 'form' | 'orders' | 'customers'
 
 export default function AdminPanel() {
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>()
@@ -99,8 +101,28 @@ export default function AdminPanel() {
       <nav className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
-            <div className="flex items-center">
+            <div className="flex items-center space-x-4">
               <h1 className="text-xl font-semibold">Admin Panel</h1>
+              <nav className="hidden md:flex space-x-4">
+                <button
+                  onClick={() => setActiveTab('list')}
+                  className={`${activeTab === 'list' ? 'text-purple-600' : 'text-gray-500'} hover:text-purple-600`}
+                >
+                  Proizvodi
+                </button>
+                <button
+                  onClick={() => setActiveTab('orders')}
+                  className={`${activeTab === 'orders' ? 'text-purple-600' : 'text-gray-500'} hover:text-purple-600`}
+                >
+                  Narudžbe
+                </button>
+                <button
+                  onClick={() => setActiveTab('customers')}
+                  className={`${activeTab === 'customers' ? 'text-purple-600' : 'text-gray-500'} hover:text-purple-600`}
+                >
+                  Kupci
+                </button>
+              </nav>
             </div>
             <div className="flex items-center gap-2">
               <Button
@@ -125,15 +147,37 @@ export default function AdminPanel() {
 
       <div className="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
         <div className="bg-white shadow rounded-lg p-4 sm:p-6">
-          {/* Mobile Add Button */}
-          <div className="sm:hidden mb-4">
-            <Button 
-              onClick={handleAddNewProduct}
-              variant="outline"
-              className="w-full"
-            >
-              Dodaj novi proizvod
-            </Button>
+          {/* Mobile Navigation */}
+          <div className="md:hidden mb-4">
+            <div className="flex space-x-2 mb-4">
+              <button
+                onClick={() => setActiveTab('list')}
+                className={`flex-1 py-2 px-4 text-center rounded-lg ${activeTab === 'list' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-600'}`}
+              >
+                Proizvodi
+              </button>
+              <button
+                onClick={() => setActiveTab('orders')}
+                className={`flex-1 py-2 px-4 text-center rounded-lg ${activeTab === 'orders' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-600'}`}
+              >
+                Narudžbe
+              </button>
+              <button
+                onClick={() => setActiveTab('customers')}
+                className={`flex-1 py-2 px-4 text-center rounded-lg ${activeTab === 'customers' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-600'}`}
+              >
+                Kupci
+              </button>
+            </div>
+            {activeTab === 'list' && (
+              <Button 
+                onClick={handleAddNewProduct}
+                variant="outline"
+                className="w-full"
+              >
+                Dodaj novi proizvod
+              </Button>
+            )}
           </div>
 
           {/* Tabs for Mobile */}
@@ -167,45 +211,54 @@ export default function AdminPanel() {
           {/* Responsive Grid */}
           {/* Main Grid Layout */}
           <div className="space-y-6">
-            {/* Products Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Product List */}
-              <div className={`${activeTab === 'form' ? 'hidden sm:block' : ''}`}>
-                <div className="hidden sm:flex justify-between items-center mb-4">
-                  <h2 className="text-lg font-semibold">Lista proizvoda</h2>
+            {activeTab === 'orders' ? (
+              <div>
+                <h2 className="text-lg font-semibold mb-4">Pregled narudžbi</h2>
+                <OrderTable />
+              </div>
+            ) : activeTab === 'customers' ? (
+              <CustomerGroupsTable />
+            ) : (
+              <div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                {/* Product List */}
+                <div className={`${activeTab === 'form' ? 'hidden sm:block' : ''}`}>
+                  <div className="hidden sm:flex justify-between items-center mb-4">
+                    <h2 className="text-lg font-semibold">Lista proizvoda</h2>
+                  </div>
+                  <ProductList 
+                    onEdit={(product) => {
+                      handleProductEdit(product)
+                      setActiveTab('form')
+                    }} 
+                    selectedProduct={selectedProduct}
+                    selectedCategory={selectedCategory}
+                    onCategoryChange={handleCategoryChange}
+                  />
                 </div>
-                <ProductList 
-                  onEdit={(product) => {
-                    handleProductEdit(product)
-                    setActiveTab('form')
-                  }} 
-                  selectedProduct={selectedProduct}
-                  selectedCategory={selectedCategory}
-                  onCategoryChange={handleCategoryChange}
-                />
-              </div>
 
-              {/* Product Form */}
-              <div className={`${activeTab === 'list' ? 'hidden sm:block' : ''}`}>
-                <h2 className="text-lg font-semibold mb-4 hidden sm:block">
-                  {formMode === 'create' ? 'Dodaj novi proizvod' : 'Uredi proizvod'}
-                </h2>
-                <ProductForm 
-                  mode={formMode}
-                  product={selectedProduct} 
-                  onSubmit={(success) => {
-                    handleProductSubmit(success)
-                    if (success) setActiveTab('list')
-                  }}
-                  selectedCategory={selectedCategory}
-                />
+                {/* Product Form */}
+                <div className={`${activeTab === 'list' ? 'hidden sm:block' : ''}`}>
+                  <h2 className="text-lg font-semibold mb-4 hidden sm:block">
+                    {formMode === 'create' ? 'Dodaj novi proizvod' : 'Uredi proizvod'}
+                  </h2>
+                  <ProductForm 
+                    mode={formMode}
+                    product={selectedProduct} 
+                    onSubmit={(success) => {
+                      handleProductSubmit(success)
+                      if (success) setActiveTab('list')
+                    }}
+                    selectedCategory={selectedCategory}
+                  />
+                </div>
               </div>
-            </div>
-
-            {/* Colors and Fragrances Section */}
-            <div className="border-t pt-6">
-              <ColorAndFragranceInput />
-            </div>
+                <div className="mt-8 border-t pt-8">
+                  <h2 className="text-lg font-semibold mb-4">Upravljanje bojama i mirisima</h2>
+                  <ColorAndFragranceInput />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
