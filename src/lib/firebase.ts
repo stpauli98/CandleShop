@@ -8,12 +8,12 @@ import { getStorage, connectStorageEmulator } from "firebase/storage";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyD7gHxyj7AW1pAv159ksET5DSq9VJkQxXA",
-  authDomain: "candleshop-865e9.firebaseapp.com",
-  projectId: "candleshop-865e9",
-  storageBucket: "candleshop-865e9.firebasestorage.app",
-  messagingSenderId: "278123606394",
-  appId: "1:278123606394:web:fc665a664b9a881ae4e6c3"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 // Initialize Firebase
