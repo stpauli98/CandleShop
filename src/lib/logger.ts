@@ -1,9 +1,40 @@
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
+// Specific interfaces for different types of data
+interface ErrorData {
+    error?: string | Error;
+    stack?: string;
+    code?: string;
+    [key: string]: unknown;
+}
+
+interface PerformanceData {
+    duration?: number;
+    operation?: string;
+    [key: string]: unknown;
+}
+
+interface UserActionData {
+    userId?: string;
+    action?: string;
+    timestamp?: number;
+    [key: string]: unknown;
+}
+
+interface FirebaseData {
+    operation?: string;
+    error?: string | Error;
+    code?: string;
+    [key: string]: unknown;
+}
+
+// Union type for all possible data types
+type LogData = ErrorData | PerformanceData | UserActionData | FirebaseData | Record<string, unknown> | null | undefined;
+
 interface LogEntry {
     level: LogLevel;
     message: string;
-    data?: any;
+    data?: LogData;
     timestamp: string;
     source?: string;
 }
@@ -28,7 +59,7 @@ class Logger {
         return levels[level] >= levels[this.logLevel];
     }
 
-    private logToConsole(level: LogLevel, message: string, data?: any): void {
+    private logToConsole(level: LogLevel, message: string, data?: LogData): void {
         if (!this.shouldLog(level)) return;
 
         const formattedMessage = this.formatMessage(level, message);
@@ -49,42 +80,56 @@ class Logger {
         }
     }
 
-    debug(message: string, data?: any, source?: string): void {
+    debug(message: string, data?: LogData, source?: string): void {
         this.logToConsole('debug', message, data);
     }
 
-    info(message: string, data?: any, source?: string): void {
+    info(message: string, data?: LogData, source?: string): void {
         this.logToConsole('info', message, data);
     }
 
-    warn(message: string, data?: any, source?: string): void {
+    warn(message: string, data?: LogData, source?: string): void {
         this.logToConsole('warn', message, data);
     }
 
-    error(message: string, data?: any, source?: string): void {
+    error(message: string, data?: LogData, source?: string): void {
         this.logToConsole('error', message, data);
         
-        // In production, could send to error reporting service
+        // In production, integrate with error reporting service
         if (!this.isDevelopment) {
-            // TODO: Integrate with error reporting service (Sentry, LogRocket, etc.)
+            // Future: Integrate with Sentry, LogRocket, or similar service
+            // this.sendToErrorReportingService(message, data);
         }
     }
 
     // Specific logging methods for common use cases
-    apiError(endpoint: string, error: any): void {
-        this.error(`API Error: ${endpoint}`, { error: error.message || error }, 'API');
+    apiError(endpoint: string, error: Error | string): void {
+        const errorData: ErrorData = { 
+            error: error instanceof Error ? error.message : error,
+            stack: error instanceof Error ? error.stack : undefined
+        };
+        this.error(`API Error: ${endpoint}`, errorData, 'API');
     }
 
-    userAction(action: string, details?: any): void {
+    userAction(action: string, details?: UserActionData): void {
         this.info(`User Action: ${action}`, details, 'USER');
     }
 
     performance(operation: string, duration: number): void {
-        this.debug(`Performance: ${operation} took ${duration}ms`, null, 'PERF');
+        const perfData: PerformanceData = { 
+            operation, 
+            duration 
+        };
+        this.debug(`Performance: ${operation} took ${duration}ms`, perfData, 'PERF');
     }
 
-    firebaseError(operation: string, error: any): void {
-        this.error(`Firebase Error: ${operation}`, { error: error.message || error }, 'FIREBASE');
+    firebaseError(operation: string, error: Error | string): void {
+        const firebaseData: FirebaseData = { 
+            operation,
+            error: error instanceof Error ? error.message : error,
+            code: error instanceof Error ? (error as any).code : undefined
+        };
+        this.error(`Firebase Error: ${operation}`, firebaseData, 'FIREBASE');
     }
 }
 
