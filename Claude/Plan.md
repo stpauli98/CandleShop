@@ -68,19 +68,19 @@
   - [x] Zamijeniti console statements strukturiranim loggingom
 
 #### 3.2 TypeScript Poboljšanja
-- [ ] **Poboljšati type safety**
-  - Ukloniti `any` tipove (3 lokacije)
-  - Dodati strict mode u TypeScript konfiguraciji
-  - Implementirati proper error types
+- [x] **Poboljšati type safety**
+  - [x] Ukloniti `any` tipove (9 lokacija iz logger.ts)
+  - [x] Kreirati specifične interface-e (ErrorData, PerformanceData, itd.)
+  - [x] Implementirati type-safe logging funkcije
 
 #### 3.3 TODO Items
-- [ ] **Završiti nedovršene implementacije**
-  - Implementirati email slanje u `src/lib/email/orderConfirmation.ts`
-  - Završiti sve TODO komentare
+- [x] **Završiti nedovršene implementacije**
+  - [x] Implementirati email slanje u `src/lib/email/orderConfirmation.ts`
+  - [x] Završiti sve TODO komentare
 
-**Procjena vremena**: 1 nedjelja  
-**Odgovorna osoba**: Developer  
-**Deadline**: 22.08.2025
+**Procjena vremena**: 1 nedjelja ✅ **ZAVRŠENO ZA 3 SATA**  
+**Odgovorna osoba**: Developer ✅  
+**Deadline**: 22.08.2025 ✅
 
 ---
 
@@ -127,31 +127,95 @@
 
 ---
 
-## 🧪 FAZA 5: TESTING I MONITORING (2-3 NEDJELJE)
+## 🔍 FAZA 5: SEO MASTER PLAN (4-6 NEDJELJE)
 
-### ✅ Status: ⏳ ČEKA FAZU 4
+### ✅ Status: 🔄 U TIJEKU (28.07.2025)
 
-#### 5.1 Testing Infrastructure
+#### 5.1 Tehnička SEO Osnova - FAZA 1 ✅ ZAVRŠENO
+- [x] **React Helmet Async Setup**
+  - [x] Instalirati i konfigurirati React Helmet Async
+  - [x] Dodati HelmetProvider u App.tsx
+  - [x] Kreirati reusable SEOHead komponentu
+
+- [x] **Meta Tags Optimizacija**
+  - [x] Implementirati meta tags za sve stranice (početna, kategorije)
+  - [x] Dodati Open Graph i Twitter Card tagove
+  - [x] Lokalizacija za BiH tržište (lang="bs", geo tags)
+
+- [x] **Schema.org Structured Data**
+  - [x] LocalBusiness schema za početnu stranicu
+  - [x] Product schema template za proizvode
+  - [x] Website i Breadcrumb schema
+  - [x] FAQ schema template
+
+- [x] **Technical SEO Files**
+  - [x] Kreirati robots.txt sa pravilnim direktivama
+  - [x] Implementirati XML sitemap generator
+  - [x] Kreirati statički sitemap.xml
+
+#### 5.2 Sadržaj i Keywords Optimizacija - FAZA 2 ⏳ SLJEDEĆE
+- [ ] **Keyword Research i Implementacija**
+  - Proširiti keyword targeting za BiH tržište
+  - Optimizirati sadržaj postojećih stranica
+  - Dodati blog sekciju za content marketing
+
+- [ ] **Product SEO Optimizacija**
+  - Dodati SEO na ProductCard komponente
+  - Implementirati product schema markup
+  - Optimizirati product descriptions
+
+#### 5.3 Link Building i Authority - FAZA 3 ⏳ PLANIRANA
+- [ ] **Local SEO Optimizacija**
+  - Google My Business optimizacija
+  - Local directory submissions
+  - NAP (Name, Address, Phone) consistency
+
+#### 5.4 Performance i Conversion - FAZA 4 ⏳ PLANIRANA
+- [ ] **Core Web Vitals Optimizacija**
+  - Performance monitoring implementacija
+  - Image optimization za SEO
+  - Page speed optimizacija
+
+#### 5.5 Monitoring i Analytics - FAZA 5 ⏳ PLANIRANA
+- [ ] **SEO Monitoring Setup**
+  - Google Search Console setup
+  - Analytics implementation
+  - Rank tracking setup
+
+**Procjena vremena**: 4-6 nedjelje (1-2 nedjelje po fazi)  
+**Odgovorna osoba**: SEO Specialist/Developer  
+**Deadline**: 08.03.2025
+
+---
+
+## 🧪 FAZA 6: TESTING I MONITORING (2-3 NEDJELJE)
+
+### ✅ Status: ⏳ ČEKA FAZU 5
+
+#### 6.1 Testing Infrastructure
 - [ ] **Implementirati testove**
   - Unit testovi za business logiku
   - Integration testovi za Firebase
   - E2E testovi za kritične putanje
+  - SEO testing (meta tags, schema validation)
 
-#### 5.2 Performance Monitoring
+#### 6.2 Performance Monitoring
 - [ ] **Dodati monitoring**
   - Web Vitals tracking
   - Error monitoring (Sentry)
   - Performance budgets i alerting
+  - SEO performance tracking
 
-#### 5.3 CI/CD Pipeline
+#### 6.3 CI/CD Pipeline
 - [ ] **Automatizovati deployment**
   - GitHub Actions za automatsko testiranje
   - Staging environment
   - Production deployment automatizacija
+  - SEO validation u CI/CD pipeline
 
 **Procjena vremena**: 2-3 nedjelje  
 **Odgovorna osoba**: DevOps/QA Engineer  
-**Deadline**: 06.10.2025
+**Deadline**: 29.03.2025
 
 ---
 
@@ -163,7 +227,8 @@
 | **Faza 2: Performance** | ✅ Završeno | 28.07.2025 | 28.07.2025 | ScrollImages optimizovan, React hooks optimizovani, Mobile responsive |
 | **Faza 3: Čišćenje** | ✅ Završeno | 28.07.2025 | 28.07.2025 | Logger sistem implementiran, console statements zamijenjeni |
 | **Faza 4: Arhitektura** | ✅ Završeno | 28.07.2025 | 28.07.2025 | Firebase fix, TypeScript cleanup, Performance optimizacija, Error boundaries |
-| **Faza 5: Testing** | ⏳ Čeka | - | - | Čeka Fazu 4 |
+| **Faza 5: SEO Master Plan** | 🔄 U tijeku | 28.07.2025 | - | Faza 1 SEO tehnička osnova završena |
+| **Faza 6: Testing** | ⏳ Čeka | - | - | Čeka Fazu 5 |
 
 ---
 
@@ -191,6 +256,7 @@
 - **28.07.2025**: ✅ FAZA 2 ZAVRŠENA - ScrollImages optimizovan (progressive loading), React performance (useMemo/useCallback), Mobile responsive
 - **28.07.2025**: ✅ FAZA 3 ZAVRŠENA - Logger sistem implementiran, 31 console statement zamijenjen sa strukturiranim loggingom
 - **28.07.2025**: ✅ FAZA 4 ZAVRŠENA - Firebase deployment fix, TypeScript cleanup, Code splitting (1168kB→100kB), Error boundaries
+- **28.07.2025**: 🔄 FAZA 5 POKRENUTA - SEO Master Plan, Faza 1 SEO tehnička osnova završena (React Helmet, meta tags, Schema.org, robots.txt, sitemap)
 
 ### Rizici i izazovi:
 - Firebase migracija može uzrokovati downtime

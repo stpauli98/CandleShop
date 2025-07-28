@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useEffect, Suspense, lazy } from "react";
 import { Toaster } from "react-hot-toast";
+import { HelmetProvider } from 'react-helmet-async';
 import ErrorBoundary from "./components/ErrorBoundary";
 import NavBar from "./components/navBar/navBar";
 import LandingPage from "./components/landingPage/LandingPage";
@@ -32,8 +33,9 @@ function App() {
   }, []);
 
   return (
-    <ErrorBoundary>
-      <div className="min-h-screen bg-gray-50">
+    <HelmetProvider>
+      <ErrorBoundary>
+        <div className="min-h-screen bg-gray-50">
         <Toaster position="top-center" />
         {location.pathname !== '/admin-panel' &&
          location.pathname !== '/admin-login' &&
@@ -69,8 +71,9 @@ function App() {
         />  
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
-      </div>
-    </ErrorBoundary>
+        </div>
+      </ErrorBoundary>
+    </HelmetProvider>
   );
 }
 

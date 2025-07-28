@@ -1,0 +1,47 @@
+# robots.txt za Šarena Čarolija
+# Optimizirano za SEO i pretraživače
+
+User-agent: *
+Allow: /
+
+# Blokiranje admin stranica i privatnih sekcija
+Disallow: /admin-panel
+Disallow: /admin-login
+Disallow: /placanje
+Disallow: /order-confirmation
+
+# Dozvoljavanje pristupa svim javnim stranicama
+Allow: /
+Allow: /svijece
+Allow: /mirisne-svijece
+Allow: /mirisni-voskovi
+Allow: /dekoracija
+Allow: /privacy-policy
+
+# XML Sitemap lokacija
+Sitemap: https://www.sarenacarolija.com/sitemap.xml
+
+# Crawl-delay za server performance
+Crawl-delay: 1
+
+# Specifične direktive za glavne pretraživače
+User-agent: Googlebot
+Allow: /
+Disallow: /admin-panel
+Disallow: /admin-login
+Disallow: /placanje
+Disallow: /order-confirmation
+
+User-agent: Bingbot
+Allow: /
+Disallow: /admin-panel
+Disallow: /admin-login
+Disallow: /placanje
+Disallow: /order-confirmation
+
+User-agent: YandexBot
+Allow: /
+Disallow: /admin-panel
+Disallow: /admin-login
+Disallow: /placanje
+Disallow: /order-confirmation
