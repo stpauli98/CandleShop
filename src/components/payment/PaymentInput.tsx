@@ -15,6 +15,7 @@ import { useShoppingCart } from '../../hooks/useShoppingCart'
 import { formatCurrency } from '../../utilities/formatCurency'
 import { createOrder } from '../../lib/firebase/orders'
 import { sendOrderConfirmationEmail } from '../../lib/email/orderConfirmation'
+import { error } from '../../lib/logger'
 
 const paymentFormSchema = z.object({
   paymentMethod: z.enum(["pouzecem"]),
@@ -101,12 +102,12 @@ export default function PaymentInput() {
       navigate("/order-confirmation", { 
         state: { order: orderData } 
       })
-    } catch (error: any) {
-      console.error("Error processing order:", error);
+    } catch (orderError: any) {
+      error("Error processing order", orderError, 'ORDER');
       
       // Ako je Firebase greška, prikaži specifičnu poruku
-      if (error.name === 'FirebaseError') {
-        if (error.message.includes('permission')) {
+      if (orderError.name === 'FirebaseError') {
+        if (orderError.message.includes('permission')) {
           toast.error(
             <div className="space-y-2">
               <p className="font-medium">Pristup Firebase bazi je blokiran</p>
@@ -129,7 +130,7 @@ export default function PaymentInput() {
             }
           );
         } else {
-          toast.error(error.message, {
+          toast.error(orderError.message, {
             duration: 5000,
             icon: '⚠️',
             style: {

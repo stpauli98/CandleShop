@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { ShoppingCart } from 'lucide-react'
 import { useShoppingCart } from '../../hooks/useShoppingCart'
@@ -7,6 +7,7 @@ import { formatCurrency } from '../../utilities/formatCurency'
 import { collection, getDocs, CollectionReference, DocumentData } from 'firebase/firestore'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ImageModal } from './ImageModal'
+import { error } from '../../lib/logger'
 
 import { getFragrances, getColors } from '../../lib/firebase/fragrancesAndColors';
 
@@ -43,58 +44,61 @@ export default function ProductGrid({
     const [mirisi, setMirisi] = useState<string[]>([])
     const [boje, setBoje] = useState<string[]>([])
 
-    // Učitaj mirise i boje
-    useEffect(() => {
-        const loadData = async () => {
-            try {
-                const [fragrances, colors] = await Promise.all([
-                    getFragrances(),
-                    getColors()
-                ]);
-                setMirisi(fragrances);
-                setBoje(colors);
-            } catch (error) {
-                console.error('Error loading data:', error);
-                toast.error('Greška pri učitavanju podataka');
-            }
-        };
-
-        loadData();
+    // Optimized data loading with useCallback
+    const loadData = useCallback(async () => {
+        try {
+            const [fragrances, colors] = await Promise.all([
+                getFragrances(),
+                getColors()
+            ]);
+            setMirisi(fragrances);
+            setBoje(colors);
+        } catch (loadError) {
+            error('Error loading data', loadError, 'DATA_LOAD');
+            toast.error('Greška pri učitavanju podataka');
+        }
     }, []);
 
+    // Učitaj mirise i boje
+    useEffect(() => {
+        loadData();
+    }, [loadData]);
+
+
+    // Optimized product fetching with useCallback
+    const fetchProducts = useCallback(async () => {
+        try {
+            const querySnapshot = await getDocs(collectionName)
+            const productsData = querySnapshot.docs
+                .map(doc => ({ 
+                    id: doc.id, 
+                    ...doc.data(),
+                    cijena: doc.data().cijena || "",
+                    naziv: doc.data().naziv || "",
+                    opis: doc.data().opis || "",
+                    slika: doc.data().slika || "",
+                    popust: doc.data().popust ? Number(doc.data().popust) : undefined,
+                    dostupnost: doc.data().dostupnost ?? true,
+                    kategorija: doc.data().kategorija || ""
+                } as Product))
+                // Ne filtriramo po kategoriji ako je featured
+                .filter(product => category === 'featured' ? true : product.kategorija === category)
+                // Limitiramo broj proizvoda na 6 ako je featured
+                .slice(0, category === 'featured' ? 6 : undefined)
+            setProducts(productsData)
+            setLoading(false)
+        } catch (fetchError) {
+            error("Error fetching products", fetchError, 'PRODUCTS');
+            setLoading(false)
+        }
+    }, [category, collectionName]);
 
     useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const querySnapshot = await getDocs(collectionName)
-                const productsData = querySnapshot.docs
-                    .map(doc => ({ 
-                        id: doc.id, 
-                        ...doc.data(),
-                        cijena: doc.data().cijena || "",
-                        naziv: doc.data().naziv || "",
-                        opis: doc.data().opis || "",
-                        slika: doc.data().slika || "",
-                        popust: doc.data().popust ? Number(doc.data().popust) : undefined,
-                        dostupnost: doc.data().dostupnost ?? true,
-                        kategorija: doc.data().kategorija || ""
-                    } as Product))
-                    // Ne filtriramo po kategoriji ako je featured
-                    .filter(product => category === 'featured' ? true : product.kategorija === category)
-                    // Limitiramo broj proizvoda na 6 ako je featured
-                    .slice(0, category === 'featured' ? 6 : undefined)
-                setProducts(productsData)
-                setLoading(false)
-            } catch (error) {
-                console.error("Error fetching products:", error)
-                setLoading(false)
-            }
-        }
-
         fetchProducts()
-    }, [category, collectionName])
+    }, [fetchProducts])
 
-    const handleAddToCart = (product: Product) => {
+    // Optimized cart handler with useCallback
+    const handleAddToCart = useCallback((product: Product) => {
         const missingSelections = [];
         if (!product.selectedMiris) missingSelections.push('miris');
         if (!product.selectedBoja) missingSelections.push('boju');
@@ -111,14 +115,36 @@ export default function ProductGrid({
         }
         addToCart(productWithDiscount)
         toast.success("Proizvod dodat u korpu")
-    }
+    }, [addToCart])
+
+    // Optimized image modal handler with useCallback
+    const handleImageClick = useCallback((imageUrl: string | undefined) => {
+        if (imageUrl) {
+            setSelectedImage(imageUrl);
+        }
+    }, []);
+
+    const handleCloseModal = useCallback(() => {
+        setSelectedImage(null);
+    }, []);
+
+    // Memoized loading component
+    const loadingComponent = useMemo(() => (
+        <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
+        </div>
+    ), []);
+
+    // Memoized discount calculation for better performance
+    const calculateDiscountedPrice = useMemo(() => {
+        return (price: string, discount?: number) => {
+            if (!discount) return price;
+            return String(Number(price) * (1 - Number(discount) / 100));
+        };
+    }, []);
 
     if (loading) {
-        return (
-            <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
-            </div>
-        )
+        return loadingComponent;
     }
 
     return (
@@ -129,7 +155,7 @@ export default function ProductGrid({
                     <ImageModal
                         imageUrl={selectedImage}
                         isOpen={true}
-                        onClose={() => setSelectedImage(null)}
+                        onClose={handleCloseModal}
                     />
                 )}
                 {products.map((product) => (
@@ -144,11 +170,7 @@ export default function ProductGrid({
                             <img
                                 src={product.slika}
                                 alt={product.naziv}
-                                onClick={() => {
-                                    if (product.slika) {
-                                        setSelectedImage(product.slika)
-                                    }
-                                }}
+                                onClick={() => handleImageClick(product.slika)}
                                 className={`w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105 ${!product.dostupnost ? 'grayscale' : ''} cursor-pointer`}
                             />
                             {product.popust && (

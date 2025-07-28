@@ -4,6 +4,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { addItem, deleteItem, getColors, getFragrances } from "../../lib/firebase/fragrancesAndColors"
 import { toast } from "react-hot-toast"
+import { error } from "../../lib/logger"
 
 interface Item {
   id: string
@@ -31,8 +32,8 @@ const ColorAndFragranceInput: React.FC = () => {
         ];
 
         setItems(formattedItems);
-      } catch (error) {
-        console.error('Error loading items:', error);
+      } catch (loadError) {
+        error('Error loading items', loadError, 'ADMIN');
         toast.error('Greška pri učitavanju stavki');
       } finally {
         setLoading(false);
@@ -51,10 +52,10 @@ const ColorAndFragranceInput: React.FC = () => {
       setItems([...items, { id, name: trimmedName, type: newItemType }]);
       setNewItemName("");
       toast.success(`${newItemType === 'color' ? 'Boja' : 'Miris'} uspješno dodan`);
-    } catch (error) {
-      console.error('Error adding item:', error);
-      if (error instanceof Error) {
-        toast.error(error.message);
+    } catch (addError) {
+      error('Error adding item', addError, 'ADMIN');
+      if (addError instanceof Error) {
+        toast.error(addError.message);
       } else {
         toast.error('Greška pri dodavanju stavke');
       }
@@ -66,8 +67,8 @@ const ColorAndFragranceInput: React.FC = () => {
       await deleteItem(id);
       setItems(items.filter((item) => item.id !== id));
       toast.success(`${items.find(i => i.id === id)?.type === 'color' ? 'Boja' : 'Miris'} uspješno obrisan`);
-    } catch (error) {
-      console.error('Error removing item:', error);
+    } catch (removeError) {
+      error('Error removing item', removeError, 'ADMIN');
       toast.error('Greška pri brisanju stavke');
     }
   }

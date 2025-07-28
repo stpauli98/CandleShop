@@ -10,6 +10,7 @@ import Button from "@/components/ui/button"
 import ColorAndFragranceInput from "./ColorAndFragrancelnput"
 import OrderTable from "./OrderTable"
 import CustomerGroupsTable from "./CustomerGroupsTable"
+import { error } from "../../lib/logger"
 
 const displayNames = {
   "omiljeniProizvodi": "Omiljeni proizvodi",
@@ -79,8 +80,8 @@ export default function AdminPanel() {
     try {
       await signOut(auth)
       navigate("/admin-login")
-    } catch (error) {
-      console.error("Logout error:", error)
+    } catch (logoutError) {
+      error("Logout error", logoutError, 'AUTH')
     }
   }
 

@@ -5,6 +5,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import ProductCard from '../components/ui/ProductCard';
 import { Product } from '../types/product';
+import { error } from '../lib/logger';
 
 export default function ProductsPage() {
     const [products, setProducts] = useState<Product[]>([]);
@@ -28,8 +29,8 @@ export default function ProductsPage() {
                     ...doc.data()
                 })) as Product[];
                 setProducts(productsData);
-            } catch (error) {
-                console.error('Error loading products:', error);
+            } catch (loadError) {
+                error('Error loading products', loadError, 'PRODUCTS');
             } finally {
                 setLoading(false);
             }

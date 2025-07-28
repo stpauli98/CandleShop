@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
+import { error } from '../lib/logger';
 
 export function useLocalStorage<T>(key: string, initialValue: T) {
     const [storedValue, setStoredValue] = useState<T>(() => {
         try {
             const item = window.localStorage.getItem(key);
             return item ? JSON.parse(item) : initialValue;
-        } catch (error) {
-            console.error(error);
+        } catch (storageError) {
+            error('Error reading from localStorage', storageError, 'STORAGE');
             return initialValue;
         }
     });
@@ -31,8 +32,8 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
             }));
 
             isUpdating.current = false;
-        } catch (error) {
-            console.error(error);
+        } catch (storageError) {
+            error('Error saving to localStorage', storageError, 'STORAGE');
             isUpdating.current = false;
         }
     };

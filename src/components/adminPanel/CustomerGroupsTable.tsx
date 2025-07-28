@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import OrderHistoryModal from './OrderHistoryModal';
 import { CustomerInfo, getCustomerGroups } from '../../lib/firebase/orders';
+import { error } from '../../lib/logger';
 
 const CustomerGroupsTable = () => {
     const [customers, setCustomers] = useState<CustomerInfo[]>([]);
@@ -17,7 +18,7 @@ const CustomerGroupsTable = () => {
                 setError(null);
             } catch (err) {
                 setError('Error fetching customer groups');
-                console.error('Error fetching customer groups:', err);
+                error('Error fetching customer groups', err, 'CUSTOMERS');
             } finally {
                 setLoading(false);
             }

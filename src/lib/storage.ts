@@ -1,6 +1,7 @@
 import { collection, addDoc } from 'firebase/firestore'
 import { auth, db } from './firebase'
 import imageCompression from 'browser-image-compression'
+import { info, error, performance } from './logger'
 
 export async function uploadImage(file: File): Promise<string> {
   // Provjeri da li je korisnik prijavljen
@@ -21,9 +22,16 @@ export async function uploadImage(file: File): Promise<string> {
       useWebWorker: true
     }
 
-    console.log('Compressing image...')
+    const startTime = Date.now();
+    info('Starting image compression...', { originalSize: file.size });
     const compressedFile = await imageCompression(file, options)
-    console.log(`Compressed from ${file.size} to ${compressedFile.size} bytes`)
+    const compressionTime = Date.now() - startTime;
+    performance('Image compression', compressionTime);
+    info(`Image compressed successfully`, { 
+      originalSize: file.size, 
+      compressedSize: compressedFile.size,
+      compressionRatio: ((1 - compressedFile.size / file.size) * 100).toFixed(1) + '%'
+    });
 
     // Konvertuj kompresovanu sliku u Base64
     const base64 = await new Promise<string>((resolve, reject) => {
@@ -54,8 +62,8 @@ export async function uploadImage(file: File): Promise<string> {
 
     // Vrati Base64 string
     return base64
-  } catch (error) {
-    console.error('Error in uploadImage:', error)
+  } catch (uploadError) {
+    error('Error in uploadImage', uploadError, 'STORAGE');
     throw new Error('Greška pri uploadu slike')
   }
 }

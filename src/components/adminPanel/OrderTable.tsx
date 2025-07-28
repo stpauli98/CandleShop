@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Order, getOrders } from '../../lib/firebase/orders';
 import OrderDetailsModal from './OrderDetailsModal';
+import { error } from '../../lib/logger';
 
 interface OrderTableProps {}
 
@@ -19,7 +20,7 @@ const OrderTable: React.FC<OrderTableProps> = () => {
         setError(null);
       } catch (err) {
         setError('Error fetching orders');
-        console.error('Error fetching orders:', err);
+        error('Error fetching orders', err, 'ORDERS');
       } finally {
         setLoading(false);
       }

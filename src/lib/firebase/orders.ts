@@ -1,5 +1,6 @@
 import { collection, addDoc, serverTimestamp, getDocs, query, orderBy, Timestamp } from 'firebase/firestore';
 import { db } from '../firebase';
+import { firebaseError, info } from '../logger';
 
 export interface CustomerInfo {
     customerEmail: string;
@@ -59,9 +60,10 @@ export const createOrder = async (orderData: Omit<Order, 'createdAt' | 'updatedA
         };
         
         const docRef = await addDoc(ordersRef, orderWithTimestamps);
+        info(`Order created successfully with ID: ${docRef.id}`, { orderNumber: orderData.orderNumber });
         return docRef.id;
     } catch (error: any) {
-        console.error('Error creating order:', error);
+        firebaseError('Creating order', error);
         
         // Detektiraj specifične greške
         if (error.code === 'permission-denied' || error.message?.includes('permission_denied')) {

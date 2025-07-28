@@ -1,4 +1,5 @@
 import { DocumentData } from 'firebase/firestore';
+import { error } from './logger';
 
 const CACHE_KEY = 'candleShop_products';
 const CACHE_DURATION = 1000 * 60 * 5; // 5 minuta
@@ -31,8 +32,8 @@ export const getFromCache = <T>(): T[] | null => {
         }
 
         return cacheItem.data;
-    } catch (error) {
-        console.error('Error reading from cache:', error);
+    } catch (cacheError) {
+        error('Error reading from cache', cacheError, 'CACHE');
         return null;
     }
 };

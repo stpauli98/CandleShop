@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { toast } from 'react-hot-toast';
 import { useLocalStorage } from './useLocalStorage';
 
@@ -22,13 +22,11 @@ export interface CartItem extends Product {
 
 export function useShoppingCart() {
     const [cart, setCart] = useLocalStorage<CartItem[]>('shopping-cart', []);
-    const [cartItemCount, setCartItemCount] = useState(0);
     const isUpdating = useRef(false);
 
-    // Ažuriraj cartItemCount kad se cart promijeni
-    useEffect(() => {
-        const count = cart.reduce((total, item) => total + item.quantity, 0);
-        setCartItemCount(count);
+    // Optimized cart count calculation with useMemo
+    const cartItemCount = useMemo(() => {
+        return cart.reduce((total, item) => total + item.quantity, 0);
     }, [cart]);
 
     // Slušaj localStorage promjene
@@ -43,7 +41,7 @@ export function useShoppingCart() {
         return () => window.removeEventListener('storage', handleStorageChange);
     }, [setCart]);
 
-    const addToCart = (product: Product) => {
+    const addToCart = useCallback((product: Product) => {
         if (isUpdating.current) return;
         isUpdating.current = true;
 
@@ -70,9 +68,9 @@ export function useShoppingCart() {
         });
 
         isUpdating.current = false;
-    };
+    }, [setCart]);
 
-    const removeFromCart = (productId: string, selectedMiris?: string, selectedBoja?: string) => {
+    const removeFromCart = useCallback((productId: string, selectedMiris?: string, selectedBoja?: string) => {
         if (isUpdating.current) return;
         isUpdating.current = true;
 
@@ -86,9 +84,9 @@ export function useShoppingCart() {
         });
 
         isUpdating.current = false;
-    };
+    }, [setCart]);
 
-    const updateQuantity = (productId: string, newQuantity: number, selectedMiris?: string, selectedBoja?: string) => {
+    const updateQuantity = useCallback((productId: string, newQuantity: number, selectedMiris?: string, selectedBoja?: string) => {
         if (newQuantity < 1 || isUpdating.current) return;
         isUpdating.current = true;
 
@@ -103,21 +101,21 @@ export function useShoppingCart() {
         );
 
         isUpdating.current = false;
-    };
+    }, [setCart]);
 
-    const clearCart = () => {
+    const clearCart = useCallback(() => {
         if (isUpdating.current) return;
         isUpdating.current = true;
         setCart([]);
         isUpdating.current = false;
-    };
+    }, [setCart]);
 
-    const calculateTotal = () => {
+    const calculateTotal = useMemo(() => {
         return cart.reduce((total, item) => {
             const price = item.novaCijena || item.cijena || '0';
             return total + (Number(price) * item.quantity);
         }, 0);
-    };
+    }, [cart]);
 
     return {
         cart,
@@ -126,6 +124,6 @@ export function useShoppingCart() {
         removeFromCart,
         updateQuantity,
         clearCart,
-        calculateTotal
+        calculateTotal: () => calculateTotal
     };
 }

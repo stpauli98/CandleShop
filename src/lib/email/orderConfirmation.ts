@@ -1,4 +1,5 @@
 import { Order } from '../firebase/orders';
+import { info } from '../logger';
 
 // TODO: Implementirati stvarno slanje emaila (npr. preko EmailJS ili nekog drugog servisa)
 export const sendOrderConfirmationEmail = async (order: Order) => {
@@ -26,6 +27,6 @@ export const sendOrderConfirmationEmail = async (order: Order) => {
         Vaš CandleShop tim
     `;
 
-    console.log('Sending email:', emailContent);
+    info('Email content prepared for order', { orderNumber: order.orderNumber, customerEmail: order.customerEmail }, 'EMAIL');
     // TODO: Implementirati stvarno slanje emaila
 };
