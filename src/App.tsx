@@ -40,7 +40,7 @@ function App() {
         {location.pathname !== '/admin-panel' &&
          location.pathname !== '/admin-login' &&
          location.pathname !== '/placanje' &&
-         location.pathname !== '/order-confirmation' 
+         !location.pathname.startsWith('/order-confirmation')
           && <NavBar />}
         
         <Routes>
@@ -63,11 +63,11 @@ function App() {
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
         <Route path="/placanje" element={<PaymentInput />} />
-        <Route 
-          path="/order-confirmation" 
+        <Route
+          path="/order-confirmation/:orderId"
           element={
             <OrderConfirmation />
-          } 
+          }
         />  
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

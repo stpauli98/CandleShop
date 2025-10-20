@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -13,8 +13,9 @@ import { Label } from "../ui/label"
 import { Input } from "../ui/input"
 import { useShoppingCart } from '../../hooks/useShoppingCart'
 import { formatCurrency } from '../../utilities/formatCurency'
+import { calculateShippingCost, isFreeShipping } from '../../utilities/shipping'
 import { createOrder } from '../../lib/firebase/orders'
-import { sendOrderConfirmationEmail } from '../../lib/email/orderConfirmation'
+import { sendOrderEmails } from '../../lib/email/emailService'
 import { error } from '../../lib/logger'
 
 const paymentFormSchema = z.object({
@@ -42,6 +43,15 @@ export default function PaymentInput() {
   const [isLoading, setIsLoading] = useState(false)
   const { cart, clearCart, calculateTotal } = useShoppingCart()
   const navigate = useNavigate()
+  const hasNavigated = useRef(false)
+
+  // Redirect if cart is empty on initial load (but not after successful order)
+  useEffect(() => {
+    if (cart.length === 0 && !hasNavigated.current) {
+      toast.error("Vaša korpa je prazna");
+      navigate("/");
+    }
+  }, [cart.length, navigate]);
 
   const form = useForm<PaymentFormSchema>({
     resolver: zodResolver(paymentFormSchema),
@@ -61,9 +71,10 @@ export default function PaymentInput() {
 
   const onSubmit = async (data: PaymentFormSchema) => {
     setIsLoading(true)
+    hasNavigated.current = true // Prevent useEffect redirect
     try {
       const total = calculateTotal();
-      const shippingCost = total >= 50 ? 0 : 5;
+      const shippingCost = calculateShippingCost(total);
 
       // Kreiranje objekta narudžbe
       const orderData = {
@@ -95,8 +106,8 @@ export default function PaymentInput() {
       // Spremanje narudžbe u Firebase
       const orderId = await createOrder(orderData);
 
-      // Slanje email potvrde
-      await sendOrderConfirmationEmail({
+      // Slanje email potvrde (customer + admin)
+      const emailResults = await sendOrderEmails({
         ...orderData,
         status: 'pending',
         createdAt: new Date(),
@@ -104,10 +115,14 @@ export default function PaymentInput() {
         id: orderId
       });
 
+      // Log email results (but don't block navigation if emails fail)
+      if (!emailResults.customer || !emailResults.admin) {
+        console.warn('Some emails failed to send:', emailResults);
+      }
+
       clearCart();
-      navigate("/order-confirmation", {
-        state: { order: orderData }
-      })
+      // Navigate will happen after clearCart, but hasNavigated flag prevents redirect
+      navigate(`/order-confirmation/${orderId}`)
     } catch (orderError) {
       const firebaseError = orderError as FirebaseError;
       error("Error processing order", firebaseError, 'ORDER');
@@ -328,14 +343,14 @@ export default function PaymentInput() {
 
               <div className="flex justify-between text-gray-600">
                 <span>Troškovi dostave:</span>
-                {calculateTotal() >= 50 ? (
+                {isFreeShipping(calculateTotal()) ? (
                   <span className="text-green-600 font-medium">Besplatno</span>
                 ) : (
-                  <span>5.00 KM</span>
+                  <span>{formatCurrency(calculateShippingCost(calculateTotal()))}</span>
                 )}
               </div>
 
-              {calculateTotal() >= 50 && (
+              {isFreeShipping(calculateTotal()) && (
                 <div className="bg-green-50 p-2 rounded text-sm text-green-700">
                   Besplatna dostava za narudžbe preko 50 KM!
                 </div>
@@ -345,7 +360,7 @@ export default function PaymentInput() {
                 <div className="flex justify-between font-semibold text-lg">
                   <span>Ukupno za plaćanje:</span>
                   <span className="text-amber-600">
-                    {formatCurrency(calculateTotal() >= 50 ? calculateTotal() : calculateTotal() + 5)}
+                    {formatCurrency(calculateTotal() + calculateShippingCost(calculateTotal()))}
                   </span>
                 </div>
                 <p className="text-sm text-gray-500 mt-1">Plaćanje pouzećem - gotovinom prilikom preuzimanja</p>

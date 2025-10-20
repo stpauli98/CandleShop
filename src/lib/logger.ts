@@ -110,7 +110,12 @@ class Logger {
 // Export singleton instance
 const logger = new Logger();
 
-// Export individual methods for easier usage
-export const { debug, info, warn, error, performance, firebaseError } = logger;
+// Export bound methods to preserve 'this' context
+export const debug = logger.debug.bind(logger);
+export const info = logger.info.bind(logger);
+export const warn = logger.warn.bind(logger);
+export const error = logger.error.bind(logger);
+export const performance = logger.performance.bind(logger);
+export const firebaseError = logger.firebaseError.bind(logger);
 
 export default logger;

@@ -207,4 +207,4 @@ This project is private and proprietary.
 
 ---
 
-Made with ❤️ for Croatian candle enthusiasts
+Made with ❤️ for Serbian candle enthusiasts

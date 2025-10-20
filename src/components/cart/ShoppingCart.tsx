@@ -1,6 +1,7 @@
 import { X } from 'lucide-react';
 import { useShoppingCart } from '../../hooks/useShoppingCart';
-import { formatCurrency } from '../../utilities/formatCurency'
+import { formatCurrency } from '../../utilities/formatCurency';
+import { calculateShippingCost, amountUntilFreeShipping, isFreeShipping } from '../../utilities/shipping';
 import { Link } from 'react-router-dom';
 
 interface ShoppingCartProps {
@@ -9,14 +10,7 @@ interface ShoppingCartProps {
 }
 
 export default function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
-    const { cart, removeFromCart, updateQuantity } = useShoppingCart();
-
-    const calculateTotal = () => {
-        return cart.reduce((total, item) => {
-            const price = item.novaCijena || item.cijena || '0';
-            return total + (Number(price) * item.quantity);
-        }, 0);
-    };
+    const { cart, removeFromCart, updateQuantity, calculateTotal } = useShoppingCart();
 
     if (!isOpen) return null;
 
@@ -102,9 +96,9 @@ export default function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                                 <span className="text-lg font-medium">Ukupno:</span>
                                 <span className="text-xl font-bold">{formatCurrency(calculateTotal())}</span>
                             </div>
-                            {calculateTotal() < 50 ? (
+                            {!isFreeShipping(calculateTotal()) ? (
                                 <div className="mb-4 p-3 bg-amber-50 rounded-lg text-amber-800 text-sm">
-                                    Dodajte još {formatCurrency(50 - calculateTotal())} za besplatnu dostavu!
+                                    Dodajte još {formatCurrency(amountUntilFreeShipping(calculateTotal()))} za besplatnu dostavu!
                                 </div>
                             ) : (
                                 <div className="mb-4 p-3 bg-green-50 rounded-lg text-green-800 text-sm">

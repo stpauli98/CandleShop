@@ -171,9 +171,9 @@ export default function ProductGrid({
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
-                        className={`${bgColor} rounded-lg shadow-md overflow-hidden`}
+                        className={`${bgColor} rounded-lg shadow-md overflow-hidden flex flex-col`}
                     >
-                        <div className="relative group">
+                        <div className="relative group flex-shrink-0">
                             <img
                                 src={product.slika}
                                 alt={product.naziv}
@@ -193,11 +193,11 @@ export default function ProductGrid({
                                 </div>
                             )}
                         </div>
-                        <div className="p-4">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-2">{product.naziv}</h3>
-                            <p className="text-gray-600 text-sm mb-4">{product.opis}</p>
+                        <div className="p-4 flex flex-col flex-grow">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[3.5rem]">{product.naziv}</h3>
+                            <p className="text-gray-600 text-sm mb-4 line-clamp-3 min-h-[4.5rem] flex-grow">{product.opis}</p>
                             {product.dostupnost && (
-                                <div className="space-y-4 mb-4">
+                                <div className="space-y-3 mb-4">
                                     <div>
                                         <Select
                                             onValueChange={(value) => {
@@ -208,7 +208,7 @@ export default function ProductGrid({
                                             }}
                                             value={selections[product.id]?.miris}
                                         >
-                                            <SelectTrigger className="w-full">
+                                            <SelectTrigger className="w-full h-10">
                                                 <SelectValue placeholder="Izaberite miris" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -230,7 +230,7 @@ export default function ProductGrid({
                                             }}
                                             value={selections[product.id]?.boja}
                                         >
-                                            <SelectTrigger className="w-full">
+                                            <SelectTrigger className="w-full h-10">
                                                 <SelectValue placeholder="Izaberite boju" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -244,19 +244,20 @@ export default function ProductGrid({
                                     </div>
                                 </div>
                             )}
-                            <div className="flex justify-between items-end">
-                                <div>
+                            {!product.dostupnost && <div className="mb-4 h-[5.5rem]"></div>}
+                            <div className="flex justify-between items-center gap-3 mt-auto">
+                                <div className="flex-shrink-0">
                                     {product.popust && product.cijena ? (
                                         <div className="flex flex-col">
-                                            <span className="text-2xl font-bold text-amber-600">
+                                            <span className="text-xl sm:text-2xl font-bold text-amber-600 whitespace-nowrap">
                                                 {formatCurrency(Number(calculateDiscountedPrice(product.cijena, product.popust)))}
                                             </span>
-                                            <span className="text-sm text-gray-500 line-through">
+                                            <span className="text-xs sm:text-sm text-gray-500 line-through whitespace-nowrap">
                                                 {formatCurrency(Number(product.cijena))}
                                             </span>
                                         </div>
                                     ) : (
-                                        <span className="text-2xl font-bold text-amber-600">
+                                        <span className="text-xl sm:text-2xl font-bold text-amber-600 whitespace-nowrap">
                                             {product.cijena ? formatCurrency(Number(product.cijena)) : 'Cijena nije definirana'}
                                         </span>
                                     )}
@@ -264,14 +265,14 @@ export default function ProductGrid({
                                 <button
                                     onClick={() => handleAddToCart(product)}
                                     disabled={!product.dostupnost}
-                                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
+                                    className={`flex items-center justify-center space-x-2 px-4 py-2.5 rounded-lg flex-shrink-0 h-10 min-w-[100px] ${
                                         product.dostupnost
                                         ? 'bg-amber-600 text-white hover:bg-amber-700'
                                         : 'bg-gray-400 text-gray-200 cursor-not-allowed'
                                     } transition-colors`}
                                 >
-                                    <ShoppingCart className="w-5 h-5" />
-                                    <span className="font-medium">
+                                    <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
+                                    <span className="font-medium text-sm sm:text-base">
                                         {cart.find(item => item.id === product.id)?.quantity || 'Dodaj'}
                                     </span>
                                 </button>

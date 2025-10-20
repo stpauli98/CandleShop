@@ -7,41 +7,8 @@ interface ScrollImagesProps {
     onImagesLoaded?: () => void;
 }
 
-// Navigator connection type definition
-interface NavigatorConnection {
-    effectiveType?: string;
-}
-
-interface NavigatorWithConnection extends Navigator {
-    connection?: NavigatorConnection;
-}
-
-// Configuration constants for performance optimization
+// Configuration constants - Load all images immediately, no restrictions
 const TOTAL_IMAGES = 299;
-
-// Responsive configuration based on device capabilities
-const getDeviceConfig = () => {
-    const isMobile = window.innerWidth < 768;
-    const isSlowConnection = 'connection' in navigator &&
-        (navigator as NavigatorWithConnection).connection?.effectiveType &&
-        ['slow-2g', '2g', '3g'].includes((navigator as NavigatorWithConnection).connection.effectiveType);
-
-    if (isMobile || isSlowConnection) {
-        return {
-            BATCH_SIZE: 25,          // Smaller batches for mobile
-            INITIAL_BATCH_SIZE: 10,  // Fewer initial images
-            PRELOAD_BUFFER: 5,       // Less aggressive preloading
-            QUALITY_REDUCTION: 0.8   // Reduce canvas quality on mobile
-        };
-    }
-
-    return {
-        BATCH_SIZE: 50,
-        INITIAL_BATCH_SIZE: 20,
-        PRELOAD_BUFFER: 10,
-        QUALITY_REDUCTION: 1.0
-    };
-};
 
 function ScrollImages({ onScrollComplete, onImagesLoaded }: ScrollImagesProps) {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -52,14 +19,8 @@ function ScrollImages({ onScrollComplete, onImagesLoaded }: ScrollImagesProps) {
     const [isAnyImageBroken, setIsAnyImageBroken] = useState(false);
     const [hasReachedEnd, setHasReachedEnd] = useState(false);
     const [isInitialBatchLoaded, setIsInitialBatchLoaded] = useState(false);
-    const [currentBatch, setCurrentBatch] = useState(0);
     const imagesRef = useRef<HTMLImageElement[]>(new Array(TOTAL_IMAGES));
-    const loadingBatchRef = useRef<Set<number>>(new Set());
     const lastRequestedFrameRef = useRef<number>(0);
-
-    // Get responsive configuration
-    const deviceConfig = useMemo(() => getDeviceConfig(), []);
-    const { BATCH_SIZE, INITIAL_BATCH_SIZE, PRELOAD_BUFFER, QUALITY_REDUCTION } = deviceConfig;
 
     // Koristimo window za scroll tracking umjesto container elementa
     const { scrollYProgress } = useScroll({
@@ -92,33 +53,6 @@ function ScrollImages({ onScrollComplete, onImagesLoaded }: ScrollImagesProps) {
         });
     }, []);
 
-    // Load images in batches for better performance
-    const loadImageBatch = useCallback(async (batchIndex: number) => {
-        if (loadingBatchRef.current.has(batchIndex)) return;
-
-        loadingBatchRef.current.add(batchIndex);
-        const startIndex = batchIndex * BATCH_SIZE;
-        const endIndex = Math.min(startIndex + BATCH_SIZE, TOTAL_IMAGES);
-
-        const batchPromises = [];
-        for (let i = startIndex; i < endIndex; i++) {
-            if (!imagesRef.current[i]) {
-                batchPromises.push(loadImage(imagePaths[i], i));
-            }
-        }
-
-        try {
-            await Promise.all(batchPromises);
-            if (batchIndex === 0) {
-                setIsInitialBatchLoaded(true);
-                onImagesLoaded?.();
-            }
-        } catch (loadError) {
-            error(`Error loading batch ${batchIndex}`, loadError, 'IMAGE_LOAD');
-            setIsAnyImageBroken(true);
-        }
-    }, [BATCH_SIZE, imagePaths, loadImage, onImagesLoaded]);
-
     // renderFrame function declaration moved before useEffect to fix hoisting issue
     const renderFrame = useCallback((frameIndex: number) => {
         if (!canvasCtxRef.current || !canvasRef.current || !imagesRef.current[frameIndex]) return;
@@ -147,62 +81,49 @@ function ScrollImages({ onScrollComplete, onImagesLoaded }: ScrollImagesProps) {
         try {
             ctx.drawImage(img, x, y, drawWidth, drawHeight);
         } catch (drawError) {
-            error('Error drawing image', drawError, 'CANVAS');
+            error('Error drawing image', { error: drawError instanceof Error ? drawError : String(drawError) }, 'CANVAS');
             setIsAnyImageBroken(true);
         }
     }, []);
 
-    // Progressive image loading - load initial batch first
+    // Load ALL images at once - no restrictions
     useEffect(() => {
         let mounted = true;
 
-        // Load initial batch for immediate playback
-        const loadInitialBatch = async () => {
-            const initialSize = Math.min(INITIAL_BATCH_SIZE, TOTAL_IMAGES);
-            const initialPromises = [];
+        const loadAllImages = async () => {
+            const allPromises = [];
 
-            for (let i = 0; i < initialSize; i++) {
-                initialPromises.push(loadImage(imagePaths[i], i));
+            // Load all 299 images at once
+            for (let i = 0; i < TOTAL_IMAGES; i++) {
+                allPromises.push(loadImage(imagePaths[i], i));
             }
 
             try {
-                await Promise.all(initialPromises);
+                await Promise.all(allPromises);
                 if (mounted) {
                     setIsInitialBatchLoaded(true);
                     onImagesLoaded?.();
                     renderFrame(0);
                 }
             } catch (loadError) {
-                error('Error loading initial batch', loadError, 'IMAGE_LOAD');
+                error('Error loading images', { error: loadError instanceof Error ? loadError : String(loadError) }, 'IMAGE_LOAD');
                 if (mounted) {
                     setIsAnyImageBroken(true);
                 }
             }
         };
 
-        void loadInitialBatch();
+        void loadAllImages();
 
         return () => {
             mounted = false;
         };
-    }, [INITIAL_BATCH_SIZE, imagePaths, loadImage, onImagesLoaded, renderFrame]);
+    }, [imagePaths, loadImage, onImagesLoaded, renderFrame]);
 
-    // Load additional batches based on scroll progress
-    const preloadBasedOnProgress = useCallback((frameIndex: number) => {
-        const requiredBatch = Math.floor(frameIndex / BATCH_SIZE);
-        const preloadBatch = Math.floor((frameIndex + PRELOAD_BUFFER) / BATCH_SIZE);
-
-        // Load current batch if not loaded
-        if (requiredBatch !== currentBatch) {
-            setCurrentBatch(requiredBatch);
-            void loadImageBatch(requiredBatch);
-        }
-
-        // Preload next batch
-        if (preloadBatch !== requiredBatch && preloadBatch < Math.ceil(TOTAL_IMAGES / BATCH_SIZE)) {
-            void loadImageBatch(preloadBatch);
-        }
-    }, [BATCH_SIZE, PRELOAD_BUFFER, currentBatch, loadImageBatch]);
+    // Preloading is disabled - all images load at once
+    const preloadBasedOnProgress = useCallback((_frameIndex: number) => {
+        // No-op: All images are loaded upfront
+    }, []);
 
     // Canvas setup
     useEffect(() => {
@@ -216,16 +137,9 @@ function ScrollImages({ onScrollComplete, onImagesLoaded }: ScrollImagesProps) {
         canvasCtxRef.current = context;
 
         const handleResize = () => {
-            // Apply quality reduction for mobile devices to improve performance
-            canvas.width = window.innerWidth * QUALITY_REDUCTION;
-            canvas.height = window.innerHeight * QUALITY_REDUCTION;
-
-            // Scale canvas display size to full screen
-            if (QUALITY_REDUCTION < 1.0) {
-                canvas.style.width = window.innerWidth + 'px';
-                canvas.style.height = window.innerHeight + 'px';
-            }
-
+            // Full quality always - no restrictions
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
             renderFrame(currentFrameRef.current);
         };
 
@@ -235,7 +149,7 @@ function ScrollImages({ onScrollComplete, onImagesLoaded }: ScrollImagesProps) {
         return () => {
             window.removeEventListener('resize', handleResize);
         };
-    }, [QUALITY_REDUCTION, isInitialBatchLoaded, renderFrame]);
+    }, [isInitialBatchLoaded, renderFrame]);
 
     // Optimized scroll handler with throttling and preloading
     useMotionValueEvent(scrollYProgress, "change", (latest) => {
@@ -296,16 +210,8 @@ function ScrollImages({ onScrollComplete, onImagesLoaded }: ScrollImagesProps) {
             {!isInitialBatchLoaded && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="text-white text-xl">
-                        Učitavanje slika... {Math.round((imagesLoaded / INITIAL_BATCH_SIZE) * 100)}%
+                        Učitavanje slika... {Math.round((imagesLoaded / TOTAL_IMAGES) * 100)}%
                     </div>
-                </div>
-            )}
-            {isInitialBatchLoaded && imagesLoaded < TOTAL_IMAGES && (
-                <div className="absolute bottom-4 right-4 bg-black bg-opacity-70 text-white px-3 py-1 rounded text-sm">
-                    {Math.round((imagesLoaded / TOTAL_IMAGES) * 100)}% učitano
-                    {deviceConfig.BATCH_SIZE < 50 && (
-                        <span className="block text-xs opacity-75">Mobilni režim</span>
-                    )}
                 </div>
             )}
             {isAnyImageBroken && (

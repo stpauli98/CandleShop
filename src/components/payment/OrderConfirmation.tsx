@@ -1,46 +1,65 @@
-import { Check } from "lucide-react"
+import { Check, Loader2 } from "lucide-react"
 import Button from "../ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card"
-import { useNavigate, useLocation } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { formatCurrency } from "../../utilities/formatCurency"
-
-interface Order {
-  orderNumber: string
-  items: Array<{
-    id: string
-    naziv?: string
-    cijena?: number
-    kolicina: number
-    selectedMiris?: string
-    selectedBoja?: string
-  }>
-  total: number
-  shippingCost: number
-  paymentMethod: string
-  shippingInfo: {
-    firstName: string
-    lastName: string
-    street: string
-    houseNumber: string
-    city: string
-    postalCode: string
-    phone: string
-    additionalInfo?: string
-  }
-  customerEmail: string
-}
+import { useEffect, useState } from "react"
+import { getOrderById, Order } from "../../lib/firebase/orders"
+import toast from "react-hot-toast"
 
 export default function OrderConfirmation() {
   const navigate = useNavigate()
-  const location = useLocation()
-  const order = location.state?.order as Order
+  const { orderId } = useParams<{ orderId: string }>()
+  const [order, setOrder] = useState<Order | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  if (!order) {
+  useEffect(() => {
+    const fetchOrder = async () => {
+      if (!orderId) {
+        setError("ID narudžbe nije pronađen")
+        setLoading(false)
+        return
+      }
+
+      try {
+        const fetchedOrder = await getOrderById(orderId)
+        if (!fetchedOrder) {
+          setError("Narudžba nije pronađena")
+        } else {
+          setOrder(fetchedOrder)
+        }
+      } catch (err) {
+        console.error("Error fetching order:", err)
+        setError("Greška pri učitavanju narudžbe")
+        toast.error("Nije moguće učitati podatke o narudžbi")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchOrder()
+  }, [orderId])
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <Card className="max-w-2xl mx-auto">
+          <CardContent className="text-center py-12">
+            <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-amber-600" />
+            <p className="text-gray-600">Učitavanje narudžbe...</p>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  if (error || !order) {
     return (
       <div className="container mx-auto px-4 py-8">
         <Card className="max-w-2xl mx-auto">
           <CardContent className="text-center py-8">
-            <p>Narudžba nije pronađena.</p>
+            <p className="text-gray-600 mb-4">{error || "Narudžba nije pronađena."}</p>
             <Button
               onClick={() => navigate('/')}
               className="mt-4"

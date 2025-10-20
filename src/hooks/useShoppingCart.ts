@@ -104,6 +104,13 @@ export function useShoppingCart() {
         return cart.reduce((total, item) => total + item.quantity, 0);
     }, [cart]);
 
+    const calculateTotal = useCallback(() => {
+        return cart.reduce((total, item) => {
+            const price = item.novaCijena || item.cijena || '0';
+            return total + (Number(price) * item.quantity);
+        }, 0);
+    }, [cart]);
+
     return {
         cart,
         addToCart,
@@ -111,5 +118,6 @@ export function useShoppingCart() {
         updateQuantity,
         clearCart,
         cartItemCount,
+        calculateTotal,
     };
 }

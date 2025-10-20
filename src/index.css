@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Hero Section Gradient Overlay */
+@layer components {
+  .hero-gradient {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent, rgba(0, 0, 0, 0.7));
+  }
+
+  @media (min-width: 768px) {
+    .hero-gradient {
+      background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.4), transparent);
+    }
+  }
+}
