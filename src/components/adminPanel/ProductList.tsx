@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { onSnapshot } from "firebase/firestore"
 import type { Product } from "./types"
 import {
@@ -16,6 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
+import { Search, Package } from "lucide-react"
 import { collections, type CollectionName } from '../../lib/controller'
 
 const displayNames = {
@@ -37,6 +39,8 @@ type ProductListProps = {
 
 export function ProductList({ onEdit, selectedProduct, selectedCategory, onCategoryChange }: ProductListProps) {
   const [products, setProducts] = useState<Product[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
 
   useEffect(() => {
     if (!selectedCategory) {
@@ -51,7 +55,6 @@ export function ProductList({ onEdit, selectedProduct, selectedCategory, onCateg
     }
 
     const collectionRef = getCollectionRef();
-    console.log('Subscribing to collection:', collectionRef.path);
     
     const unsubscribe = onSnapshot(collectionRef, (snapshot) => {
       try {
@@ -92,21 +95,76 @@ export function ProductList({ onEdit, selectedProduct, selectedCategory, onCateg
     return () => unsubscribe()
   }, [selectedCategory])
 
+  // Filter products based on search query
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredProducts(products)
+      return
+    }
+
+    const query = searchQuery.toLowerCase()
+    const filtered = products.filter(product =>
+      product.naziv.toLowerCase().includes(query) ||
+      product.opis?.toLowerCase().includes(query) ||
+      product.cijena.includes(query)
+    )
+    setFilteredProducts(filtered)
+  }, [products, searchQuery])
+
+  const displayProducts = searchQuery ? filteredProducts : products
+
   return (
     <div className="space-y-4">
-      <div className="flex items-center space-x-2">
-        <Select value={selectedCategory} onValueChange={onCategoryChange}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Odaberite kategoriju" />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.entries(collections).map(([key]) => (
-              <SelectItem key={key} value={key}>
-                {displayNames[key as keyof typeof displayNames]}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      {/* Header with stats and filters */}
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Package className="w-5 h-5 text-purple-600" />
+            <h3 className="text-lg font-semibold text-gray-900">Proizvodi</h3>
+          </div>
+          <div className="text-sm text-gray-600">
+            Ukupno: <span className="font-semibold text-gray-900">{products.length}</span>
+            {searchQuery && (
+              <span className="ml-2">
+                | Pronađeno: <span className="font-semibold text-purple-600">{displayProducts.length}</span>
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Category Select */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Kategorija</label>
+            <Select value={selectedCategory} onValueChange={onCategoryChange}>
+              <SelectTrigger>
+                <SelectValue placeholder="Odaberite kategoriju" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(collections).map(([key]) => (
+                  <SelectItem key={key} value={key}>
+                    {displayNames[key as keyof typeof displayNames]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Search Input */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Pretraga</label>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Input
+                type="text"
+                placeholder="Pretraži po nazivu, opisu, cijeni..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Desktop View */}
@@ -125,12 +183,20 @@ export function ProductList({ onEdit, selectedProduct, selectedCategory, onCateg
             <TableBody>
               {products.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-4">
-                    Nema proizvoda u ovoj kategoriji
+                  <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                    <Package className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                    <p>Nema proizvoda u ovoj kategoriji</p>
+                  </TableCell>
+                </TableRow>
+              ) : displayProducts.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                    <Search className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                    <p>Nisu pronađeni proizvodi za "{searchQuery}"</p>
                   </TableCell>
                 </TableRow>
               ) : (
-                products.map((product) => (
+                displayProducts.map((product) => (
                   <TableRow 
                     key={product.id}
                     className={`cursor-pointer hover:bg-gray-50 ${
@@ -147,21 +213,30 @@ export function ProductList({ onEdit, selectedProduct, selectedCategory, onCateg
                         />
                       )}
                     </TableCell>
-                    <TableCell className="font-medium">{product.naziv}</TableCell>
-                    <TableCell>{product.cijena} KM</TableCell>
                     <TableCell>
-                      {product.popust > 0 ? (
-                        <span className="px-2 py-1 rounded-full bg-orange-100 text-orange-800">
-                          -{product.popust}%
-                        </span>
-                      ) : (
-                        '-'
+                      <div className="font-medium">{product.naziv}</div>
+                      {product.opis && (
+                        <div className="text-xs text-gray-500 mt-1 truncate max-w-xs">
+                          {product.opis}
+                        </div>
                       )}
                     </TableCell>
                     <TableCell>
-                      <span className={`px-2 py-1 rounded-full text-sm ${
-                        product.dostupnost 
-                          ? 'bg-green-100 text-green-800' 
+                      <div className="font-semibold">{product.cijena} KM</div>
+                    </TableCell>
+                    <TableCell>
+                      {product.popust > 0 ? (
+                        <span className="px-2 py-1 rounded-full bg-orange-100 text-orange-800 text-xs font-medium">
+                          -{product.popust}%
+                        </span>
+                      ) : (
+                        <span className="text-gray-400">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                        product.dostupnost
+                          ? 'bg-green-100 text-green-800'
                           : 'bg-red-100 text-red-800'
                       }`}>
                         {product.dostupnost ? "Dostupno" : "Nije dostupno"}
@@ -178,11 +253,17 @@ export function ProductList({ onEdit, selectedProduct, selectedCategory, onCateg
       {/* Mobile View */}
       <div className="sm:hidden space-y-2">
         {products.length === 0 ? (
-          <div className="text-center py-4 text-gray-500">
-            Nema proizvoda u ovoj kategoriji
+          <div className="text-center py-8 text-gray-500">
+            <Package className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+            <p>Nema proizvoda u ovoj kategoriji</p>
+          </div>
+        ) : displayProducts.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <Search className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+            <p>Nisu pronađeni proizvodi za "{searchQuery}"</p>
           </div>
         ) : (
-          products.map((product) => (
+          displayProducts.map((product) => (
             <div
               key={product.id}
               className={`border rounded-lg p-4 cursor-pointer ${
@@ -199,21 +280,24 @@ export function ProductList({ onEdit, selectedProduct, selectedCategory, onCateg
                   />
                 )}
                 <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-start gap-2">
-                    <h3 className="font-medium truncate">{product.naziv}</h3>
-                    <div className="text-gray-900 whitespace-nowrap">
+                  <div className="flex justify-between items-start gap-2 mb-1">
+                    <h3 className="font-medium">{product.naziv}</h3>
+                    <div className="text-gray-900 font-semibold whitespace-nowrap">
                       {product.cijena} KM
                     </div>
                   </div>
-                  <div className="mt-2 flex flex-wrap gap-2">
+                  {product.opis && (
+                    <p className="text-xs text-gray-500 line-clamp-2 mb-2">{product.opis}</p>
+                  )}
+                  <div className="flex flex-wrap gap-2">
                     {product.popust > 0 && (
-                      <span className="px-2 py-1 rounded-full bg-orange-100 text-orange-800 text-sm">
+                      <span className="px-2 py-1 rounded-full bg-orange-100 text-orange-800 text-xs font-medium">
                         -{product.popust}%
                       </span>
                     )}
-                    <span className={`px-2 py-1 rounded-full text-sm ${
-                      product.dostupnost 
-                        ? 'bg-green-100 text-green-800' 
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      product.dostupnost
+                        ? 'bg-green-100 text-green-800'
                         : 'bg-red-100 text-red-800'
                     }`}>
                       {product.dostupnost ? "Dostupno" : "Nije dostupno"}

@@ -173,33 +173,34 @@ export default function PaymentInput() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
+    <div className="max-w-2xl mx-auto p-4 sm:p-6">
+      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">Informacije za dostavu</h1>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
           <FormField
             control={form.control}
             name="paymentMethod"
             render={({ field }) => (
-              <FormItem className="space-y-4">
-                <FormLabel className="text-lg font-semibold">Način plaćanja</FormLabel>
+              <FormItem className="space-y-3 sm:space-y-4">
+                <FormLabel className="text-base sm:text-lg font-semibold">Način plaćanja</FormLabel>
                 <FormControl>
                   <RadioGroup
                     onValueChange={field.onChange}
                     defaultValue={field.value}
-                    className="space-y-4"
+                    className="space-y-3 sm:space-y-4"
                   >
-                    <div className="flex items-center space-x-2 bg-gray-50 p-4 rounded-lg">
+                    <div className="flex items-center space-x-3 bg-gray-50 p-3 sm:p-4 rounded-lg">
                       <RadioGroupItem value="pouzecem" id="pouzecem" />
-                      <Label htmlFor="pouzecem">Plaćanje pouzećem</Label>
+                      <Label htmlFor="pouzecem" className="text-sm sm:text-base cursor-pointer">Plaćanje pouzećem</Label>
                     </div>
 
-                    <div className="flex items-center space-x-2 bg-gray-100 p-4 rounded-lg opacity-50 cursor-not-allowed">
+                    <div className="flex items-center space-x-3 bg-gray-100 p-3 sm:p-4 rounded-lg opacity-50 cursor-not-allowed">
                       <RadioGroupItem disabled value="paypal" id="paypal" />
-                      <div>
-                        <Label htmlFor="paypal" className="flex items-center">
-                          PayPal <span className="ml-2 text-sm text-amber-600">(Uskoro)</span>
+                      <div className="flex-1">
+                        <Label htmlFor="paypal" className="flex items-center text-sm sm:text-base">
+                          PayPal <span className="ml-2 text-xs sm:text-sm text-amber-600">(Uskoro)</span>
                         </Label>
-                        <p className="text-sm text-gray-500">Online plaćanje PayPal-om će biti dostupno uskoro</p>
+                        <p className="text-xs sm:text-sm text-gray-500 mt-1">Online plaćanje PayPal-om će biti dostupno uskoro</p>
                       </div>
                     </div>
                   </RadioGroup>
@@ -208,15 +209,15 @@ export default function PaymentInput() {
             )}
           />
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <FormField
               control={form.control}
               name="firstName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Ime</FormLabel>
+                  <FormLabel className="text-sm sm:text-base">Ime</FormLabel>
                   <FormControl>
-                    <Input placeholder="Vaše ime" {...field} />
+                    <Input placeholder="Vaše ime" className="h-11 text-base" {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -227,9 +228,9 @@ export default function PaymentInput() {
               name="lastName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Prezime</FormLabel>
+                  <FormLabel className="text-sm sm:text-base">Prezime</FormLabel>
                   <FormControl>
-                    <Input placeholder="Vaše prezime" {...field} />
+                    <Input placeholder="Vaše prezime" className="h-11 text-base" {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -241,23 +242,23 @@ export default function PaymentInput() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel className="text-sm sm:text-base">Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="vasa@email.com" {...field} />
+                  <Input placeholder="vasa@email.com" className="h-11 text-base" {...field} />
                 </FormControl>
               </FormItem>
             )}
           />
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <FormField
               control={form.control}
               name="street"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Ulica</FormLabel>
+                  <FormLabel className="text-sm sm:text-base">Ulica</FormLabel>
                   <FormControl>
-                    <Input placeholder="Naziv ulice" {...field} />
+                    <Input placeholder="Naziv ulice" className="h-11 text-base" {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -268,24 +269,24 @@ export default function PaymentInput() {
               name="houseNumber"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Broj</FormLabel>
+                  <FormLabel className="text-sm sm:text-base">Broj</FormLabel>
                   <FormControl>
-                    <Input placeholder="Broj kuće/stana" {...field} />
+                    <Input placeholder="Broj kuće/stana" className="h-11 text-base" {...field} />
                   </FormControl>
                 </FormItem>
               )}
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <FormField
               control={form.control}
               name="city"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Grad</FormLabel>
+                  <FormLabel className="text-sm sm:text-base">Grad</FormLabel>
                   <FormControl>
-                    <Input placeholder="Naziv grada" {...field} />
+                    <Input placeholder="Naziv grada" className="h-11 text-base" {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -296,9 +297,9 @@ export default function PaymentInput() {
               name="postalCode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Poštanski broj</FormLabel>
+                  <FormLabel className="text-sm sm:text-base">Poštanski broj</FormLabel>
                   <FormControl>
-                    <Input placeholder="npr. 71000" {...field} />
+                    <Input placeholder="npr. 71000" className="h-11 text-base" {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -310,9 +311,9 @@ export default function PaymentInput() {
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Broj telefona</FormLabel>
+                <FormLabel className="text-sm sm:text-base">Broj telefona</FormLabel>
                 <FormControl>
-                  <Input placeholder="Vaš kontakt telefon" {...field} />
+                  <Input placeholder="Vaš kontakt telefon" className="h-11 text-base" {...field} />
                 </FormControl>
               </FormItem>
             )}
@@ -323,54 +324,54 @@ export default function PaymentInput() {
             name="additionalInfo"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Dodatne napomene (opcionalno)</FormLabel>
+                <FormLabel className="text-sm sm:text-base">Dodatne napomene (opcionalno)</FormLabel>
                 <FormControl>
-                  <Input placeholder="Npr. sprat, interfon, vrijeme dostave..." {...field} />
+                  <Input placeholder="Npr. sprat, interfon, vrijeme dostave..." className="h-11 text-base" {...field} />
                 </FormControl>
               </FormItem>
             )}
           />
 
           {/* Order Summary */}
-          <div className="mt-8 p-6 bg-gray-50 rounded-lg space-y-4">
-            <h3 className="text-lg font-semibold">Pregled narudžbe</h3>
+          <div className="mt-6 sm:mt-8 p-4 sm:p-6 bg-gray-50 rounded-lg space-y-3 sm:space-y-4">
+            <h3 className="text-base sm:text-lg font-semibold">Pregled narudžbe</h3>
 
             <div className="space-y-2">
-              <div className="flex justify-between">
+              <div className="flex justify-between text-sm sm:text-base">
                 <span>Ukupno proizvodi:</span>
-                <span>{formatCurrency(calculateTotal())}</span>
+                <span className="font-medium">{formatCurrency(calculateTotal())}</span>
               </div>
 
-              <div className="flex justify-between text-gray-600">
+              <div className="flex justify-between text-gray-600 text-sm sm:text-base">
                 <span>Troškovi dostave:</span>
                 {isFreeShipping(calculateTotal()) ? (
                   <span className="text-green-600 font-medium">Besplatno</span>
                 ) : (
-                  <span>{formatCurrency(calculateShippingCost(calculateTotal()))}</span>
+                  <span className="font-medium">{formatCurrency(calculateShippingCost(calculateTotal()))}</span>
                 )}
               </div>
 
               {isFreeShipping(calculateTotal()) && (
-                <div className="bg-green-50 p-2 rounded text-sm text-green-700">
+                <div className="bg-green-50 p-2 sm:p-3 rounded text-xs sm:text-sm text-green-700">
                   Besplatna dostava za narudžbe preko 50 KM!
                 </div>
               )}
 
-              <div className="pt-2 border-t border-gray-200">
-                <div className="flex justify-between font-semibold text-lg">
+              <div className="pt-2 sm:pt-3 border-t border-gray-200">
+                <div className="flex justify-between font-semibold text-base sm:text-lg">
                   <span>Ukupno za plaćanje:</span>
                   <span className="text-amber-600">
                     {formatCurrency(calculateTotal() + calculateShippingCost(calculateTotal()))}
                   </span>
                 </div>
-                <p className="text-sm text-gray-500 mt-1">Plaćanje pouzećem - gotovinom prilikom preuzimanja</p>
+                <p className="text-xs sm:text-sm text-gray-500 mt-1">Plaćanje pouzećem - gotovinom prilikom preuzimanja</p>
               </div>
             </div>
           </div>
 
           <Button
             type="submit"
-            className="w-full bg-amber-600 hover:bg-amber-700 text-white"
+            className="w-full bg-amber-600 hover:bg-amber-700 text-white py-3 sm:py-3.5 text-base sm:text-lg font-medium"
             disabled={isLoading}
           >
             {isLoading ? "Procesiranje..." : "Potvrdi narudžbu"}

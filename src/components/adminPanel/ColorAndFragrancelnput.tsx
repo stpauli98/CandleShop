@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { addItem, deleteItem, getColors, getFragrances } from "../../lib/firebase/fragrancesAndColors"
+import { addItem, deleteItem, getAllItems } from "../../lib/firebase/fragrancesAndColors"
 import { toast } from "react-hot-toast"
 import { error } from "../../lib/logger"
 
@@ -21,19 +21,10 @@ const ColorAndFragranceInput: React.FC = () => {
   useEffect(() => {
     const loadItems = async () => {
       try {
-        const [colors, fragrances] = await Promise.all([
-          getColors(),
-          getFragrances()
-        ]);
-
-        const formattedItems: Item[] = [
-          ...colors.map(name => ({ id: name, name, type: 'color' as const })),
-          ...fragrances.map(name => ({ id: name, name, type: 'fragrance' as const }))
-        ];
-
-        setItems(formattedItems);
+        const allItems = await getAllItems();
+        setItems(allItems);
       } catch (loadError) {
-        error('Error loading items', loadError, 'ADMIN');
+        error('Error loading items', loadError as Record<string, unknown>, 'ADMIN');
         toast.error('Greška pri učitavanju stavki');
       } finally {
         setLoading(false);
@@ -53,7 +44,7 @@ const ColorAndFragranceInput: React.FC = () => {
       setNewItemName("");
       toast.success(`${newItemType === 'color' ? 'Boja' : 'Miris'} uspješno dodan`);
     } catch (addError) {
-      error('Error adding item', addError, 'ADMIN');
+      error('Error adding item', addError as Record<string, unknown>, 'ADMIN');
       if (addError instanceof Error) {
         toast.error(addError.message);
       } else {
@@ -68,7 +59,7 @@ const ColorAndFragranceInput: React.FC = () => {
       setItems(items.filter((item) => item.id !== id));
       toast.success(`${items.find(i => i.id === id)?.type === 'color' ? 'Boja' : 'Miris'} uspješno obrisan`);
     } catch (removeError) {
-      error('Error removing item', removeError, 'ADMIN');
+      error('Error removing item', removeError as Record<string, unknown>, 'ADMIN');
       toast.error('Greška pri brisanju stavke');
     }
   }

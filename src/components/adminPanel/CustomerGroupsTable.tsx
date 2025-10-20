@@ -19,7 +19,7 @@ const CustomerGroupsTable = () => {
             } catch (err) {
                 const errorMessage = 'Error fetching customer groups';
                 setError(errorMessage);
-                logError(errorMessage, err, 'CUSTOMERS');
+                logError(errorMessage, err as Record<string, unknown>, 'CUSTOMERS');
             } finally {
                 setLoading(false);
             }
@@ -73,7 +73,7 @@ const CustomerGroupsTable = () => {
                 </thead>
                 <tbody>
                     {customers.map((customer) => (
-                        <tr key={customer.customerEmail} className="hover:bg-gray-50">
+                        <tr key={`${customer.customerEmail}_${customer.phone}`} className="hover:bg-gray-50">
                             <td className="py-2 px-4 border-b">
                                 {customer.firstName} {customer.lastName}
                             </td>

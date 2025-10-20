@@ -1,15 +1,23 @@
 import React from 'react';
 import { Order } from '../../lib/firebase/orders';
 import { formatCurrency } from '../../utilities/formatCurency';
+import OrderStatusManager from './OrderStatusManager';
 
 interface OrderDetailsModalProps {
   order: Order | null;
   isOpen: boolean;
   onClose: () => void;
+  onOrderUpdated?: (order: Order) => void;
 }
 
-const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, isOpen, onClose }) => {
+const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, isOpen, onClose, onOrderUpdated }) => {
   if (!isOpen || !order) return null;
+
+  const handleOrderUpdated = (updatedOrder: Order) => {
+    if (onOrderUpdated) {
+      onOrderUpdated(updatedOrder);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
@@ -27,16 +35,12 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, isOpen, on
             </button>
           </div>
 
-          {/* Status narudžbe */}
-          <div className="mb-6">
-            <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
-              ${order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-              order.status === 'processing' ? 'bg-blue-100 text-blue-800' :
-              order.status === 'shipped' ? 'bg-purple-100 text-purple-800' :
-              order.status === 'delivered' ? 'bg-green-100 text-green-800' :
-              'bg-red-100 text-red-800'}">
-              {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-            </div>
+          {/* Order Status Management */}
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+            <OrderStatusManager
+              order={order}
+              onStatusUpdated={handleOrderUpdated}
+            />
           </div>
 
           {/* Informacije o kupcu */}

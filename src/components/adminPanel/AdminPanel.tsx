@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { ProductForm } from "./ProductForm"
 import { ProductList } from "./ProductList"
 import type { Product } from "./types"
@@ -10,11 +10,12 @@ import Button from "@/components/ui/button"
 import ColorAndFragranceInput from "./ColorAndFragrancelnput"
 import OrderTable from "./OrderTable"
 import CustomerGroupsTable from "./CustomerGroupsTable"
+import Dashboard from "./Dashboard"
 import { error } from "../../lib/logger"
 
 type CategoryId = 'omiljeniProizvodi' | 'svijece' | 'mirisneSvijece' | 'mirisniVoskovi' | 'dekoracije'
 
-type ActiveTab = 'list' | 'form' | 'orders' | 'customers'
+type ActiveTab = 'dashboard' | 'list' | 'form' | 'orders' | 'customers'
 
 export default function AdminPanel() {
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>()
@@ -22,7 +23,7 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true)
   const [authenticated, setAuthenticated] = useState(false)
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create')
-  const [activeTab, setActiveTab] = useState<ActiveTab>('list')
+  const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard')
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -72,7 +73,7 @@ export default function AdminPanel() {
       await signOut(auth)
       navigate("/admin-login")
     } catch (logoutError) {
-      error("Logout error", logoutError, 'AUTH')
+      error("Logout error", logoutError as Record<string, unknown>, 'AUTH')
     }
   }
 
@@ -96,6 +97,12 @@ export default function AdminPanel() {
             <div className="flex items-center space-x-4">
               <h1 className="text-xl font-semibold">Admin Panel</h1>
               <nav className="hidden md:flex space-x-4">
+                <button
+                  onClick={() => setActiveTab('dashboard')}
+                  className={`${activeTab === 'dashboard' ? 'text-purple-600' : 'text-gray-500'} hover:text-purple-600`}
+                >
+                  Dashboard
+                </button>
                 <button
                   onClick={() => setActiveTab('list')}
                   className={`${activeTab === 'list' ? 'text-purple-600' : 'text-gray-500'} hover:text-purple-600`}
@@ -141,22 +148,28 @@ export default function AdminPanel() {
         <div className="bg-white shadow rounded-lg p-4 sm:p-6">
           {/* Mobile Navigation */}
           <div className="md:hidden mb-4">
-            <div className="flex space-x-2 mb-4">
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              <button
+                onClick={() => setActiveTab('dashboard')}
+                className={`py-2 px-3 text-center rounded-lg text-sm ${activeTab === 'dashboard' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-600'}`}
+              >
+                Dashboard
+              </button>
               <button
                 onClick={() => setActiveTab('list')}
-                className={`flex-1 py-2 px-4 text-center rounded-lg ${activeTab === 'list' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-600'}`}
+                className={`py-2 px-3 text-center rounded-lg text-sm ${activeTab === 'list' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-600'}`}
               >
                 Proizvodi
               </button>
               <button
                 onClick={() => setActiveTab('orders')}
-                className={`flex-1 py-2 px-4 text-center rounded-lg ${activeTab === 'orders' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-600'}`}
+                className={`py-2 px-3 text-center rounded-lg text-sm ${activeTab === 'orders' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-600'}`}
               >
                 Narudžbe
               </button>
               <button
                 onClick={() => setActiveTab('customers')}
-                className={`flex-1 py-2 px-4 text-center rounded-lg ${activeTab === 'customers' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-600'}`}
+                className={`py-2 px-3 text-center rounded-lg text-sm ${activeTab === 'customers' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-600'}`}
               >
                 Kupci
               </button>
@@ -203,7 +216,9 @@ export default function AdminPanel() {
           {/* Responsive Grid */}
           {/* Main Grid Layout */}
           <div className="space-y-6">
-            {activeTab === 'orders' ? (
+            {activeTab === 'dashboard' ? (
+              <Dashboard />
+            ) : activeTab === 'orders' ? (
               <div>
                 <h2 className="text-lg font-semibold mb-4">Pregled narudžbi</h2>
                 <OrderTable />

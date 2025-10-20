@@ -1,4 +1,4 @@
-import { collection, addDoc, serverTimestamp, getDocs, getDoc, doc, query, orderBy, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, getDocs, getDoc, doc, query, orderBy, where, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 import { firebaseError, info } from '../logger';
 
@@ -201,5 +201,93 @@ export const getCustomerGroups = async (): Promise<CustomerInfo[]> => {
             .sort((a, b) => b.totalOrders - a.totalOrders);
     } catch (error) {
         throw new FirebaseError('Error fetching customer groups', error);
+    }
+};
+
+/**
+ * Update order status with optional email notification
+ */
+export const updateOrderStatus = async (
+    orderId: string,
+    newStatus: Order['status'],
+    sendEmailNotification: boolean = true
+): Promise<Order> => {
+    try {
+        const orderRef = doc(db, 'orders', orderId);
+        const orderSnap = await getDoc(orderRef);
+
+        if (!orderSnap.exists()) {
+            throw new FirebaseError('Order not found', { orderId });
+        }
+
+        const currentOrder = {
+            id: orderSnap.id,
+            ...orderSnap.data(),
+            createdAt: orderSnap.data().createdAt instanceof Timestamp
+                ? orderSnap.data().createdAt.toDate()
+                : new Date(),
+            updatedAt: orderSnap.data().updatedAt instanceof Timestamp
+                ? orderSnap.data().updatedAt.toDate()
+                : new Date()
+        } as Order;
+
+        const oldStatus = currentOrder.status;
+
+        // Update status and timestamp
+        await updateDoc(orderRef, {
+            status: newStatus,
+            updatedAt: serverTimestamp()
+        });
+
+        const updatedOrder = {
+            ...currentOrder,
+            status: newStatus,
+            updatedAt: new Date()
+        };
+
+        info(`Order status updated: ${orderId}`, {
+            oldStatus,
+            newStatus,
+            orderNumber: currentOrder.orderNumber
+        });
+
+        // Send email notification if requested
+        if (sendEmailNotification) {
+            const { sendOrderStatusUpdateEmail } = await import('../email/emailService');
+            await sendOrderStatusUpdateEmail(updatedOrder, oldStatus, newStatus);
+        }
+
+        return updatedOrder;
+    } catch (error) {
+        firebaseError(`Updating order status for ${orderId}`, error);
+        throw new FirebaseError(`Error updating order status`, error);
+    }
+};
+
+/**
+ * Get orders filtered by status
+ */
+export const getOrdersByStatus = async (status: Order['status']): Promise<Order[]> => {
+    try {
+        const ordersRef = collection(db, 'orders');
+        const q = query(
+            ordersRef,
+            where('status', '==', status),
+            orderBy('createdAt', 'desc')
+        );
+        const querySnapshot = await getDocs(q);
+
+        return querySnapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                ...data,
+                createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : new Date(),
+                updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : new Date()
+            } as Order;
+        });
+    } catch (error) {
+        firebaseError(`Fetching orders by status: ${status}`, error);
+        throw new FirebaseError(`Error fetching orders by status`, error);
     }
 };

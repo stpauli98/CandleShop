@@ -11,4 +11,6 @@ export const collections = {
   mirisneSvijece: () => getCollection("mirisneSvijece"),
   mirisniVoskovi: () => getCollection("mirisniVoskovi"),
   dekoracije: () => getCollection("dekoracije"),
-};
+} as const;
+
+export type CollectionName = keyof typeof collections;

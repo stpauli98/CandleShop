@@ -187,3 +187,92 @@ export async function sendOrderEmails(order: Order): Promise<{ customer: boolean
         admin: adminResult
     };
 }
+
+/**
+ * Get status display name in Croatian
+ */
+function getStatusDisplayName(status: Order['status']): string {
+    const statusMap = {
+        pending: 'Na čekanju',
+        processing: 'U obradi',
+        shipped: 'Poslato',
+        delivered: 'Dostavljeno',
+        cancelled: 'Otkazano'
+    };
+    return statusMap[status];
+}
+
+/**
+ * Send order status update email to customer
+ */
+export async function sendOrderStatusUpdateEmail(
+    order: Order,
+    oldStatus: Order['status'],
+    newStatus: Order['status']
+): Promise<boolean> {
+    try {
+        if (!EMAILJS_SERVICE_ID || !EMAILJS_CUSTOMER_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
+            logError('EmailJS configuration missing for status update', {
+                service: !!EMAILJS_SERVICE_ID,
+                template: !!EMAILJS_CUSTOMER_TEMPLATE_ID,
+                key: !!EMAILJS_PUBLIC_KEY
+            }, 'EMAIL');
+            return false;
+        }
+
+        const statusMessage = getStatusMessage(newStatus);
+
+        const emailParams = {
+            order_number: order.orderNumber,
+            customer_name: `${order.shippingInfo.firstName} ${order.shippingInfo.lastName}`,
+            old_status: getStatusDisplayName(oldStatus),
+            new_status: getStatusDisplayName(newStatus),
+            status_message: statusMessage,
+            order_date: new Date(order.createdAt).toLocaleDateString('bs-BA', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }),
+            items_list: formatOrderItems(order),
+            total: `${order.total.toFixed(2)} KM`,
+            to_email: order.customerEmail,
+            to_name: `${order.shippingInfo.firstName} ${order.shippingInfo.lastName}`
+        };
+
+        const response = await emailjs.send(
+            EMAILJS_SERVICE_ID,
+            EMAILJS_CUSTOMER_TEMPLATE_ID,
+            emailParams,
+            EMAILJS_PUBLIC_KEY
+        );
+
+        if (response.status === 200) {
+            info(`Status update email sent for order ${order.orderNumber}`, {
+                email: order.customerEmail,
+                oldStatus,
+                newStatus
+            });
+            return true;
+        }
+
+        logError('Failed to send status update email', { status: response.status }, 'EMAIL');
+        return false;
+    } catch (err) {
+        logError('Error sending status update email', err, 'EMAIL');
+        return false;
+    }
+}
+
+/**
+ * Get user-friendly status message
+ */
+function getStatusMessage(status: Order['status']): string {
+    const messages = {
+        pending: 'Vaša narudžba je primljena i čeka obradu. Uskoro ćemo je procesovati.',
+        processing: 'Vaša narudžba je u obradi. Pripremamo pakovanje proizvoda.',
+        shipped: 'Vaša narudžba je poslata! Možete očekivati dostavu u narednih 2-5 radnih dana.',
+        delivered: 'Vaša narudžba je uspješno dostavljena. Nadamo se da ste zadovoljni!',
+        cancelled: 'Vaša narudžba je otkazana. Ako imate pitanja, kontaktirajte nas.'
+    };
+    return messages[status];
+}

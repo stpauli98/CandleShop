@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import ConfirmDialog from "./shared/ConfirmDialog"
 
 const categories = [
   { id: "svijece" as const, name: "Svijeće" },
@@ -74,6 +75,7 @@ type ProductFormProps = {
 export function ProductForm({ product, onSubmit, mode, selectedCategory }: ProductFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   const defaultValues = useMemo(() => {
     if (mode === 'create') {
@@ -87,12 +89,12 @@ export function ProductForm({ product, onSubmit, mode, selectedCategory }: Produ
         dostupnost: true,
         kategorija: selectedCategory
       }
-    } 
-    
+    }
+
     if (product) {
       // Ensure we're using the product's actual category or fallback to selected
-      const categoryId = isValidCategory(product.kategorija) ? 
-        product.kategorija : 
+      const categoryId = isValidCategory(product.kategorija) ?
+        product.kategorija :
         selectedCategory
 
       return {
@@ -115,7 +117,8 @@ export function ProductForm({ product, onSubmit, mode, selectedCategory }: Produ
       opis: '',
       popust: 0,
       dostupnost: true,
-      kategorija: selectedCategory
+      kategorija: selectedCategory,
+      featured: false
     }
   }, [mode, product, selectedCategory])
 
@@ -153,9 +156,11 @@ export function ProductForm({ product, onSubmit, mode, selectedCategory }: Produ
       const productId = values.id || Date.now().toString()
       
       // Ako mijenjamo kategoriju proizvoda, moramo izbrisati stari i kreirati novi
-      const oldCollectionRef = product?.kategorija && collections[product.kategorija as CollectionName];
-      const newCollectionRef = collections[values.kategorija as CollectionName];
-      
+      const oldCollectionRef = product?.kategorija && isValidCategory(product.kategorija)
+        ? collections[product.kategorija]
+        : null;
+      const newCollectionRef = collections[values.kategorija];
+
       if (!newCollectionRef) {
         throw new Error("Neispravna kategorija");
       }
@@ -175,7 +180,9 @@ export function ProductForm({ product, onSubmit, mode, selectedCategory }: Produ
         opis: values.opis,  // već je trimano u schemi
         popust: values.popust,  // već je normalizirano u schemi
         dostupnost: values.dostupnost,
-        kategorija: values.kategorija
+        kategorija: values.kategorija,
+        updatedAt: new Date(),
+        createdAt: product?.createdAt || new Date()
       }
 
       // Spremi u odabranu kolekciju
@@ -193,6 +200,7 @@ export function ProductForm({ product, onSubmit, mode, selectedCategory }: Produ
           popust: 0,
           dostupnost: true,
           kategorija: selectedCategory,
+          featured: false
         })
       }
     } catch (error) {
@@ -204,21 +212,26 @@ export function ProductForm({ product, onSubmit, mode, selectedCategory }: Produ
     }
   }
 
-  async function handleDelete() {
+  async function handleDeleteConfirm() {
     if (!product?.id || !product?.kategorija) return
-    
+
     setIsSubmitting(true)
     setError(null)
-    
+    const deleteToast = toast.loading('Brisanje proizvoda...');
+
     try {
-      const collectionRef = collections[product.kategorija as CollectionName];
-      if (!collectionRef) {
+      if (!isValidCategory(product.kategorija)) {
         throw new Error("Neispravna kategorija");
       }
-      
+
+      const collectionRef = collections[product.kategorija];
       const docRef = doc(collectionRef(), product.id);
       await deleteDoc(docRef);
+
+      toast.success('Proizvod uspješno obrisan!', { id: deleteToast });
+      setShowDeleteConfirm(false);
       onSubmit(true);
+
       form.reset({
         id: '',
         naziv: '',
@@ -227,10 +240,11 @@ export function ProductForm({ product, onSubmit, mode, selectedCategory }: Produ
         opis: '',
         popust: 0,
         dostupnost: true,
-        kategorija: selectedCategory,
+        kategorija: selectedCategory
       });
     } catch (error) {
       console.error("Error deleting product:", error);
+      toast.error("Došlo je do greške prilikom brisanja proizvoda.", { id: deleteToast });
       setError("Došlo je do greške prilikom brisanja proizvoda. Molimo pokušajte ponovno.");
     } finally {
       setIsSubmitting(false);
@@ -392,9 +406,9 @@ export function ProductForm({ product, onSubmit, mode, selectedCategory }: Produ
             <FormItem>
               <FormLabel>Popust (%)</FormLabel>
               <FormControl>
-                <Input 
-                  type="number" 
-                  placeholder="Unesite popust" 
+                <Input
+                  type="number"
+                  placeholder="Unesite popust"
                   {...field}
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
@@ -434,18 +448,31 @@ export function ProductForm({ product, onSubmit, mode, selectedCategory }: Produ
             {isSubmitting ? 'Spremanje...' : (product ? 'Spremi promjene' : 'Dodaj proizvod')}
           </Button>
           {product && (
-            <Button 
-              type="button" 
-              variant="destructive" 
-              onClick={handleDelete}
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => setShowDeleteConfirm(true)}
               disabled={isSubmitting}
               className={isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}
             >
-              {isSubmitting ? 'Brisanje...' : 'Obriši'}
+              Obriši
             </Button>
           )}
         </div>
       </form>
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        title="Potvrda brisanja"
+        message={`Da li ste sigurni da želite obrisati proizvod "${product?.naziv}"? Ova akcija se ne može poništiti.`}
+        confirmText="Obriši proizvod"
+        cancelText="Otkaži"
+        confirmVariant="destructive"
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setShowDeleteConfirm(false)}
+        isLoading={isSubmitting}
+      />
     </Form>
   )
 }

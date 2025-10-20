@@ -27,6 +27,16 @@ export const getColors = async (): Promise<string[]> => {
     ));
 };
 
+// Dohvati sve stavke sa pravim Firestore ID-jevima
+export const getAllItems = async (): Promise<Item[]> => {
+    const querySnapshot = await getDocs(collection(db, 'fragrancesAndColors'));
+    return querySnapshot.docs.map(doc => ({
+        id: doc.id,  // Pravi Firestore document ID
+        name: doc.data().name,
+        type: doc.data().type
+    }));
+};
+
 // Provjeri postoji li već stavka s istim imenom i tipom
 export const checkItemExists = async (name: string, type: 'color' | 'fragrance'): Promise<boolean> => {
     const querySnapshot = await getDocs(collection(db, 'fragrancesAndColors'));
