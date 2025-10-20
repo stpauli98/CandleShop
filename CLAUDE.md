@@ -25,7 +25,7 @@ This is a React e-commerce application for a candle shop ("CandleShop") built wi
 # Start development server
 npm run dev
 
-# Build for production
+# Build for production (includes TypeScript type checking)
 npm run build
 
 # Preview production build
@@ -33,7 +33,18 @@ npm run preview
 ```
 
 ### Code Quality
-The project uses ESLint with TypeScript configuration. No specific test commands are currently configured.
+```bash
+# Run ESLint on entire codebase
+npm run lint
+
+# Auto-fix ESLint issues
+npm run lint:fix
+
+# TypeScript type checking (without build)
+npm run type-check
+```
+
+**Important**: The `npm run build` command runs TypeScript type checking (`tsc`) before Vite build. This ensures type safety in production builds.
 
 ## Architecture & Code Organization
 
@@ -76,6 +87,12 @@ The project uses ESLint with TypeScript configuration. No specific test commands
 - Authentication
 - Storage (images)
 
+**Environment Setup**:
+- Copy `.env.example` to `.env.production`
+- Fill in Firebase credentials from Firebase Console
+- The app will throw an error if environment variables are missing
+- **Never commit `.env.production`** - it's in `.gitignore`
+
 **Collections Structure**:
 - `omiljeniProizvodi` - Featured products
 - `svijece` - Regular candles
@@ -111,6 +128,19 @@ interface Product {
 
 **Cart Item Management**: Shopping cart supports product variants (scent, color) and persists to localStorage with cross-tab synchronization.
 
+### State Management Patterns
+
+**ProductGrid Component** (`src/components/sharedComponents/ProductGrid.tsx`):
+- Uses separate `selections` state for miris/boja selection (prevents unnecessary re-renders)
+- Memoized discount calculation function to avoid duplication
+- Cleanup pattern with `mounted` flag in useEffect for async operations
+- All discount logic centralized in `calculateDiscountedPrice` memoized function
+
+**Shopping Cart** (`src/hooks/useShoppingCart.ts`):
+- Custom hook with localStorage persistence
+- Handles product variants (selectedMiris, selectedBoja)
+- Automatic price calculation with discounts
+
 ### Routing Configuration
 
 **Public Routes**:
@@ -131,14 +161,29 @@ interface Product {
 
 **Component Styling**: Uses Tailwind CSS with utility classes and shadcn/ui component patterns
 
-**State Management**: 
+**State Management**:
 - Local state with React hooks
 - Shopping cart via custom hook with localStorage persistence
 - Firebase for server state
+- Separate selection state for form inputs (prevents re-render cascades)
+
+**Performance Optimizations**:
+- `useCallback` for event handlers to prevent re-renders
+- `useMemo` for expensive calculations (discount pricing, loading components)
+- Cleanup patterns with mounted flags in async effects
+- Centralized calculation functions to avoid duplication
 
 **Form Handling**: React Hook Form with Zod validation for type-safe forms
 
-**Error Handling**: React Hot Toast for user notifications
+**Error Handling**:
+- React Hot Toast for user notifications
+- Custom logger (`src/lib/logger.ts`) for development/production logging
+- Error boundaries for graceful failure handling
+
+**Type Safety**:
+- Type assertions for error handling (`as Record<string, unknown>` for LogData compatibility)
+- Proper TypeScript interfaces for Firebase data structures
+- Zod schemas for runtime validation
 
 **Image Optimization**: Browser image compression for uploads
 
@@ -156,9 +201,27 @@ The application is configured for Firebase hosting with:
 - **Language**: Croatian language for UI text and route names
 - **Currency**: Local currency formatting utilities
 - **Admin Panel**: Protected routes with Firebase authentication
-- **Product Variants**: Support for scent and color selection
+- **Product Variants**: Support for scent and color selection (stored in separate state)
 - **Image Handling**: Upload and compression for product images
 - **CORS**: Development CORS configuration for Firebase Storage
+
+## Code Quality
+
+**ESLint Configuration**: ESLint 9 with flat config (`eslint.config.js`)
+- TypeScript ESLint rules enabled
+- React hooks rules enforced
+- React refresh warnings for component exports
+- All errors and warnings must be fixed before committing
+
+**TypeScript**: Strict type checking enabled
+- Build fails if type errors exist
+- Use proper type assertions for error handling
+- Never use `any` - use `unknown` or specific types
+
+**Vite Plugin Checker**:
+- TypeScript checking during dev and build
+- ESLint disabled in vite-plugin-checker (ESLint 9 compatibility issue)
+- Run `npm run lint` separately for ESLint checks
 
 ## File Naming Conventions
 
