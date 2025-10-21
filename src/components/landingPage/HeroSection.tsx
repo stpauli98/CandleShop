@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { useMemo } from 'react'
-import heroImage from '@/assets/heroSection.jpg'
+import heroImage from '@/assets/HeroSection.jpg'
 
 // Configuration constants
 const HERO_TEXT_OFFSET_TOP = 20; // Tailwind spacing units
