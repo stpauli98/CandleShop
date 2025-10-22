@@ -1,4 +1,6 @@
 // Structured Data generators for SEO
+// VAŽNO: Svi podaci u ovom fajlu su TAČNI i verifikovani
+// Google kažnjava lažne structured data - NE dodavati lažne informacije!
 
 export interface Product {
   id: string;
@@ -12,50 +14,31 @@ export interface Product {
 // Local Business Schema for Homepage
 export const generateLocalBusinessSchema = () => ({
   "@context": "https://schema.org",
-  "@type": "LocalBusiness",
+  "@type": "OnlineStore",
   "name": "Šarena Čarolija",
   "description": "Ručno izrađene mirisne svijeće i dekoracije za dom od prirodnih materijala. Specijaliziramo se za sojin vosak, esencijalna ulja i pamučne fitiljeve.",
   "url": "https://www.sarenacarolija.com",
-  "logo": "https://www.sarenacarolija.com/images/logo.png",
-  "image": "https://www.sarenacarolija.com/images/workshop-main.jpg",
-  "telephone": "+387-XX-XXX-XXX", // TODO: Add real phone number
-  "email": "info@sarenacarolija.com",
+  "logo": "https://i.imgur.com/8k7dh0m.jpeg",
+  "image": "https://i.imgur.com/8k7dh0m.jpeg",
+  "telephone": "+387 65 905 254",
+  "email": "sarena.carolija2025@gmail.com",
   "address": {
     "@type": "PostalAddress",
-    "addressCountry": "BA",
-    "addressRegion": "Federacija BiH"
+    "addressLocality": "Gradiška",
+    "addressRegion": "Republika Srpska",
+    "addressCountry": "BA"
   },
   "geo": {
     "@type": "GeoCoordinates",
-    "latitude": "43.8486",
-    "longitude": "18.3564"
+    "latitude": "45.1464897",
+    "longitude": "17.2551953"
   },
-  "openingHours": [
-    "Mo-Fr 09:00-17:00",
-    "Sa 10:00-14:00"
-  ],
-  "priceRange": "15-100 KM",
-  "paymentAccepted": ["Cash", "Bank Transfer"],
+  "priceRange": "15-50 KM",
+  "paymentAccepted": ["Cash"],
   "currenciesAccepted": "BAM",
   "areaServed": {
     "@type": "Country",
     "name": "Bosnia and Herzegovina"
-  },
-  "serviceArea": {
-    "@type": "GeoCircle",
-    "geoMidpoint": {
-      "@type": "GeoCoordinates",
-      "latitude": "43.8486",
-      "longitude": "18.3564"
-    },
-    "geoRadius": "100000"
-  },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.9",
-    "reviewCount": "127",
-    "bestRating": "5",
-    "worstRating": "1"
   },
   "hasOfferCatalog": {
     "@type": "OfferCatalog",
@@ -70,7 +53,7 @@ export const generateLocalBusinessSchema = () => ({
         }
       },
       {
-        "@type": "Offer", 
+        "@type": "Offer",
         "itemOffered": {
           "@type": "Product",
           "name": "Mirisni Voskovi",
@@ -80,7 +63,7 @@ export const generateLocalBusinessSchema = () => ({
       {
         "@type": "Offer",
         "itemOffered": {
-          "@type": "Product", 
+          "@type": "Product",
           "name": "Dekoracije",
           "category": "Dekoracija"
         }
@@ -95,17 +78,19 @@ export const generateProductSchema = (product: Product) => ({
   "@type": "Product",
   "name": product.naziv || 'Ručno Izrađena Svijeća',
   "description": product.opis || 'Ručno izrađena mirisna svijeća od prirodnog sojin voska sa esencijalnim uljima.',
-  "image": product.slika || 'https://www.sarenacarolija.com/images/default-product.jpg',
+  "image": product.slika || 'https://i.imgur.com/8k7dh0m.jpeg',
   "brand": {
     "@type": "Brand",
     "name": "Šarena Čarolija",
-    "logo": "https://www.sarenacarolija.com/images/logo.png"
+    "logo": "https://i.imgur.com/8k7dh0m.jpeg"
   },
   "manufacturer": {
     "@type": "Organization",
     "name": "Šarena Čarolija",
     "address": {
       "@type": "PostalAddress",
+      "addressLocality": "Gradiška",
+      "addressRegion": "Republika Srpska",
       "addressCountry": "BA"
     }
   },
@@ -120,41 +105,29 @@ export const generateProductSchema = (product: Product) => ({
       "@type": "Organization",
       "name": "Šarena Čarolija"
     },
-    "hasMerchantReturnPolicy": {
-      "@type": "MerchantReturnPolicy",
-      "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
-      "merchantReturnDays": 14
-    },
     "shippingDetails": {
       "@type": "OfferShippingDetails",
       "shippingRate": {
         "@type": "MonetaryAmount",
-        "value": "5.00",
+        "value": "8.00",
         "currency": "BAM"
       },
       "deliveryTime": {
         "@type": "ShippingDeliveryTime",
         "handlingTime": {
           "@type": "QuantitativeValue",
-          "minValue": 1,
-          "maxValue": 2,
+          "minValue": 2,
+          "maxValue": 3,
           "unitCode": "DAY"
         },
         "transitTime": {
-          "@type": "QuantitativeValue", 
-          "minValue": 2,
-          "maxValue": 5,
+          "@type": "QuantitativeValue",
+          "minValue": 1,
+          "maxValue": 2,
           "unitCode": "DAY"
         }
       }
     }
-  },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.8",
-    "reviewCount": "32",
-    "bestRating": "5",
-    "worstRating": "1"
   },
   "additionalProperty": [
     {
@@ -187,19 +160,11 @@ export const generateWebsiteSchema = () => ({
     "name": "Šarena Čarolija",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://www.sarenacarolija.com/images/logo.png",
-      "width": 300,
-      "height": 100
+      "url": "https://i.imgur.com/8k7dh0m.jpeg"
     }
   },
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": "https://www.sarenacarolija.com/search?q={search_term_string}",
-    "query-input": "required name=search_term_string"
-  },
   "sameAs": [
-    "https://www.facebook.com/sarenacarolija",
-    "https://www.instagram.com/sarenacarolija"
+    "https://www.instagram.com/sarena_carolijaa_"
   ]
 });
 

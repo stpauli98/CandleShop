@@ -1,47 +1,70 @@
 # robots.txt za Šarena Čarolija
-# Optimizirano za SEO i pretraživače
+# E-commerce sajt za ručno izrađene svijeće i dekoracije
+# https://www.sarenacarolija.com
 
+# Opšta pravila za sve pretraživače
 User-agent: *
-Allow: /
-
-# Blokiranje admin stranica i privatnih sekcija
-Disallow: /admin-panel
-Disallow: /admin-login
-Disallow: /placanje
-Disallow: /order-confirmation
 
 # Dozvoljavanje pristupa svim javnim stranicama
 Allow: /
-Allow: /svijece
-Allow: /mirisne-svijece
-Allow: /mirisni-voskovi
-Allow: /dekoracija
 Allow: /privacy-policy
+
+# Blokiranje admin stranica i checkout procesa
+Disallow: /admin-panel
+Disallow: /admin-login
+Disallow: /placanje
+Disallow: /order-confirmation/
+
+# Blokiranje build artifakts i internal fajlova
+Disallow: /src/
+Disallow: /node_modules/
+Disallow: /*.json$
+Disallow: /*.map$
 
 # XML Sitemap lokacija
 Sitemap: https://www.sarenacarolija.com/sitemap.xml
 
-# Crawl-delay za server performance
-Crawl-delay: 1
-
 # Specifične direktive za glavne pretraživače
+# Googlebot - puna brzina crawling-a (bez delay-a)
 User-agent: Googlebot
 Allow: /
 Disallow: /admin-panel
 Disallow: /admin-login
 Disallow: /placanje
-Disallow: /order-confirmation
+Disallow: /order-confirmation/
 
+# Googlebot Image - dozvoli indeksiranje svih slika
+User-agent: Googlebot-Image
+Allow: /
+
+# Bingbot - Microsoft pretraživač
 User-agent: Bingbot
 Allow: /
 Disallow: /admin-panel
 Disallow: /admin-login
 Disallow: /placanje
-Disallow: /order-confirmation
+Disallow: /order-confirmation/
 
+# YandexBot - Ruski pretraživač
 User-agent: YandexBot
 Allow: /
 Disallow: /admin-panel
 Disallow: /admin-login
 Disallow: /placanje
-Disallow: /order-confirmation
+Disallow: /order-confirmation/
+
+# Facebook bot - za link preview
+User-agent: Facebot
+Allow: /
+
+# Twitter bot - za card preview
+User-agent: Twitterbot
+Allow: /
+
+# LinkedIn bot - za link preview
+User-agent: LinkedInBot
+Allow: /
+
+# WhatsApp bot - za link preview
+User-agent: WhatsApp
+Allow: /

@@ -17,12 +17,12 @@ export default function LandingPage() {
   return (
     <>
       <SEOHead
-        title="Ručno Izrađene Mirisne Svijeće | Šarena Čarolija"
-        description="Otkrijte naše ručno izrađene mirisne svijeće od prirodnog sojin voska. Najbolje mirisne svijeće u Bosni i Hercegovini. Besplatna dostava za narudžbe preko 50 KM."
-        keywords="mirisne svijeće bosna, ručno izrađene svijeće, sojin vosak, prirodne svijeće, mirisne svijeće online, svijeće bih, aromaterapija, dekorativne svijeće"
+        title="Mirisne Svijeće Ručni Rad BiH | Šarena Čarolija"
+        description="Kupite ručno pravljene mirisne svijeće od prirodnog sojin voska. Esencijalna ulja, pamučni fitilj, ekološke svijeće. Besplatna dostava 50+ KM. Proizvod BiH! 🕯️"
+        keywords="mirisne svijeće bosna, ručno izrađene svijeće, sojin vosak svijeće, prirodne svijeće bih, svijeće online shop, ekološke svijeće, aromaterapija svijeće, dekorativne svijeće, mirisni voskovi, wax melts bih, svijeće sarajevo, domaće svijeće"
         url="https://www.sarenacarolija.com"
         type="website"
-        image="https://www.sarenacarolija.com/images/homepage-hero.jpg"
+        image="https://i.imgur.com/8k7dh0m.jpeg"
         structuredData={structuredData}
       />
       <main style={{ position: 'relative' }}>
