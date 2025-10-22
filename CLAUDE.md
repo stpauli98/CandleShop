@@ -4,17 +4,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a React e-commerce application for a candle shop ("CandleShop") built with TypeScript, Vite, and Firebase. The application supports multiple product categories, shopping cart functionality, payment processing, and admin panel for product management.
+React e-commerce application for a candle shop built with TypeScript, Vite, and Firebase. Single-page application with shopping cart, payment processing, and admin panel.
 
 ## Core Technologies & Stack
 
-- **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite
+- **Framework**: React 18 with TypeScript (strict mode)
+- **Build Tool**: Vite 5 with code splitting optimization
 - **Backend**: Firebase (Firestore, Auth, Storage, Hosting)
-- **UI Library**: Radix UI components with shadcn/ui
+- **UI Library**: Radix UI + shadcn/ui components
 - **Styling**: Tailwind CSS with animations
 - **Form Handling**: React Hook Form with Zod validation
 - **Notifications**: React Hot Toast
+- **Email Service**: EmailJS for order confirmations
 - **Icons**: Lucide React + React Icons
 - **Animations**: Framer Motion
 
@@ -22,212 +23,208 @@ This is a React e-commerce application for a candle shop ("CandleShop") built wi
 
 ### Build & Development
 ```bash
-# Start development server
-npm run dev
-
-# Build for production (includes TypeScript type checking)
-npm run build
-
-# Preview production build
-npm run preview
+npm run dev          # Start dev server (http://localhost:5173)
+npm run build        # Production build (tsc + vite build)
+npm run preview      # Preview production build locally
 ```
 
 ### Code Quality
 ```bash
-# Run ESLint on entire codebase
-npm run lint
-
-# Auto-fix ESLint issues
-npm run lint:fix
-
-# TypeScript type checking (without build)
-npm run type-check
+npm run lint         # Run ESLint
+npm run lint:fix     # Auto-fix ESLint issues
+npm run type-check   # TypeScript type checking only
 ```
 
-**Important**: The `npm run build` command runs TypeScript type checking (`tsc`) before Vite build. This ensures type safety in production builds.
+**Important**: `npm run build` runs TypeScript checking before Vite build. Build fails on type errors.
 
 ## Architecture & Code Organization
 
+### Current Routing Architecture
+
+**Single-Page Layout**: The app currently uses a single landing page with all product categories displayed on one page. Category-specific routes (`/svijece`, `/mirisne-svijece`, `/mirisni-voskovi`, `/dekoracija`) are commented out in [App.tsx:60-64](src/App.tsx#L60-L64).
+
+**Active Routes**:
+- `/` - Landing page (all products)
+- `/placanje` - Checkout (no navbar)
+- `/order-confirmation/:orderId` - Order confirmation (no navbar)
+- `/privacy-policy` - Privacy policy
+- `/admin-login` - Admin auth (no navbar, lazy loaded)
+- `/admin-panel` - Admin dashboard (no navbar, lazy loaded)
+
+**Navbar Exclusions**: Navbar hidden on `/admin-*`, `/placanje`, and `/order-confirmation` routes via conditional rendering in [App.tsx:41-45](src/App.tsx#L41-L45).
+
 ### Directory Structure
 
-**Core Application**:
-- `src/App.tsx` - Main app with routing configuration
-- `src/main.tsx` - React app entry point with router setup
-- `src/index.css` - Global Tailwind styles
-
-**Component Architecture**:
-- `components/` - Feature-specific components organized by domain
-  - `adminPanel/` - Admin functionality (login, product management, orders)
-  - `cart/` - Shopping cart components
-  - `landingPage/` - Marketing/homepage components
-  - `navBar/` - Navigation components
-  - `payment/` - Payment processing and order confirmation
-  - `sharedComponents/` - Reusable UI components
-  - `ui/` - Base UI components (shadcn/ui style)
-
-**Pages Structure**:
-- `pages/` - Product category pages
-  - `Candles/` - Regular candles
-  - `scentedCandles/` - Scented candles
-  - `scentedWaxes/` - Scented waxes
-  - `decoration/` - Decorative items
-
-**Data & State Management**:
-- `hooks/` - Custom React hooks (shopping cart, localStorage)
-- `lib/` - Utilities and external service integrations
-  - `firebase/` - Firebase service modules
-  - `email/` - Email functionality
-- `types/` - TypeScript type definitions
-- `utilities/` - Helper functions
+```
+src/
+├── components/
+│   ├── adminPanel/        # Admin (lazy loaded)
+│   ├── cart/              # Shopping cart
+│   ├── landingPage/       # Homepage sections
+│   ├── payment/           # Checkout & order confirmation
+│   ├── sharedComponents/  # ProductGrid (main component)
+│   └── ui/                # shadcn/ui base components
+├── pages/                 # Category pages (currently unused)
+├── hooks/                 # Custom hooks (cart, localStorage)
+├── lib/
+│   ├── firebase.ts        # Firebase initialization
+│   ├── logger.ts          # Custom logger utility
+│   └── email/             # EmailJS integration
+├── types/                 # TypeScript interfaces
+└── utilities/             # Helper functions
+```
 
 ### Firebase Integration
 
-**Configuration**: Firebase config is in `src/lib/firebase.ts` with services for:
-- Firestore (database)
-- Authentication
-- Storage (images)
+**Configuration** ([src/lib/firebase.ts](src/lib/firebase.ts)):
+```typescript
+// Services: Firestore, Auth, Storage
+// Environment: Uses Vite env vars (VITE_FIREBASE_*)
+// Dev mode: Attempts to connect to Storage emulator (localhost:9199)
+```
 
 **Environment Setup**:
-- Copy `.env.example` to `.env.production`
-- Fill in Firebase credentials from Firebase Console
-- The app will throw an error if environment variables are missing
-- **Never commit `.env.production`** - it's in `.gitignore`
+1. Copy `.env.example` to `.env.production`
+2. Fill in Firebase credentials (apiKey, authDomain, projectId, etc.)
+3. Add EmailJS credentials (serviceId, templateIds, publicKey)
+4. App throws error if Firebase env vars missing
 
-**Collections Structure**:
-- `omiljeniProizvodi` - Featured products
+**Collections Structure** (Croatian names):
+- `omiljeniProizvodi` - Featured products (displayed first)
 - `svijece` - Regular candles
 - `mirisneSvijece` - Scented candles
 - `mirisniVoskovi` - Scented waxes
 - `dekoracije` - Decorations
 
-**Admin Authentication**: Uses Firebase Auth for admin panel access
-
 ### Product Data Architecture
 
-**Product Interface** (`src/types/product.ts`):
+**Dual Interface System**:
+- `src/types/product.ts` - Formal Product interface (English, unused in current code)
+- Component-level interfaces - Actual implementation uses Croatian field names
+
+**Active Product Schema** (from ProductGrid component):
 ```typescript
 interface Product {
   id: string;
-  name: string;
-  description: string;
-  price: number;
-  imageUrl: string;
-  category: 'mirisne' | 'dekorativne' | 'poklon';
-  scent?: string;
-  size?: string;
-  color?: string;
-  featured: boolean;
-  discount: number;
-  stock: number;
-  rating: number;
-  reviews: number;
-  createdAt: Date;
-  updatedAt: Date;
+  naziv?: string;        // name
+  cijena?: string;       // price
+  slika?: string;        // image URL
+  opis?: string;         // description
+  popust?: number;       // discount percentage (0-100)
+  dostupnost?: boolean;  // availability
+  kategorija?: string;   // category
+  selectedMiris?: string;  // selected scent variant
+  selectedBoja?: string;   // selected color variant
 }
 ```
 
-**Cart Item Management**: Shopping cart supports product variants (scent, color) and persists to localStorage with cross-tab synchronization.
+**Cart Item Variants**: Shopping cart supports product variants (miris/scent and boja/color) as separate cart items with same product ID.
 
-### State Management Patterns
+### Critical Performance Patterns
 
-**ProductGrid Component** (`src/components/sharedComponents/ProductGrid.tsx`):
-- Uses separate `selections` state for miris/boja selection (prevents unnecessary re-renders)
-- Memoized discount calculation function to avoid duplication
-- Cleanup pattern with `mounted` flag in useEffect for async operations
-- All discount logic centralized in `calculateDiscountedPrice` memoized function
+**ProductGrid Component** ([src/components/sharedComponents/ProductGrid.tsx](src/components/sharedComponents/ProductGrid.tsx)):
+- **Mounted flag cleanup**: Prevents state updates on unmounted components ([ProductGrid.tsx:45-88](src/components/sharedComponents/ProductGrid.tsx#L45-L88))
+- **Memoized discount calculation**: `useMemo` for `calculateDiscountedPrice` to prevent re-computation ([ProductGrid.tsx:92-98](src/components/sharedComponents/ProductGrid.tsx#L92-L98))
+- **Separate selection state**: Product variants stored separately from product data to prevent re-render cascades
+- **Optimized cart handlers**: `useCallback` for add-to-cart operations
 
-**Shopping Cart** (`src/hooks/useShoppingCart.ts`):
-- Custom hook with localStorage persistence
-- Handles product variants (selectedMiris, selectedBoja)
-- Automatic price calculation with discounts
+**Shopping Cart Hook** ([src/hooks/useShoppingCart.ts](src/hooks/useShoppingCart.ts)):
+- **localStorage persistence**: Automatic sync with localStorage
+- **Cross-tab synchronization**: Storage event listener for multi-tab support ([useShoppingCart.ts:28-42](src/hooks/useShoppingCart.ts#L28-L42))
+- **Variant-aware cart**: Separate cart items for same product with different miris/boja
+- **Initial mount guard**: Prevents toast notifications on page load ([useShoppingCart.ts:44-50](src/hooks/useShoppingCart.ts#L44-L50))
 
-### Routing Configuration
+### Vite Build Optimization
 
-**Public Routes**:
-- `/` - Landing page
-- `/svijece` - Candles
-- `/mirisne-svijece` - Scented candles
-- `/mirisni-voskovi` - Scented waxes
-- `/dekoracija` - Decorations
-- `/privacy-policy` - Privacy policy
-- `/placanje` - Payment
-- `/order-confirmation` - Order confirmation
+**Manual Code Splitting** ([vite.config.ts:26-62](vite.config.ts#L26-L62)):
+- `react-vendor` chunk: React core libraries
+- `firebase` chunk: Firebase SDK (app, firestore, auth, storage)
+- `ui-vendor` chunk: Framer Motion, React Hot Toast, Lucide
+- `form-vendor` chunk: React Hook Form, Zod
+- `admin` chunk: Admin panel components (lazy loaded)
 
-**Admin Routes** (no navbar):
-- `/admin-login` - Admin authentication
-- `/admin-panel` - Product and order management
+**Production Optimizations**:
+- Terser minification with `drop_console: true` (removes console.logs)
+- Chunk size warning limit: 1000kB
+- Admin components lazy loaded via React.lazy()
 
-### Key Development Patterns
+### Logger Utility
 
-**Component Styling**: Uses Tailwind CSS with utility classes and shadcn/ui component patterns
+**Custom Logger** ([src/lib/logger.ts](src/lib/logger.ts)):
+- **Environment-aware**: Debug level in dev, error level in production
+- **Typed data**: Union type for ErrorData, PerformanceData, UserActionData, FirebaseData
+- **Exported functions**: `debug()`, `info()`, `warn()`, `error()`, `performance()`, `firebaseError()`
+- **Usage pattern**: `import { error } from '@/lib/logger'` then `error("message", dataObject, 'SOURCE')`
 
-**State Management**:
-- Local state with React hooks
-- Shopping cart via custom hook with localStorage persistence
-- Firebase for server state
-- Separate selection state for form inputs (prevents re-render cascades)
+### EmailJS Integration
 
-**Performance Optimizations**:
-- `useCallback` for event handlers to prevent re-renders
-- `useMemo` for expensive calculations (discount pricing, loading components)
-- Cleanup patterns with mounted flags in async effects
-- Centralized calculation functions to avoid duplication
+**Configuration** (`.env.production`):
+```bash
+VITE_EMAILJS_SERVICE_ID=your_service_id
+VITE_EMAILJS_CUSTOMER_TEMPLATE_ID=customer_confirmation_template
+VITE_EMAILJS_ADMIN_TEMPLATE_ID=admin_notification_template
+VITE_EMAILJS_PUBLIC_KEY=your_public_key
+VITE_ADMIN_EMAIL=admin@sarenacarolija.com
+```
 
-**Form Handling**: React Hook Form with Zod validation for type-safe forms
+**Use Cases**:
+- Customer order confirmations
+- Admin order notifications
 
-**Error Handling**:
-- React Hot Toast for user notifications
-- Custom logger (`src/lib/logger.ts`) for development/production logging
-- Error boundaries for graceful failure handling
+### TypeScript & ESLint Configuration
 
-**Type Safety**:
-- Type assertions for error handling (`as Record<string, unknown>` for LogData compatibility)
-- Proper TypeScript interfaces for Firebase data structures
-- Zod schemas for runtime validation
+**TypeScript** ([tsconfig.app.json](tsconfig.app.json)):
+- Strict mode enabled
+- Path alias: `@/*` → `./src/*`
+- Unused locals/parameters checks enabled
+- No unchecked side effect imports
 
-**Image Optimization**: Browser image compression for uploads
+**ESLint** ([eslint.config.js](eslint.config.js)):
+- ESLint 9 flat config
+- TypeScript ESLint + React Hooks rules
+- Unused vars allowed if prefixed with `_`
+- `@typescript-eslint/no-explicit-any` set to warn (not error)
 
-**Path Aliases**: `@/` alias configured for `src/` directory
+**Vite Plugin Checker**: TypeScript checking enabled during dev/build. ESLint disabled in plugin (ESLint 9 compatibility).
 
-## Firebase Deployment
+### Error Handling Patterns
 
-The application is configured for Firebase hosting with:
-- Build output: `dist/` directory
-- SPA routing: All routes redirect to `index.html`
-- Firestore rules: Custom security rules for data access
+**Type-Safe Error Handling**:
+```typescript
+// Logger requires Record<string, unknown> for data
+catch (error) {
+  error("Error message", error as Record<string, unknown>, 'SOURCE');
+}
+```
 
-## Development Notes
+**User Notifications**: React Hot Toast for success/error messages (Croatian language)
 
-- **Language**: Croatian language for UI text and route names
-- **Currency**: Local currency formatting utilities
-- **Admin Panel**: Protected routes with Firebase authentication
-- **Product Variants**: Support for scent and color selection (stored in separate state)
-- **Image Handling**: Upload and compression for product images
-- **CORS**: Development CORS configuration for Firebase Storage
+**Error Boundaries**: Wrapped around app in [App.tsx:38](src/App.tsx#L38)
 
-## Code Quality
+### Development Notes
 
-**ESLint Configuration**: ESLint 9 with flat config (`eslint.config.js`)
-- TypeScript ESLint rules enabled
-- React hooks rules enforced
-- React refresh warnings for component exports
-- All errors and warnings must be fixed before committing
+**Language**: Croatian for all UI text, route names, and database field names (e.g., `naziv`, `cijena`, `svijece`)
 
-**TypeScript**: Strict type checking enabled
-- Build fails if type errors exist
-- Use proper type assertions for error handling
-- Never use `any` - use `unknown` or specific types
+**Path Aliases**: `@/` resolves to `src/` directory in imports
 
-**Vite Plugin Checker**:
-- TypeScript checking during dev and build
-- ESLint disabled in vite-plugin-checker (ESLint 9 compatibility issue)
-- Run `npm run lint` separately for ESLint checks
+**Firebase Storage Emulator**: Dev mode attempts connection to `localhost:9199` (fails gracefully with warning if unavailable)
+
+**Image Handling**: Browser image compression library for product image uploads
+
+**Admin Panel**: Protected by Firebase Auth, lazy loaded for performance
 
 ## File Naming Conventions
 
-- React components: PascalCase (e.g., `ProductCard.tsx`)
-- Hooks: camelCase with `use` prefix (e.g., `useShoppingCart.ts`)
-- Utilities: camelCase (e.g., `formatCurrency.ts`)
-- Data files: camelCase with descriptive suffix (e.g., `candlesData.ts`)
+- Components: PascalCase (`ProductCard.tsx`)
+- Hooks: camelCase with `use` prefix (`useShoppingCart.ts`)
+- Utilities: camelCase (`formatCurrency.ts`)
+- Types: camelCase (`product.ts`)
 
-When working with this codebase, prioritize maintaining the existing Firebase integration, Croatian language consistency, and the component-based architecture patterns.
+## Firebase Deployment
+
+```bash
+npm run build        # Build to dist/
+firebase deploy      # Deploy to Firebase Hosting
+```
+
+**Hosting Config**: SPA routing (all routes redirect to `index.html`)
