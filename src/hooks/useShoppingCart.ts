@@ -67,10 +67,11 @@ export function useShoppingCart() {
             return [...currentCart, { ...product, quantity: 1, selectedMiris, selectedBoja }];
         });
 
-        toast.success('Proizvod je dodan u korpu!', {
-            duration: 2000,
-            position: 'top-right',
-        });
+        // Toast notification removed - handled in ProductGrid component
+        // toast.success('Proizvod je dodan u korpu!', {
+        //     duration: 2000,
+        //     position: 'top-right',
+        // });
     }, [setCart]);
 
     const removeFromCart = useCallback((id: string, selectedMiris?: string, selectedBoja?: string) => {

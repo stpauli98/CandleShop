@@ -1,16 +1,18 @@
 import { Link, useLocation } from "react-router-dom"
-import { Menu, X, Flame, ShoppingCart, Home, Droplet, Sparkles } from "lucide-react"
+import { Menu, X, Flame, ShoppingCart } from "lucide-react"
+// Commented out unused icons for single-page layout
+// import { Home, Droplet, Sparkles } from "lucide-react"
 import { useState, useEffect } from 'react'
 import { useShoppingCart } from "../../hooks/useShoppingCart"
 import ShoppingCartModal from "../cart/ShoppingCart"
 
-// Navigation items
-const navItems = [
-  { name: 'Svijeće', href: '/svijece', icon: Flame },
-  { name: 'Mirisne svijeće', href: '/mirisne-svijece', icon: Home },
-  { name: 'Mirisni voskovi', href: '/mirisni-voskovi', icon: Droplet },
-  { name: 'Dekoracije', href: '/dekoracija', icon: Sparkles },
-]
+// Navigation items - commented out for single-page layout
+// const navItems = [
+//   { name: 'Svijeće', href: '/svijece', icon: Flame },
+//   { name: 'Mirisne svijeće', href: '/mirisne-svijece', icon: Home },
+//   { name: 'Mirisni voskovi', href: '/mirisni-voskovi', icon: Droplet },
+//   { name: 'Dekoracije', href: '/dekoracija', icon: Sparkles },
+// ]
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -67,8 +69,8 @@ export default function Navbar() {
             Šarena Čarolija
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden sm:flex justify-between flex-1 max-w-3xl ml-20">
+          {/* Desktop Navigation - commented out for single-page layout */}
+          {/* <div className="hidden sm:flex justify-between flex-1 max-w-3xl ml-20">
             {navItems.map((item) => (
               <Link
                 key={item.name}
@@ -87,7 +89,7 @@ export default function Navbar() {
                 {item.name}
               </Link>
             ))}
-          </div>
+          </div> */}
 
           {/* Shopping Cart */}
           <div className="hidden sm:flex items-center ml-4">
@@ -130,10 +132,11 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu - commented out category links for single-page layout */}
       {isOpen && (
         <div className={`sm:hidden ${isOverHero && isHomePage ? 'bg-black/80' : 'bg-white/95'} backdrop-blur-sm`}>
           <div className="px-2 pt-2 pb-3 space-y-1">
+            {/* Category navigation links commented out
             {navItems.map((item) => (
               <Link
                 key={item.name}
@@ -153,6 +156,7 @@ export default function Navbar() {
                 {item.name}
               </Link>
             ))}
+            */}
             {/* Shopping Cart za mobilni */}
             <button
               onClick={() => {
