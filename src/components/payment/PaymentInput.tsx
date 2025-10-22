@@ -195,12 +195,12 @@ export default function PaymentInput() {
                     </div>
 
                     <div className="flex items-center space-x-3 bg-gray-100 p-3 sm:p-4 rounded-lg opacity-50 cursor-not-allowed">
-                      <RadioGroupItem disabled value="paypal" id="paypal" />
+                      <RadioGroupItem disabled value="karticno" id="karticno" />
                       <div className="flex-1">
-                        <Label htmlFor="paypal" className="flex items-center text-sm sm:text-base">
-                          PayPal <span className="ml-2 text-xs sm:text-sm text-amber-600">(Uskoro)</span>
+                        <Label htmlFor="karticno" className="flex items-center text-sm sm:text-base">
+                          Kartično plaćanje <span className="ml-2 text-xs sm:text-sm text-amber-600">(Uskoro)</span>
                         </Label>
-                        <p className="text-xs sm:text-sm text-gray-500 mt-1">Online plaćanje PayPal-om će biti dostupno uskoro</p>
+                        <p className="text-xs sm:text-sm text-gray-500 mt-1">Online plaćanje karticom će biti dostupno uskoro</p>
                       </div>
                     </div>
                   </RadioGroup>
