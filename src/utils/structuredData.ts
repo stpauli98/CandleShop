@@ -49,7 +49,14 @@ export const generateLocalBusinessSchema = () => ({
         "itemOffered": {
           "@type": "Product",
           "name": "Mirisne Svijeće",
-          "category": "Svijeće"
+          "category": "Svijeće",
+          "offers": {
+            "@type": "AggregateOffer",
+            "priceCurrency": "BAM",
+            "lowPrice": "15",
+            "highPrice": "50",
+            "availability": "https://schema.org/InStock"
+          }
         }
       },
       {
@@ -57,7 +64,14 @@ export const generateLocalBusinessSchema = () => ({
         "itemOffered": {
           "@type": "Product",
           "name": "Mirisni Voskovi",
-          "category": "Voskovi"
+          "category": "Voskovi",
+          "offers": {
+            "@type": "AggregateOffer",
+            "priceCurrency": "BAM",
+            "lowPrice": "15",
+            "highPrice": "40",
+            "availability": "https://schema.org/InStock"
+          }
         }
       },
       {
@@ -65,7 +79,14 @@ export const generateLocalBusinessSchema = () => ({
         "itemOffered": {
           "@type": "Product",
           "name": "Dekoracije",
-          "category": "Dekoracija"
+          "category": "Dekoracija",
+          "offers": {
+            "@type": "AggregateOffer",
+            "priceCurrency": "BAM",
+            "lowPrice": "20",
+            "highPrice": "50",
+            "availability": "https://schema.org/InStock"
+          }
         }
       }
     ]

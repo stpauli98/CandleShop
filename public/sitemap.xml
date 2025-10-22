@@ -16,51 +16,16 @@
     <priority>0.3</priority>
   </url>
 
-  <!-- Deep links ka sekcijama na homepage-u (za bolji SEO) -->
+  <!-- Sekcije sa ID-jevima koji stvarno postoje u kodu -->
   <url>
-    <loc>https://www.sarenacarolija.com/#omiljeni-proizvodi</loc>
+    <loc>https://www.sarenacarolija.com/#featured-products</loc>
     <lastmod>2025-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://www.sarenacarolija.com/#svijece</loc>
-    <lastmod>2025-10-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://www.sarenacarolija.com/#mirisne-svijece</loc>
-    <lastmod>2025-10-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://www.sarenacarolija.com/#mirisni-voskovi</loc>
-    <lastmod>2025-10-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://www.sarenacarolija.com/#dekoracije</loc>
-    <lastmod>2025-10-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://www.sarenacarolija.com/#o-nama</loc>
-    <lastmod>2025-10-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
-  <url>
-    <loc>https://www.sarenacarolija.com/#kontakt</loc>
+    <loc>https://www.sarenacarolija.com/#faq</loc>
     <lastmod>2025-10-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
