@@ -3,7 +3,7 @@
   <!-- Homepage - Single page application sa svim proizvodima -->
   <url>
     <loc>https://www.sarenacarolija.com/</loc>
-    <lastmod>2025-10-22</lastmod>
+    <lastmod>2025-11-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -11,7 +11,7 @@
   <!-- Privacy Policy -->
   <url>
     <loc>https://www.sarenacarolija.com/privacy-policy</loc>
-    <lastmod>2025-10-22</lastmod>
+    <lastmod>2025-11-01</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
@@ -19,14 +19,14 @@
   <!-- Sekcije sa ID-jevima koji stvarno postoje u kodu -->
   <url>
     <loc>https://www.sarenacarolija.com/#featured-products</loc>
-    <lastmod>2025-10-22</lastmod>
+    <lastmod>2025-11-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
     <loc>https://www.sarenacarolija.com/#faq</loc>
-    <lastmod>2025-10-22</lastmod>
+    <lastmod>2025-11-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>

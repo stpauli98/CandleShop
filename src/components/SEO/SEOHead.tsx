@@ -27,7 +27,7 @@ const SEOHead = ({
     : `${title} | Šarena Čarolija`;
 
   return (
-    <Helmet>
+    <Helmet prioritizeSeoTags>
       {/* Basic Meta Tags */}
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
