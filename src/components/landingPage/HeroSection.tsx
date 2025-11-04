@@ -4,6 +4,7 @@ import heroImage from '@/assets/HeroSection.jpg'
 
 // Configuration constants
 const HERO_TEXT_OFFSET_TOP = 20; // Tailwind spacing units
+const HERO_TEXT_OFFSET_TOP_MOBILE =70; // Mobile-specific top offset (higher value = more down)
 const HERO_TEXT_OFFSET_LEFT = 8; // Percentage
 
 export default function HeroSection() {
@@ -40,7 +41,11 @@ export default function HeroSection() {
                 {/* Gornji tekst */}
                 <div
                     className="absolute top-0 w-full md:relative md:top-auto md:pt-0 md:h-full md:flex md:items-center"
-                    style={{ paddingTop: `${HERO_TEXT_OFFSET_TOP * 0.25}rem` }}
+                    style={{
+                        paddingTop: window.innerWidth >= 768
+                            ? `${HERO_TEXT_OFFSET_TOP * 0.25}rem`
+                            : `${HERO_TEXT_OFFSET_TOP_MOBILE * 0.25}rem`
+                    }}
                 >
                     <div
                         className="w-full px-6 md:px-0 md:w-auto md:max-w-xl text-center md:text-left"
@@ -48,12 +53,12 @@ export default function HeroSection() {
                     >
                         <motion.div
                             {...heroTextAnimation}
-                            className="space-y-4 md:space-y-6"
+                            className="space-y-8 md:space-y-10"
                         >
                             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight text-white">
                                 Pretvorite svoj dom u oazu mira i magije
                             </h1>
-                            <p className="text-lg md:text-xl text-gray-200 leading-relaxed max-w-md mx-auto md:mx-0 mt-11">
+                            <p className="text-lg md:text-xl text-gray-200 leading-relaxed max-w-md mx-auto md:mx-0" style={{ marginTop: '150px' }}>
                                 Naše ručno izrađene svijeće su više od dekoracije – one unose toplinu, mir i ljubav u svaki trenutak.
                             </p>
                         </motion.div>
