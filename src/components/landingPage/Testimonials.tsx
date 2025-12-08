@@ -1,4 +1,6 @@
-import { useEffect, useState, useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Star, Quote } from 'lucide-react';
 
 interface Testimonial {
   id: number;
@@ -6,6 +8,7 @@ interface Testimonial {
   role: string;
   content: string;
   imageUrl: string;
+  rating: number;
 }
 
 const testimonials: Testimonial[] = [
@@ -14,56 +17,48 @@ const testimonials: Testimonial[] = [
     name: "Ana Marić",
     role: "Redovni kupac",
     content: "Svijeće su prekrasne i mirisi su nevjerovatni. Svaka koju sam kupila je bila savršena za stvaranje ugodne atmosfere u mom domu.",
-    imageUrl: "https://i.imgur.com/WFOtnWN.jpeg"
+    imageUrl: "https://i.imgur.com/WFOtnWN.jpeg",
+    rating: 5
   },
   {
     id: 2,
     name: "Miloš Kovač",
     role: "Ljubitelj svijeća",
     content: "Kvaliteta ovih svijeća je izvanredna. Dugo gore i miris se lijepo širi kroz cijelu prostoriju. Definitivno ću opet kupovati.",
-    imageUrl: "https://i.imgur.com/ZiYEejB.jpeg"
+    imageUrl: "https://i.imgur.com/ZiYEejB.jpeg",
+    rating: 5
   },
   {
     id: 3,
     name: "Sara Novak",
     role: "Interior dizajner",
     content: "Kao dizajner interijera, često preporučujem ove svijeće svojim klijentima. Kvaliteta i dizajn su na najvišem nivou.",
-    imageUrl: "https://i.imgur.com/WFOtnWN.jpeg"
+    imageUrl: "https://i.imgur.com/WFOtnWN.jpeg",
+    rating: 5
   },
   {
     id: 4,
     name: "Ivana Petrović",
     role: "Poklon entuzijasta",
     content: "Kupila sam svijeće kao poklone za prijatelje i porodicu. Svi su oduševljeni i pitaju me gdje sam ih našla!",
-    imageUrl: "https://i.imgur.com/nJN9g28.jpeg"
+    imageUrl: "https://i.imgur.com/nJN9g28.jpeg",
+    rating: 5
   },
   {
     id: 5,
     name: "Luka Matić",
     role: "Ljubitelj prirodnih proizvoda",
     content: "Cijenim što su svijeće napravljene od prirodnih sastojaka. Bez štetnih hemikalija i mirisi su autentični.",
-    imageUrl: "https://i.imgur.com/ZiYEejB.jpeg"
+    imageUrl: "https://i.imgur.com/ZiYEejB.jpeg",
+    rating: 5
   },
   {
     id: 6,
     name: "Maja Horvat",
     role: "Vlasnica salona",
     content: "Koristim ove svijeće u svom salonu i klijenti ih obožavaju. Pomažu u stvaranju opuštajuće atmosfere.",
-    imageUrl: "https://i.imgur.com/nJN9g28.jpeg"
-  },
-  {
-    id: 7,
-    name: "Tomislav Vuković",
-    role: "Student",
-    content: "Ove svijeće su savršene za opuštanje tokom studiranja. Miris lavande mi pomaže da se fokusiram.",
-    imageUrl: "https://i.imgur.com/ZiYEejB.jpeg"
-  },
-  {
-    id: 8,
-    name: "Jelena Krstić",
-    role: "Majka",
-    content: "Djeca i ja obožavamo ove svijeće. Posebno su praktične za opuštajuće večeri kod kuće.",
-    imageUrl: "https://i.imgur.com/WFOtnWN.jpeg"
+    imageUrl: "https://i.imgur.com/nJN9g28.jpeg",
+    rating: 5
   }
 ];
 
@@ -93,7 +88,7 @@ export default function Testimonials() {
       setCurrentTranslate(prev => {
         const newTranslate = prev + diff;
         const maxTranslate = 0;
-        const minTranslate = -(testimonials.length * 288);
+        const minTranslate = -(testimonials.length * 380);
         return Math.max(Math.min(newTranslate, maxTranslate), minTranslate);
       });
       touchStartX = currentX;
@@ -115,53 +110,52 @@ export default function Testimonials() {
     };
   }, [isDragging]);
 
+  const renderStars = (rating: number) => {
+    return [...Array(5)].map((_, i) => (
+      <Star
+        key={i}
+        className={`w-4 h-4 ${i < rating ? 'text-amber-400 fill-amber-400' : 'text-stone-300'}`}
+      />
+    ));
+  };
+
   return (
-    <section className="py-16 bg-gradient-to-b from-purple-50 to-orange-50">
-      <style>
-        {`
-          @keyframes scroll {
-            0% {
-              transform: translateX(0);
-            }
-            100% {
-              transform: translateX(calc(-280px * ${testimonials.length}));
-            }
-          }
+    <section className="py-20 md:py-28 section-warm relative overflow-hidden">
+      {/* Decorative Elements */}
+      <div className="absolute top-20 left-10 w-64 h-64 bg-amber-200/20 rounded-full blur-3xl" />
+      <div className="absolute bottom-20 right-10 w-48 h-48 bg-amber-100/30 rounded-full blur-2xl" />
 
-          @media (min-width: 768px) {
-            @keyframes scroll {
-              0% {
-                transform: translateX(0);
-              }
-              100% {
-                transform: translateX(calc(-400px * ${testimonials.length}));
-              }
-            }
-          }
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+          className="text-center"
+        >
+          <span className="inline-block px-4 py-1.5 bg-amber-100 text-amber-700 text-sm font-medium rounded-full mb-4">
+            Recenzije
+          </span>
+          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-charcoal-800 mb-4">
+            Što kažu naši{' '}
+            <span className="text-gradient-warm">kupci</span>
+          </h2>
+          <p className="text-lg text-stone-600 max-w-2xl mx-auto">
+            Pridružite se stotinama zadovoljnih kupaca koji su otkrili magiju naših svijeća
+          </p>
+        </motion.div>
+      </div>
 
-          .testimonials-scroll {
-            animation: scroll 30s linear infinite;
-          }
-
-          .testimonials-scroll:hover {
-            animation-play-state: paused;
-          }
-        `}
-      </style>
-
-      <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-orange-400 bg-clip-text text-transparent">
-        Što kažu naši kupci
-      </h2>
-
+      {/* Testimonials Carousel */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute left-0 top-0 h-full w-[100px] md:w-[200px] bg-gradient-to-r from-purple-50 via-purple-50/80 to-transparent z-10" />
-          <div className="absolute right-0 top-0 h-full w-[100px] md:w-[200px] bg-gradient-to-l from-purple-50 via-purple-50/80 to-transparent z-10" />
-        </div>
+        {/* Fade Overlays */}
+        <div className="absolute left-0 top-0 h-full w-20 md:w-40 bg-gradient-to-r from-cream-50 to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 h-full w-20 md:w-40 bg-gradient-to-l from-cream-50 to-transparent z-10 pointer-events-none" />
 
         <div
           ref={sliderRef}
-          className={`flex gap-4 md:gap-8 testimonials-scroll touch-pan-x`}
+          className="flex gap-6 animate-testimonial-scroll touch-pan-x py-4"
           style={{
             transform: isDragging ? `translateX(${currentTranslate}px)` : undefined,
             transition: isDragging ? 'none' : 'transform 0.3s ease-out',
@@ -170,50 +164,106 @@ export default function Testimonials() {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          {/* Prvi set */}
+          {/* First Set */}
           {testimonials.map((testimonial) => (
             <div
               key={`first-${testimonial.id}`}
-              className="flex-shrink-0 w-[280px] md:w-[400px] bg-white p-4 md:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+              className="flex-shrink-0 w-[340px] md:w-[380px]"
             >
-              <div className="flex items-center mb-3 md:mb-4">
-                <img
-                  src={testimonial.imageUrl}
-                  alt={testimonial.name}
-                  className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover mr-3 md:mr-4"
-                  draggable="false"
-                />
-                <div>
-                  <h3 className="font-semibold text-gray-900 text-sm md:text-base">{testimonial.name}</h3>
-                  <p className="text-xs md:text-sm text-gray-600">{testimonial.role}</p>
+              <div className="bg-white rounded-2xl p-6 shadow-warm border border-stone-100 h-full hover:shadow-warm-lg transition-shadow duration-300">
+                {/* Quote Icon */}
+                <Quote className="w-8 h-8 text-amber-300 mb-4" />
+
+                {/* Content */}
+                <p className="text-stone-600 leading-relaxed mb-6">
+                  "{testimonial.content}"
+                </p>
+
+                {/* Rating */}
+                <div className="flex gap-1 mb-4">
+                  {renderStars(testimonial.rating)}
+                </div>
+
+                {/* Author */}
+                <div className="flex items-center gap-3 pt-4 border-t border-stone-100">
+                  <img
+                    src={testimonial.imageUrl}
+                    alt={testimonial.name}
+                    className="w-12 h-12 rounded-full object-cover ring-2 ring-amber-100"
+                    draggable="false"
+                  />
+                  <div>
+                    <h4 className="font-semibold text-charcoal-800">{testimonial.name}</h4>
+                    <p className="text-sm text-stone-500">{testimonial.role}</p>
+                  </div>
                 </div>
               </div>
-              <p className="text-gray-600 italic text-sm md:text-base">{testimonial.content}</p>
             </div>
           ))}
-          {/* Drugi set */}
+
+          {/* Second Set (for infinite scroll) */}
           {testimonials.map((testimonial) => (
             <div
               key={`second-${testimonial.id}`}
-              className="flex-shrink-0 w-[280px] md:w-[400px] bg-white p-4 md:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+              className="flex-shrink-0 w-[340px] md:w-[380px]"
             >
-              <div className="flex items-center mb-3 md:mb-4">
-                <img
-                  src={testimonial.imageUrl}
-                  alt={testimonial.name}
-                  className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover mr-3 md:mr-4"
-                  draggable="false"
-                />
-                <div>
-                  <h3 className="font-semibold text-gray-900 text-sm md:text-base">{testimonial.name}</h3>
-                  <p className="text-xs md:text-sm text-gray-600">{testimonial.role}</p>
+              <div className="bg-white rounded-2xl p-6 shadow-warm border border-stone-100 h-full hover:shadow-warm-lg transition-shadow duration-300">
+                {/* Quote Icon */}
+                <Quote className="w-8 h-8 text-amber-300 mb-4" />
+
+                {/* Content */}
+                <p className="text-stone-600 leading-relaxed mb-6">
+                  "{testimonial.content}"
+                </p>
+
+                {/* Rating */}
+                <div className="flex gap-1 mb-4">
+                  {renderStars(testimonial.rating)}
+                </div>
+
+                {/* Author */}
+                <div className="flex items-center gap-3 pt-4 border-t border-stone-100">
+                  <img
+                    src={testimonial.imageUrl}
+                    alt={testimonial.name}
+                    className="w-12 h-12 rounded-full object-cover ring-2 ring-amber-100"
+                    draggable="false"
+                  />
+                  <div>
+                    <h4 className="font-semibold text-charcoal-800">{testimonial.name}</h4>
+                    <p className="text-sm text-stone-500">{testimonial.role}</p>
+                  </div>
                 </div>
               </div>
-              <p className="text-gray-600 italic text-sm md:text-base">{testimonial.content}</p>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Trust Badge */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="mt-12 text-center"
+      >
+        <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-white rounded-full shadow-warm border border-stone-100">
+          <div className="flex -space-x-2">
+            {testimonials.slice(0, 4).map((t, i) => (
+              <img
+                key={i}
+                src={t.imageUrl}
+                alt=""
+                className="w-8 h-8 rounded-full border-2 border-white object-cover"
+              />
+            ))}
+          </div>
+          <span className="text-sm text-stone-600 ml-2">
+            <span className="font-semibold text-charcoal-800">500+</span> zadovoljnih kupaca
+          </span>
+        </div>
+      </motion.div>
     </section>
   );
 }
