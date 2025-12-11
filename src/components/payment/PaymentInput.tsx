@@ -12,11 +12,11 @@ import { RadioGroup, RadioGroupItem } from "../ui/radio-group"
 import { Label } from "../ui/label"
 import { Input } from "../ui/input"
 import { useShoppingCart } from '../../hooks/useShoppingCart'
-import { formatCurrency } from '../../utilities/formatCurency'
+import { formatCurrency } from '../../utilities/formatCurrency'
 import { calculateShippingCost, isFreeShipping } from '../../utilities/shipping'
 import { createOrder } from '../../lib/firebase/orders'
 import { sendOrderEmails } from '../../lib/email/emailService'
-import { error } from '../../lib/logger'
+import { error, warn } from '../../lib/logger'
 
 const paymentFormSchema = z.object({
   paymentMethod: z.enum(["pouzecem"]),
@@ -117,7 +117,7 @@ export default function PaymentInput() {
 
       // Log email results (but don't block navigation if emails fail)
       if (!emailResults.customer || !emailResults.admin) {
-        console.warn('Some emails failed to send:', emailResults);
+        warn('Some emails failed to send', emailResults as Record<string, unknown>, 'EMAIL');
       }
 
       clearCart();

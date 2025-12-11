@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom"
 import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth"
 import { auth } from "../../lib/firebase"
 import { Link } from "react-router-dom"
+import { error as logError } from "../../lib/logger"
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("")
@@ -33,7 +34,7 @@ export default function AdminLogin() {
       await signInWithEmailAndPassword(auth, email, password)
       // Navigation will be handled by the useEffect
     } catch (err: unknown) {
-      console.error("Neuspjesno prijavljivanje:", err)
+      logError("Neuspjesno prijavljivanje", err as Record<string, unknown>, 'AUTH');
       const errorMessage = err instanceof Error ? err.message : "Neuspjesno prijavljivanje. Proverite podatke."
       setError(errorMessage)
       setLoading(false)

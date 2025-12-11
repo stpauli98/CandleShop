@@ -5,12 +5,8 @@ import { HelmetProvider } from 'react-helmet-async';
 import ErrorBoundary from "./components/ErrorBoundary";
 import NavBar from "./components/navBar/navBar";
 import LandingPage from "./components/landingPage/LandingPage";
-// Category pages imports - commented out for single-page layout
-// import Candles from "./pages/Candles/Candles";
-// import ScentedCandles from "./pages/scentedCandles/ScentedCandles";
-// import ScentedWaxes from "./pages/scentedWaxes/ScentedWaxes";
-// import Decoration from "./pages/decoration/Decoration";
 import PrivacyPolicy from "./components/PrivacyPolicy";
+import TermsOfService from "./components/TermsOfService";
 import PaymentInput from "./components/payment/PaymentInput";
 import OrderConfirmation from "./components/payment/OrderConfirmation";
 
@@ -57,12 +53,8 @@ function App() {
         } />
         
         <Route path="/" element={<LandingPage />} />
-        {/* Category routes - commented out for single-page layout */}
-        {/* <Route path="/svijece" element={<Candles />} /> */}
-        {/* <Route path="/mirisne-svijece" element={<ScentedCandles />} /> */}
-        {/* <Route path="/mirisni-voskovi" element={<ScentedWaxes />} /> */}
-        {/* <Route path="/dekoracija" element={<Decoration />} /> */}
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfService />} />
 
         <Route path="/placanje" element={<PaymentInput />} />
         <Route

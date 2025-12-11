@@ -2,10 +2,11 @@ import { Check, Loader2 } from "lucide-react"
 import Button from "../ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card"
 import { useNavigate, useParams } from "react-router-dom"
-import { formatCurrency } from "../../utilities/formatCurency"
+import { formatCurrency } from "../../utilities/formatCurrency"
 import { useEffect, useState } from "react"
 import { getOrderById, Order } from "../../lib/firebase/orders"
 import toast from "react-hot-toast"
+import { error as logError } from "../../lib/logger"
 
 export default function OrderConfirmation() {
   const navigate = useNavigate()
@@ -30,7 +31,7 @@ export default function OrderConfirmation() {
           setOrder(fetchedOrder)
         }
       } catch (err) {
-        console.error("Error fetching order:", err)
+        logError("Error fetching order", err as Record<string, unknown>, 'ORDER');
         setError("Greška pri učitavanju narudžbe")
         toast.error("Nije moguće učitati podatke o narudžbi")
       } finally {

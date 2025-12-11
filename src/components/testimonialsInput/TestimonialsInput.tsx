@@ -11,7 +11,7 @@ export default function TestimonialsInput() {
   });
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
+    // Form data will be handled by future testimonials submission logic
   };
   return (
     <main className="w-full min-h-screen bg-gradient-to-b from-purple-50 to-orange-50 py-12 px-4">

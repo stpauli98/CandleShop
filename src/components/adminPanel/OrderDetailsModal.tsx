@@ -1,6 +1,6 @@
 import React from 'react';
 import { Order } from '../../lib/firebase/orders';
-import { formatCurrency } from '../../utilities/formatCurency';
+import { formatCurrency } from '../../utilities/formatCurrency';
 import OrderStatusManager from './OrderStatusManager';
 
 interface OrderDetailsModalProps {

@@ -7,6 +7,7 @@ import { collections, type CollectionName } from "../../lib/controller"
 import type { Product } from "./types"
 import { uploadImage } from "../../lib/storage"
 import { toast } from "react-hot-toast"
+import { error as logError } from "../../lib/logger"
 
 import Button from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -203,8 +204,8 @@ export function ProductForm({ product, onSubmit, mode, selectedCategory }: Produ
           featured: false
         })
       }
-    } catch (error) {
-      console.error("Error saving product:", error)
+    } catch (err) {
+      logError("Error saving product", err as Record<string, unknown>, 'PRODUCTS');
       setError("Došlo je do greške prilikom spremanja proizvoda. Molimo pokušajte ponovno.")
       onSubmit(false)
     } finally {
@@ -242,8 +243,8 @@ export function ProductForm({ product, onSubmit, mode, selectedCategory }: Produ
         dostupnost: true,
         kategorija: selectedCategory
       });
-    } catch (error) {
-      console.error("Error deleting product:", error);
+    } catch (err) {
+      logError("Error deleting product", err as Record<string, unknown>, 'PRODUCTS');
       toast.error("Došlo je do greške prilikom brisanja proizvoda.", { id: deleteToast });
       setError("Došlo je do greške prilikom brisanja proizvoda. Molimo pokušajte ponovno.");
     } finally {
@@ -347,8 +348,8 @@ export function ProductForm({ product, onSubmit, mode, selectedCategory }: Produ
                             const imageUrl = await uploadImage(file)
                             field.onChange(imageUrl)
                             toast.success('Slika je uspješno uploadana', { id: 'upload' })
-                          } catch (error) {
-                            console.error('Error uploading image:', error)
+                          } catch (err) {
+                            logError('Error uploading image', err as Record<string, unknown>, 'STORAGE');
                             toast.error('Greška pri uploadu slike', { id: 'upload' })
                           }
                         }

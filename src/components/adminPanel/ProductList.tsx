@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { onSnapshot } from "firebase/firestore"
 import type { Product } from "./types"
 import {
@@ -19,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Search, Package } from "lucide-react"
 import { collections, type CollectionName } from '../../lib/controller'
+import { warn, error } from '../../lib/logger'
 
 const displayNames = {
   "omiljeniProizvodi": "Omiljeni proizvodi",
@@ -40,17 +41,16 @@ type ProductListProps = {
 export function ProductList({ onEdit, selectedProduct, selectedCategory, onCategoryChange }: ProductListProps) {
   const [products, setProducts] = useState<Product[]>([])
   const [searchQuery, setSearchQuery] = useState('')
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
 
   useEffect(() => {
     if (!selectedCategory) {
-      console.warn('No category selected');
+      warn('No category selected', {}, 'PRODUCTS');
       return;
     }
 
     const getCollectionRef = collections[selectedCategory as CollectionName];
     if (!getCollectionRef) {
-      console.error('Invalid category:', selectedCategory);
+      error('Invalid category', { selectedCategory }, 'PRODUCTS');
       return;
     }
 
@@ -64,7 +64,7 @@ export function ProductList({ onEdit, selectedProduct, selectedCategory, onCateg
             
             // Provjeri da li proizvod ima sve potrebne podatke
             if (!data.naziv || !data.cijena) {
-              console.warn('Proizvod nema naziv ili cijenu:', doc.id);
+              warn('Proizvod nema naziv ili cijenu', { docId: doc.id }, 'PRODUCTS');
               return null;
             }
 
@@ -84,34 +84,30 @@ export function ProductList({ onEdit, selectedProduct, selectedCategory, onCateg
           .sort((a, b) => a.naziv.localeCompare(b.naziv)); // Sortiraj po nazivu
         
         setProducts(productsData);
-      } catch (error) {
-        console.error('Error processing products:', error);
+      } catch (err) {
+        error('Error processing products', err as Record<string, unknown>, 'PRODUCTS');
         setProducts([]);
       }
-    }, (error) => {
-      console.error('Error fetching products:', error);
+    }, (err) => {
+      error('Error fetching products', err as Record<string, unknown>, 'PRODUCTS');
     });
 
     return () => unsubscribe()
   }, [selectedCategory])
 
-  // Filter products based on search query
-  useEffect(() => {
+  // Filter products based on search query using useMemo
+  const displayProducts = useMemo(() => {
     if (!searchQuery.trim()) {
-      setFilteredProducts(products)
-      return
+      return products
     }
 
     const query = searchQuery.toLowerCase()
-    const filtered = products.filter(product =>
+    return products.filter(product =>
       product.naziv.toLowerCase().includes(query) ||
       product.opis?.toLowerCase().includes(query) ||
       product.cijena.includes(query)
     )
-    setFilteredProducts(filtered)
   }, [products, searchQuery])
-
-  const displayProducts = searchQuery ? filteredProducts : products
 
   return (
     <div className="space-y-4">

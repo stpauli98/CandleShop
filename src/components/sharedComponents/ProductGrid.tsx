@@ -1,25 +1,13 @@
 import { useEffect, useState, useMemo, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { ShoppingCart } from 'lucide-react'
+import { ShoppingCart, Eye } from 'lucide-react'
 import { useShoppingCart } from '../../hooks/useShoppingCart'
-import { toast, Toaster } from 'react-hot-toast'
-import { formatCurrency } from '../../utilities/formatCurency'
+import { toast } from 'react-hot-toast'
+import { formatCurrency } from '../../utilities/formatCurrency'
 import { getDocs, CollectionReference, DocumentData } from 'firebase/firestore'
 import { ImageModal } from './ImageModal'
 import { error } from '../../lib/logger'
-
-interface Product {
-    id: string;
-    naziv?: string;
-    cijena?: string;
-    slika?: string;
-    opis?: string;
-    popust?: number;
-    dostupnost?: boolean;
-    kategorija?: string;
-    selectedMiris?: string;
-    selectedBoja?: string;
-}
+import type { Product } from '../../types/product'
 
 interface ProductGridProps {
     category: string;
@@ -30,7 +18,6 @@ interface ProductGridProps {
 
 export default function ProductGrid({
     category,
-    bgColor = "bg-purple-50",
     collectionName,
     manualProducts
 }: ProductGridProps) {
@@ -105,7 +92,17 @@ export default function ProductGrid({
         }
 
         addToCart(productWithDiscount)
-        toast.success('Proizvod dodat u korpu')
+        toast.success('Proizvod dodat u korpu', {
+            style: {
+                background: '#292524',
+                color: '#fefcf3',
+                borderRadius: '12px',
+            },
+            iconTheme: {
+                primary: '#f59e0b',
+                secondary: '#292524',
+            },
+        })
     }, [addToCart, calculateDiscountedPrice])
 
     // Image modal handler
@@ -122,8 +119,12 @@ export default function ProductGrid({
 
     // Loading component
     const loadingComponent = useMemo(() => (
-        <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
+        <div className="flex flex-col justify-center items-center h-64 gap-4">
+            <div className="relative w-16 h-16">
+                <div className="absolute inset-0 rounded-full border-2 border-amber-200"></div>
+                <div className="absolute inset-0 rounded-full border-2 border-amber-500 border-t-transparent animate-spin"></div>
+            </div>
+            <span className="text-stone-500 text-sm">Učitavanje proizvoda...</span>
         </div>
     ), []);
 
@@ -133,180 +134,139 @@ export default function ProductGrid({
 
     return (
         <>
-            <Toaster position="top-center" />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {products.map((product) => {
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                {products.map((product, index) => {
                     const hasDiscount = typeof product.popust === 'number' && product.popust > 0;
                     const isExpanded = expandedDescriptions[product.id];
+                    const cartItem = cart.find(item => item.id === product.id);
 
                     return (
                         <motion.div
                             key={product.id}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5 }}
-                            whileHover={{ y: -8 }}
-                            className="bg-white rounded-2xl shadow-lg hover:shadow-2xl overflow-hidden flex flex-col transition-all duration-300"
+                            transition={{ duration: 0.4, delay: index * 0.1 }}
+                            className="group bg-white rounded-2xl shadow-warm border border-stone-100 overflow-hidden flex flex-col hover:shadow-warm-lg hover:-translate-y-1 transition-all duration-300"
                         >
                             {/* Image Section */}
-                            <div className="relative group flex-shrink-0 overflow-hidden">
-                                <motion.img
+                            <div className="relative aspect-[4/3] overflow-hidden bg-stone-100">
+                                <img
                                     src={product.slika}
-                                    alt={product.naziv}
-                                    onClick={() => handleImageClick(product.slika)}
-                                    className={`w-full h-56 object-cover cursor-pointer transition-transform duration-500 ${!product.dostupnost ? 'grayscale' : 'group-hover:scale-110'}`}
-                                    whileHover={{ scale: 1.05 }}
+                                    alt={product.naziv || 'Proizvod'}
+                                    loading="lazy"
+                                    className={`w-full h-full object-cover transition-transform duration-500 ${
+                                        !product.dostupnost ? 'grayscale' : 'group-hover:scale-105'
+                                    }`}
                                 />
 
-                                {/* Discount Badge */}
-                                {hasDiscount && (
-                                    <motion.div
-                                        initial={{ scale: 0 }}
-                                        animate={{ scale: 1 }}
-                                        className="absolute top-3 right-3"
-                                    >
-                                        <div className="bg-gradient-to-br from-red-500 to-red-600 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transform rotate-12">
-                                            <div className="text-center -rotate-12">
-                                                <div className="text-lg font-bold leading-none">-{product.popust}%</div>
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                )}
+                                {/* Overlay Actions */}
+                                <div className={`absolute inset-0 bg-charcoal-900/0 group-hover:bg-charcoal-900/20 transition-colors duration-300 ${
+                                    !product.dostupnost ? 'bg-charcoal-900/60' : ''
+                                }`}>
+                                    {product.dostupnost && (
+                                        <button
+                                            onClick={() => handleImageClick(product.slika)}
+                                            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white hover:scale-110"
+                                            aria-label="Pogledaj sliku"
+                                        >
+                                            <Eye className="w-5 h-5 text-charcoal-700" />
+                                        </button>
+                                    )}
+                                </div>
 
-                                {/* Stock Badge */}
-                                {product.dostupnost && (
-                                    <div className="absolute top-3 left-3">
-                                        <span className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold shadow-md">
+                                {/* Badges */}
+                                <div className="absolute top-3 left-3 right-3 flex justify-between items-start">
+                                    {/* Stock Badge */}
+                                    {product.dostupnost && (
+                                        <span className="badge badge-success">
                                             Na stanju
                                         </span>
-                                    </div>
-                                )}
+                                    )}
+
+                                    {/* Discount Badge */}
+                                    {hasDiscount && (
+                                        <motion.div
+                                            initial={{ scale: 0, rotate: -12 }}
+                                            animate={{ scale: 1, rotate: 0 }}
+                                            className="bg-gradient-to-br from-rose-500 to-rose-600 text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-lg"
+                                        >
+                                            -{product.popust}%
+                                        </motion.div>
+                                    )}
+                                </div>
 
                                 {/* Out of Stock Overlay */}
                                 {!product.dostupnost && (
-                                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm">
-                                        <span className="text-white text-2xl font-bold">Nije dostupno</span>
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <span className="bg-charcoal-900/80 backdrop-blur-sm text-white px-6 py-3 rounded-full font-semibold">
+                                            Nije dostupno
+                                        </span>
                                     </div>
                                 )}
                             </div>
 
                             {/* Content Section */}
-                            <div className="p-4 flex flex-col h-full">
-                                {/* Title - Fixed Height */}
-                                <h3 className="text-base font-bold text-gray-900 line-clamp-2 h-[2.5rem] hover:text-purple-600 transition-colors mb-2">
+                            <div className="p-5 flex flex-col flex-grow">
+                                {/* Title */}
+                                <h3 className="font-display text-lg font-semibold text-charcoal-800 line-clamp-2 mb-2 group-hover:text-amber-700 transition-colors">
                                     {product.naziv}
                                 </h3>
 
-                                {/* Description - Expandable with flex-grow */}
+                                {/* Description */}
                                 <div className="flex-grow mb-4">
-                                    <p className={`text-gray-600 text-sm leading-relaxed ${!isExpanded ? 'line-clamp-5' : ''}`}>
+                                    <p className={`text-stone-500 text-sm leading-relaxed ${!isExpanded ? 'line-clamp-3' : ''}`}>
                                         {product.opis || 'Ručno izrađena svijeća vrhunskog kvaliteta.'}
                                     </p>
-                                    {product.opis && product.opis.length > 150 && (
+                                    {product.opis && product.opis.length > 100 && (
                                         <button
                                             onClick={() => toggleDescription(product.id)}
-                                            className="text-purple-600 text-sm font-medium mt-2 hover:text-purple-700 transition-colors"
+                                            className="text-amber-600 text-sm font-medium mt-2 hover:text-amber-700 transition-colors"
+                                            aria-label={isExpanded ? `Prikaži manje opisa za ${product.naziv}` : `Saznaj više o ${product.naziv}`}
                                         >
                                             {isExpanded ? 'Prikaži manje' : 'Saznaj više'}
                                         </button>
                                     )}
                                 </div>
 
-                                {/* Selectors - Commented out for future use */}
-                                {/* <div className="h-[100px] flex flex-col justify-end">
-                                    {product.dostupnost && (
-                                        <div className="space-y-2">
-                                            <div className="relative">
-                                                <div className="absolute left-2 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
-                                                    <Sparkles className="w-3 h-3 text-purple-500" />
-                                                </div>
-                                                <Select
-                                                    onValueChange={(value) => {
-                                                        setSelections(prev => ({
-                                                            ...prev,
-                                                            [product.id]: { ...prev[product.id], miris: value }
-                                                        }));
-                                                    }}
-                                                    value={selections[product.id]?.miris}
-                                                >
-                                                    <SelectTrigger className="w-full h-9 pl-8 border-2 border-purple-200 focus:border-purple-500 rounded-lg transition-colors text-sm">
-                                                        <SelectValue placeholder="Izaberite miris" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {mirisi.map((miris) => (
-                                                            <SelectItem key={miris} value={miris}>
-                                                                {miris.charAt(0).toUpperCase() + miris.slice(1)}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-
-                                            <div className="relative">
-                                                <div className="absolute left-2 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
-                                                    <Palette className="w-3 h-3 text-purple-500" />
-                                                </div>
-                                                <Select
-                                                    onValueChange={(value) => {
-                                                        setSelections(prev => ({
-                                                            ...prev,
-                                                            [product.id]: { ...prev[product.id], boja: value }
-                                                        }));
-                                                    }}
-                                                    value={selections[product.id]?.boja}
-                                                >
-                                                    <SelectTrigger className="w-full h-9 pl-8 border-2 border-purple-200 focus:border-purple-500 rounded-lg transition-colors text-sm">
-                                                        <SelectValue placeholder="Izaberite boju" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {boje.map((boja) => (
-                                                            <SelectItem key={boja} value={boja}>
-                                                                {boja.charAt(0).toUpperCase() + boja.slice(1)}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div> */}
-
-
-                                {/* Price and Add to Cart - Fixed at Bottom */}
-                                <div className="mt-auto pt-4 pb-2 border-t border-gray-100">
+                                {/* Price and Add to Cart */}
+                                <div className="pt-4 border-t border-stone-100">
                                     <div className="flex justify-between items-center gap-3">
+                                        {/* Price */}
                                         <div className="flex-shrink-0">
                                             {hasDiscount && product.cijena ? (
                                                 <div className="flex flex-col">
-                                                    <span className="text-xs text-gray-500 line-through">
+                                                    <span className="text-xs text-stone-400 line-through">
                                                         {formatCurrency(Number(product.cijena))}
                                                     </span>
-                                                    <span className="text-xl font-bold text-purple-600">
+                                                    <span className="text-xl font-bold text-amber-600">
                                                         {formatCurrency(Number(calculateDiscountedPrice(product.cijena, product.popust)))}
                                                     </span>
                                                 </div>
                                             ) : (
-                                                <span className="text-xl font-bold text-purple-600">
+                                                <span className="text-xl font-bold text-charcoal-800">
                                                     {product.cijena && Number(product.cijena) > 0
                                                         ? formatCurrency(Number(product.cijena))
                                                         : 'Cijena na upit'}
                                                 </span>
                                             )}
                                         </div>
+
+                                        {/* Add to Cart Button */}
                                         <motion.button
                                             onClick={() => handleAddToCart(product)}
                                             disabled={!product.dostupnost}
-                                            whileHover={product.dostupnost ? { scale: 1.05 } : {}}
-                                            whileTap={product.dostupnost ? { scale: 0.95 } : {}}
-                                            className={`flex items-center justify-center space-x-2 px-4 py-2 rounded-xl font-semibold text-sm transition-all shadow-md ${
+                                            whileHover={product.dostupnost ? { scale: 1.02 } : {}}
+                                            whileTap={product.dostupnost ? { scale: 0.98 } : {}}
+                                            className={`flex items-center gap-2 px-4 py-2.5 rounded-full font-semibold text-sm transition-all ${
                                                 product.dostupnost
-                                                    ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 hover:shadow-lg'
-                                                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                                    ? 'bg-amber-500 hover:bg-amber-400 text-charcoal-900 shadow-warm hover:shadow-warm-lg'
+                                                    : 'bg-stone-200 text-stone-400 cursor-not-allowed'
                                             }`}
+                                            aria-label={`Dodaj ${product.naziv} u korpu`}
                                         >
                                             <ShoppingCart className="w-4 h-4" />
                                             <span>
-                                                {cart.find(item => item.id === product.id)?.quantity || 'Dodaj'}
+                                                {cartItem?.quantity ? `${cartItem.quantity} u korpi` : 'Dodaj'}
                                             </span>
                                         </motion.button>
                                     </div>

@@ -1,7 +1,7 @@
 import { X } from 'lucide-react';
 import { useShoppingCart } from '../../hooks/useShoppingCart';
-import { formatCurrency } from '../../utilities/formatCurency';
-import { calculateShippingCost, amountUntilFreeShipping, isFreeShipping } from '../../utilities/shipping';
+import { formatCurrency } from '../../utilities/formatCurrency';
+import { amountUntilFreeShipping, isFreeShipping } from '../../utilities/shipping';
 import { Link } from 'react-router-dom';
 
 interface ShoppingCartProps {

@@ -1,24 +1,8 @@
 import { useEffect, useRef, useMemo, useCallback } from 'react';
 import { toast } from 'react-hot-toast';
 import { useLocalStorage } from './useLocalStorage';
-
-interface Product {
-    id: string;
-    naziv?: string;
-    cijena?: string;
-    novaCijena?: string;
-    slika?: string;
-    opis?: string;
-    popust?: number;
-    dostupnost?: boolean;
-    kategorija?: string;
-}
-
-interface CartItem extends Product {
-    quantity: number;
-    selectedMiris?: string;
-    selectedBoja?: string;
-}
+import type { Product, CartItem } from '../types/product';
+import { error } from '../lib/logger';
 
 export function useShoppingCart() {
     const [cart, setCart] = useLocalStorage<CartItem[]>('shopping-cart', []);
@@ -31,8 +15,8 @@ export function useShoppingCart() {
                 try {
                     const newCart = JSON.parse(e.newValue);
                     setCart(newCart);
-                } catch (error) {
-                    console.error('Error parsing cart from storage:', error);
+                } catch (err) {
+                    error('Error parsing cart from storage', err as Record<string, unknown>, 'CART');
                 }
             }
         };

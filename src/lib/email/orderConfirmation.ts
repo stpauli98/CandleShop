@@ -92,8 +92,8 @@ export async function sendOrderConfirmationEmail(order: Order): Promise<void> {
     try {
         info(`Email confirmation generated for order ${order.orderNumber}`, { email: order.customerEmail });
         // Future implementation with EmailJS or other email service
-        const emailContent = generateOrderConfirmationEmail(order);
-        console.log('Email content ready:', emailContent);
+        const _emailContent = generateOrderConfirmationEmail(order);
+        // Email content is ready for future email service integration
     } catch (err) {
         error('Failed to send order confirmation email', err, 'EMAIL');
     }

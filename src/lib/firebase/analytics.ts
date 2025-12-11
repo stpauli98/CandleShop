@@ -1,7 +1,6 @@
 import { collection, getDocs, query, where, orderBy, Timestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Order } from './orders';
-import { collections } from '../controller';
 
 export interface DashboardStats {
   today: PeriodStats;
