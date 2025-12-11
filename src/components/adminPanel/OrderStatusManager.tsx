@@ -2,31 +2,26 @@ import React, { useState } from 'react';
 import { Order, updateOrderStatus } from '../../lib/firebase/orders';
 import { toast } from 'react-hot-toast';
 import { error as logError } from '../../lib/logger';
+import { ORDER_STATUSES_ARRAY } from '@/lib/constants/admin';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 interface OrderStatusManagerProps {
   order: Order;
   onStatusUpdated: (updatedOrder: Order) => void;
 }
 
-const statusOptions: Array<{ value: Order['status']; label: string; color: string }> = [
-  { value: 'pending', label: 'Na čekanju', color: 'bg-yellow-100 text-yellow-800' },
-  { value: 'processing', label: 'U obradi', color: 'bg-blue-100 text-blue-800' },
-  { value: 'shipped', label: 'Poslato', color: 'bg-purple-100 text-purple-800' },
-  { value: 'delivered', label: 'Dostavljeno', color: 'bg-green-100 text-green-800' },
-  { value: 'cancelled', label: 'Otkazano', color: 'bg-red-100 text-red-800' }
-];
-
 const OrderStatusManager: React.FC<OrderStatusManagerProps> = ({ order, onStatusUpdated }) => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [sendEmail, setSendEmail] = useState(true);
 
-  const currentStatus = statusOptions.find(s => s.value === order.status);
+  const currentStatus = ORDER_STATUSES_ARRAY.find(s => s.value === order.status);
 
   const handleStatusChange = async (newStatus: Order['status']) => {
     if (newStatus === order.status) return;
 
     setIsUpdating(true);
-    const loadingToast = toast.loading(`Ažuriranje statusa na "${statusOptions.find(s => s.value === newStatus)?.label}"...`);
+    const loadingToast = toast.loading(`Ažuriranje statusa na "${ORDER_STATUSES_ARRAY.find(s => s.value === newStatus)?.label}"...`);
 
     try {
       const updatedOrder = await updateOrderStatus(order.id!, newStatus, sendEmail);
@@ -40,7 +35,7 @@ const OrderStatusManager: React.FC<OrderStatusManagerProps> = ({ order, onStatus
 
       onStatusUpdated(updatedOrder);
     } catch (err) {
-      logError('Error updating order status', err, 'ORDERS');
+      logError('Error updating order status', err as Record<string, unknown>, 'ORDERS');
       toast.error('Greška prilikom ažuriranja statusa', { id: loadingToast });
     } finally {
       setIsUpdating(false);
@@ -60,23 +55,21 @@ const OrderStatusManager: React.FC<OrderStatusManagerProps> = ({ order, onStatus
         </div>
 
         <div className="flex items-center space-x-2">
-          <input
-            type="checkbox"
+          <Switch
             id="sendEmail"
             checked={sendEmail}
-            onChange={(e) => setSendEmail(e.target.checked)}
-            className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+            onCheckedChange={setSendEmail}
           />
-          <label htmlFor="sendEmail" className="text-sm text-gray-700">
+          <Label htmlFor="sendEmail" className="text-sm text-gray-700 cursor-pointer">
             Pošalji email obavještenje
-          </label>
+          </Label>
         </div>
       </div>
 
       <div>
         <h3 className="text-sm font-medium text-gray-700 mb-2">Promijeni status</h3>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-          {statusOptions.map((status) => (
+          {ORDER_STATUSES_ARRAY.map((status) => (
             <button
               key={status.value}
               onClick={() => handleStatusChange(status.value)}

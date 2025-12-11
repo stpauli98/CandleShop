@@ -48,7 +48,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
               <span className={`inline-flex items-center font-medium ${
                 trend.isPositive ? 'text-green-600' : 'text-red-600'
               }`}>
-                {trend.isPositive ? '↑' : '↓'} {Math.abs(trend.value)}%
+                {trend.isPositive ? '↑' : '↓'} {Math.abs(trend.value).toFixed(2)}%
               </span>
             )}
             {subtitle && (

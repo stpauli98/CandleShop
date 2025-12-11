@@ -1,25 +1,18 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../../lib/firebase";
+import { useAuth } from "@/contexts/AuthContext";
 
 const ProtectedRoute = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const { isAuthenticated, loading } = useAuth();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setIsAuthenticated(!!user);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  if (isAuthenticated === null) {
-    // Still checking auth state
-    return <div>Učitavanje...</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+      </div>
+    );
   }
 
-  return isAuthenticated ? <Outlet /> : <Navigate to="/admin-login" />;
+  return isAuthenticated ? <Outlet /> : <Navigate to="/admin-login" replace />;
 };
 
 export default ProtectedRoute;

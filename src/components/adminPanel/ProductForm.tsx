@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { doc, setDoc, deleteDoc } from "firebase/firestore"
-import { collections, type CollectionName } from "../../lib/controller"
+import { collections } from "../../lib/controller"
 import type { Product } from "./types"
 import { uploadImage } from "../../lib/storage"
 import { toast } from "react-hot-toast"
@@ -22,19 +22,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import ConfirmDialog from "./shared/ConfirmDialog"
-
-const categories = [
-  { id: "svijece" as const, name: "Svijeće" },
-  { id: "mirisneSvijece" as const, name: "Mirisne svijeće" },
-  { id: "mirisniVoskovi" as const, name: "Mirisni voskovi" },
-  { id: "dekoracije" as const, name: "Dekoracije" },
-  { id: "omiljeniProizvodi" as const, name: "Omiljeni proizvodi" },
-] as const
-
-type CategoryId = CollectionName;
+import { CATEGORIES_ARRAY, type CategoryId } from '@/lib/constants/admin'
 
 const isValidCategory = (category: string): category is CategoryId => {
-  return categories.some(c => c.id === category);
+  return CATEGORIES_ARRAY.some(c => c.id === category);
 }
 
 const categorySchema = z.enum(["svijece", "mirisneSvijece", "mirisniVoskovi", "dekoracije", "omiljeniProizvodi"])
@@ -305,12 +296,12 @@ export function ProductForm({ product, onSubmit, mode, selectedCategory }: Produ
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue>
-                      {categories.find(c => c.id === field.value)?.name || 'Odaberite kategoriju'}
+                      {CATEGORIES_ARRAY.find(c => c.id === field.value)?.name || 'Odaberite kategoriju'}
                     </SelectValue>
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {categories.map((category) => (
+                  {CATEGORIES_ARRAY.map((category) => (
                     <SelectItem key={category.id} value={category.id}>
                       {category.name}
                     </SelectItem>

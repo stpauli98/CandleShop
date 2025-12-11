@@ -1,50 +1,44 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth"
-import { auth } from "../../lib/firebase"
 import { Link } from "react-router-dom"
-import { error as logError } from "../../lib/logger"
+import { useAuth } from "@/contexts/AuthContext"
+import { error as logError } from "@/lib/logger"
 
 export default function AdminLogin() {
+  const { isAuthenticated, loading: authLoading, login } = useAuth()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
   const navigate = useNavigate()
 
+  // Redirect ako je već autentificiran
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        navigate("/admin-panel")
-      }
-      setLoading(false)
-    })
-
-    return () => unsubscribe()
-  }, [navigate])
+    if (!authLoading && isAuthenticated) {
+      navigate("/admin-panel", { replace: true })
+    }
+  }, [authLoading, isAuthenticated, navigate])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
-    setLoading(true)
+    setSubmitting(true)
 
     try {
-      await signInWithEmailAndPassword(auth, email, password)
-      // Navigation will be handled by the useEffect
+      await login(email, password)
+      // Navigacija će biti obrađena kroz useEffect gore
     } catch (err: unknown) {
-      logError("Neuspjesno prijavljivanje", err as Record<string, unknown>, 'AUTH');
-      const errorMessage = err instanceof Error ? err.message : "Neuspjesno prijavljivanje. Proverite podatke."
+      logError("Neuspješno prijavljivanje", err as Record<string, unknown>, 'AUTH')
+      const errorMessage = err instanceof Error ? err.message : "Neuspješno prijavljivanje. Provjerite podatke."
       setError(errorMessage)
-      setLoading(false)
+      setSubmitting(false)
     }
   }
 
-  if (loading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div>Učitavanje...</div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
       </div>
     )
   }
@@ -100,10 +94,10 @@ export default function AdminLogin() {
           <div>
             <button
               type="submit"
-              disabled={loading}
+              disabled={submitting}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
             >
-              {loading ? "Učitavanje..." : "Uloguj se"}
+              {submitting ? "Učitavanje..." : "Uloguj se"}
             </button>
             <Link
               to="/"

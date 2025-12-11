@@ -20,16 +20,7 @@ import { Input } from "@/components/ui/input"
 import { Search, Package } from "lucide-react"
 import { collections, type CollectionName } from '../../lib/controller'
 import { warn, error } from '../../lib/logger'
-
-const displayNames = {
-  "omiljeniProizvodi": "Omiljeni proizvodi",
-  "svijece": "Svijeće",
-  "mirisneSvijece": "Mirisne svijeće",
-  "mirisniVoskovi": "Mirisni voskovi",
-  "dekoracije": "Dekoracije"
-} as const
-
-type CategoryId = keyof typeof displayNames
+import { CATEGORIES, type CategoryId, getCategoryName } from '@/lib/constants/admin'
 
 type ProductListProps = {
   onEdit: (product: Product) => void
@@ -137,9 +128,9 @@ export function ProductList({ onEdit, selectedProduct, selectedCategory, onCateg
                 <SelectValue placeholder="Odaberite kategoriju" />
               </SelectTrigger>
               <SelectContent>
-                {Object.entries(collections).map(([key]) => (
+                {Object.keys(CATEGORIES).map((key) => (
                   <SelectItem key={key} value={key}>
-                    {displayNames[key as keyof typeof displayNames]}
+                    {getCategoryName(key as CategoryId)}
                   </SelectItem>
                 ))}
               </SelectContent>

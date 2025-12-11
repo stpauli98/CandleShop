@@ -1,59 +1,31 @@
-import { useState, useEffect } from "react"
 import { ProductForm } from "./ProductForm"
 import { ProductList } from "./ProductList"
-import type { Product } from "./types"
-import { useNavigate } from 'react-router-dom'
-import { onAuthStateChanged, signOut } from "firebase/auth"
-import { auth } from "../../lib/firebase"
 import { toast } from "react-hot-toast"
 import Button from "@/components/ui/button"
 import ColorAndFragranceInput from "./ColorAndFragrancelnput"
 import OrderTable from "./OrderTable"
 import CustomerGroupsTable from "./CustomerGroupsTable"
 import Dashboard from "./Dashboard"
-import { error } from "../../lib/logger"
-
-type CategoryId = 'omiljeniProizvodi' | 'svijece' | 'mirisneSvijece' | 'mirisniVoskovi' | 'dekoracije'
-
-type ActiveTab = 'dashboard' | 'list' | 'form' | 'orders' | 'customers'
+import { useAuth } from "@/contexts/AuthContext"
+import { useAdminState } from "./hooks/useAdminState"
 
 export default function AdminPanel() {
-  const [selectedProduct, setSelectedProduct] = useState<Product | undefined>()
-  const [selectedCategory, setSelectedCategory] = useState<CategoryId>("svijece")
-  const [loading, setLoading] = useState(true)
-  const [authenticated, setAuthenticated] = useState(false)
-  const [formMode, setFormMode] = useState<'create' | 'edit'>('create')
-  const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard')
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        navigate("/admin-login")
-      } else {
-        setAuthenticated(true)
-      }
-      setLoading(false)
-    })
-
-    return () => unsubscribe()
-  }, [navigate])
-
-  const handleProductEdit = (product: Product) => {
-    setSelectedProduct(product)
-    setFormMode('edit')
-  }
-
-  const handleAddNewProduct = () => {
-    setSelectedProduct(undefined)
-    setFormMode('create')
-    setActiveTab('form') // Prebaci na formu kada se klikne dugme
-  }
+  const { logout } = useAuth()
+  const {
+    selectedProduct,
+    selectedCategory,
+    formMode,
+    activeTab,
+    setTab,
+    setCategory,
+    startEdit,
+    startCreate,
+    resetForm,
+  } = useAdminState()
 
   const handleProductSubmit = async (success: boolean) => {
     if (success) {
-      setSelectedProduct(undefined)
-      setFormMode('create')
+      resetForm()
       toast.success(
         formMode === 'create'
           ? 'Proizvod je uspješno dodan!'
@@ -62,31 +34,13 @@ export default function AdminPanel() {
     }
   }
 
-  const handleCategoryChange = (category: CategoryId) => {
-    setSelectedCategory(category)
-    setSelectedProduct(undefined)
-    setFormMode('create')
-  }
-
   const handleLogout = async () => {
     try {
-      await signOut(auth)
-      navigate("/admin-login")
-    } catch (logoutError) {
-      error("Logout error", logoutError as Record<string, unknown>, 'AUTH')
+      await logout()
+      // ProtectedRoute će automatski preusmjeriti na login
+    } catch {
+      toast.error('Greška pri odjavi')
     }
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div>Učitavanje...</div>
-      </div>
-    )
-  }
-
-  if (!authenticated) {
-    return null
   }
 
   return (
@@ -98,25 +52,25 @@ export default function AdminPanel() {
               <h1 className="text-xl font-semibold">Admin Panel</h1>
               <nav className="hidden md:flex space-x-4">
                 <button
-                  onClick={() => setActiveTab('dashboard')}
+                  onClick={() => setTab('dashboard')}
                   className={`${activeTab === 'dashboard' ? 'text-purple-600' : 'text-gray-500'} hover:text-purple-600`}
                 >
                   Dashboard
                 </button>
                 <button
-                  onClick={() => setActiveTab('list')}
+                  onClick={() => setTab('list')}
                   className={`${activeTab === 'list' ? 'text-purple-600' : 'text-gray-500'} hover:text-purple-600`}
                 >
                   Proizvodi
                 </button>
                 <button
-                  onClick={() => setActiveTab('orders')}
+                  onClick={() => setTab('orders')}
                   className={`${activeTab === 'orders' ? 'text-purple-600' : 'text-gray-500'} hover:text-purple-600`}
                 >
                   Narudžbe
                 </button>
                 <button
-                  onClick={() => setActiveTab('customers')}
+                  onClick={() => setTab('customers')}
                   className={`${activeTab === 'customers' ? 'text-purple-600' : 'text-gray-500'} hover:text-purple-600`}
                 >
                   Kupci
@@ -125,7 +79,7 @@ export default function AdminPanel() {
             </div>
             <div className="flex items-center gap-2">
               <Button
-                onClick={handleAddNewProduct}
+                onClick={startCreate}
                 variant="outline"
                 size="sm"
                 className="hidden sm:inline-flex"
@@ -150,25 +104,25 @@ export default function AdminPanel() {
           <div className="md:hidden mb-4">
             <div className="grid grid-cols-2 gap-2 mb-4">
               <button
-                onClick={() => setActiveTab('dashboard')}
+                onClick={() => setTab('dashboard')}
                 className={`py-2 px-3 text-center rounded-lg text-sm ${activeTab === 'dashboard' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-600'}`}
               >
                 Dashboard
               </button>
               <button
-                onClick={() => setActiveTab('list')}
+                onClick={() => setTab('list')}
                 className={`py-2 px-3 text-center rounded-lg text-sm ${activeTab === 'list' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-600'}`}
               >
                 Proizvodi
               </button>
               <button
-                onClick={() => setActiveTab('orders')}
+                onClick={() => setTab('orders')}
                 className={`py-2 px-3 text-center rounded-lg text-sm ${activeTab === 'orders' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-600'}`}
               >
                 Narudžbe
               </button>
               <button
-                onClick={() => setActiveTab('customers')}
+                onClick={() => setTab('customers')}
                 className={`py-2 px-3 text-center rounded-lg text-sm ${activeTab === 'customers' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-600'}`}
               >
                 Kupci
@@ -176,7 +130,7 @@ export default function AdminPanel() {
             </div>
             {activeTab === 'list' && (
               <Button
-                onClick={handleAddNewProduct}
+                onClick={startCreate}
                 variant="outline"
                 className="w-full"
               >
@@ -190,7 +144,7 @@ export default function AdminPanel() {
             <div className="border-b border-gray-200">
               <nav className="-mb-px flex space-x-4" aria-label="Tabs">
                 <button
-                  onClick={() => setActiveTab('list')}
+                  onClick={() => setTab('list')}
                   className={`${
                     activeTab === 'list'
                       ? 'border-indigo-500 text-indigo-600'
@@ -200,7 +154,7 @@ export default function AdminPanel() {
                   Lista proizvoda
                 </button>
                 <button
-                  onClick={() => setActiveTab('form')}
+                  onClick={() => setTab('form')}
                   className={`${
                     activeTab === 'form'
                       ? 'border-indigo-500 text-indigo-600'
@@ -213,7 +167,6 @@ export default function AdminPanel() {
             </div>
           </div>
 
-          {/* Responsive Grid */}
           {/* Main Grid Layout */}
           <div className="space-y-6">
             {activeTab === 'dashboard' ? (
@@ -234,13 +187,10 @@ export default function AdminPanel() {
                     <h2 className="text-lg font-semibold">Lista proizvoda</h2>
                   </div>
                   <ProductList
-                    onEdit={(product) => {
-                      handleProductEdit(product)
-                      setActiveTab('form')
-                    }}
+                    onEdit={startEdit}
                     selectedProduct={selectedProduct}
                     selectedCategory={selectedCategory}
-                    onCategoryChange={handleCategoryChange}
+                    onCategoryChange={setCategory}
                   />
                 </div>
 
@@ -254,7 +204,7 @@ export default function AdminPanel() {
                     product={selectedProduct}
                     onSubmit={(success) => {
                       handleProductSubmit(success)
-                      if (success) setActiveTab('list')
+                      if (success) setTab('list')
                     }}
                     selectedCategory={selectedCategory}
                   />

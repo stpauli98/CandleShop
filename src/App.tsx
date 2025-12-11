@@ -9,6 +9,8 @@ import PrivacyPolicy from "./components/PrivacyPolicy";
 import TermsOfService from "./components/TermsOfService";
 import PaymentInput from "./components/payment/PaymentInput";
 import OrderConfirmation from "./components/payment/OrderConfirmation";
+import { AuthProvider } from "./contexts/AuthContext";
+import ProtectedRoute from "./components/adminPanel/ProtectedRoute";
 
 // Lazy load Admin components for better performance
 const AdminPanel = lazy(() => import("./components/adminPanel/AdminPanel"));
@@ -31,42 +33,49 @@ function App() {
 
   return (
     <HelmetProvider>
-      <ErrorBoundary>
-        <div className="min-h-screen bg-gray-50">
-        <Toaster position="top-center" />
-        {location.pathname !== '/admin-panel' &&
-         location.pathname !== '/admin-login' &&
-         location.pathname !== '/placanje' &&
-         !location.pathname.startsWith('/order-confirmation')
-          && <NavBar />}
-        
-        <Routes>
-        <Route path="/admin-login" element={
-          <Suspense fallback={<LoadingSpinner />}>
-            <AdminLogin />
-          </Suspense>
-        } />
-        <Route path="/admin-panel" element={
-          <Suspense fallback={<LoadingSpinner />}>
-            <AdminPanel />
-          </Suspense>
-        } />
-        
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/terms" element={<TermsOfService />} />
+      <AuthProvider>
+        <ErrorBoundary>
+          <div className="min-h-screen bg-gray-50">
+            <Toaster position="top-center" />
+            {location.pathname !== '/admin-panel' &&
+             location.pathname !== '/admin-login' &&
+             location.pathname !== '/placanje' &&
+             !location.pathname.startsWith('/order-confirmation')
+              && <NavBar />}
 
-        <Route path="/placanje" element={<PaymentInput />} />
-        <Route
-          path="/order-confirmation/:orderId"
-          element={
-            <OrderConfirmation />
-          }
-        />  
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-        </div>
-      </ErrorBoundary>
+            <Routes>
+              {/* Admin Login - javno dostupna */}
+              <Route path="/admin-login" element={
+                <Suspense fallback={<LoadingSpinner />}>
+                  <AdminLogin />
+                </Suspense>
+              } />
+
+              {/* Protected Admin Routes */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/admin-panel" element={
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <AdminPanel />
+                  </Suspense>
+                } />
+              </Route>
+
+              {/* Public Routes */}
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsOfService />} />
+              <Route path="/placanje" element={<PaymentInput />} />
+              <Route
+                path="/order-confirmation/:orderId"
+                element={<OrderConfirmation />}
+              />
+
+              {/* Catch-all redirect */}
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          </div>
+        </ErrorBoundary>
+      </AuthProvider>
     </HelmetProvider>
   );
 }
