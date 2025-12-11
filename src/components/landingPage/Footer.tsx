@@ -29,7 +29,7 @@ const Footer = () => {
       <div className="absolute top-0 left-1/4 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl" />
       <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-amber-400/5 rounded-full blur-2xl" />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="relative px-3 sm:px-6 lg:px-12 xl:px-16 py-16">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-12">
           {/* Brand Column */}
@@ -58,7 +58,7 @@ const Footer = () => {
               Unesite toplinu u svoj dom sa našim ručno rađenim svijećama od prirodnih sastojaka.
             </p>
             {/* Social Links */}
-            <div className="flex gap-3">
+            <div className="flex items-center gap-3">
               <a
                 href="https://www.facebook.com/sarena.carolija"
                 target="_blank"
@@ -77,6 +77,7 @@ const Footer = () => {
               >
                 <FaInstagram className="w-5 h-5 text-stone-400 group-hover:text-charcoal-900 transition-colors" />
               </a>
+              <span className="text-xs text-stone-500 ml-2">Zapratite nas za najnovije proizvode!</span>
             </div>
           </div>
 
@@ -163,12 +164,6 @@ const Footer = () => {
               </div>
             </div>
 
-            {/* Newsletter hint */}
-            <div className="mt-8 p-4 bg-charcoal-800/50 rounded-xl border border-charcoal-700">
-              <p className="text-xs text-stone-500">
-                Zapratite nas na društvenim mrežama za najnovije proizvode i akcije!
-              </p>
-            </div>
           </div>
         </div>
 
@@ -176,7 +171,15 @@ const Footer = () => {
         <div className="pt-8 border-t border-charcoal-800">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-stone-500">
-              &copy; {new Date().getFullYear()} Šarena Čarolija. Sva prava zadržana.
+              &copy; {new Date().getFullYear()} Šarena Čarolija. Sva prava zadržana. | Kreirano od strane{' '}
+              <a 
+                href="https://www.nextpixel.dev" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-amber-400 hover:text-amber-300 transition-colors"
+              >
+                Next Pixel
+              </a>
             </p>
             <div className="flex items-center gap-6">
               <Link

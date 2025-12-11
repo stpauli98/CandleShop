@@ -34,7 +34,7 @@ export default function HeroSection() {
     };
 
     return (
-        <section className="relative hero-section h-screen overflow-hidden">
+        <section className="relative hero-section min-h-screen pb-8 overflow-hidden">
             {/* Background Image */}
             <div className="absolute inset-0 bg-charcoal-900">
                 <motion.img
@@ -65,7 +65,7 @@ export default function HeroSection() {
 
             {/* Main Content */}
             <div className="relative h-full z-10">
-                <div className="h-full max-w-7xl mx-auto px-6 lg:px-8 flex flex-col justify-center">
+                <div className="h-full max-w-7xl mx-auto px-6 lg:px-8 flex flex-col justify-center pt-24 sm:pt-20">
                     <motion.div
                         variants={containerAnimation}
                         initial="hidden"
@@ -133,7 +133,7 @@ export default function HeroSection() {
                                 <ChevronDown className="w-5 h-5 group-hover:translate-y-0.5 transition-transform" />
                             </button>
                             <a
-                                href="mailto:sarena.carolija2025@gmail.com"
+                                href="tel:+38765905254"
                                 className="inline-flex items-center gap-2 px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-full border border-white/20 backdrop-blur-sm transition-all duration-300"
                             >
                                 Kontaktiraj nas
@@ -143,9 +143,9 @@ export default function HeroSection() {
                         {/* Trust Indicators */}
                         <motion.div
                             variants={itemAnimation}
-                            className="mt-12 pt-8 border-t border-white/10"
+                            className="mt-12 pt-8 pb-4 border-t border-white/10"
                         >
-                            <div className="flex flex-wrap items-center gap-8 text-stone-400 text-sm">
+                            <div className="flex flex-wrap items-center gap-8 text-stone-300 text-sm bg-black/40 backdrop-blur-sm rounded-xl px-6 py-4">
                                 <div className="flex items-center gap-2">
                                     <svg className="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -170,26 +170,6 @@ export default function HeroSection() {
                 </div>
             </div>
 
-            {/* Scroll Indicator */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 2, duration: 1 }}
-                className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
-            >
-                <button
-                    onClick={scrollToProducts}
-                    className="flex flex-col items-center gap-2 text-white/60 hover:text-white/90 transition-colors group"
-                >
-                    <span className="text-xs tracking-widest uppercase">Skrolaj</span>
-                    <motion.div
-                        animate={{ y: [0, 8, 0] }}
-                        transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-                    >
-                        <ChevronDown className="w-5 h-5" />
-                    </motion.div>
-                </button>
-            </motion.div>
         </section>
     );
 }

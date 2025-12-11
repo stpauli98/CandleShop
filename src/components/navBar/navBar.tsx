@@ -61,21 +61,6 @@ export default function Navbar() {
               to="/"
               className="flex items-center gap-3 group"
             >
-              {/* Flame Icon */}
-              <div className={`relative transition-all duration-300 ${
-                isTransparent ? 'text-amber-400' : 'text-amber-500'
-              }`}>
-                <svg
-                  className="w-9 h-9 animate-flame"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <path d="M12 2C10.5 4.5 8 6 8 9c0 2.5 1.5 4 4 4s4-1.5 4-4c0-3-2.5-4.5-4-7zm0 18c-3.5 0-6-2.5-6-6 0-2.5 1.5-5 3-7 0 2 1 4 3 4s3-2 3-4c1.5 2 3 4.5 3 7 0 3.5-2.5 6-6 6z"/>
-                </svg>
-                {/* Subtle glow effect */}
-                <div className="absolute inset-0 bg-amber-400/30 blur-md rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </div>
-
               {/* Brand Name */}
               <div className="flex flex-col">
                 <span className={`font-display text-xl sm:text-2xl font-bold tracking-tight transition-colors duration-300 ${

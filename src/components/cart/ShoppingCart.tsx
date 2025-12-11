@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { X } from 'lucide-react';
 import { useShoppingCart } from '../../hooks/useShoppingCart';
 import { formatCurrency } from '../../utilities/formatCurrency';
@@ -11,6 +12,17 @@ interface ShoppingCartProps {
 
 export default function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
     const { cart, removeFromCart, updateQuantity, calculateTotal } = useShoppingCart();
+
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [isOpen]);
 
     if (!isOpen) return null;
 

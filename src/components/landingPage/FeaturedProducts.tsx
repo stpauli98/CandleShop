@@ -118,7 +118,7 @@ const FeaturedProducts = () => {
   if (loading) {
     return (
       <section id="featured-products" className="py-20 md:py-28 section-warm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="px-3 sm:px-6 lg:px-12 xl:px-16">
           <div className="flex flex-col items-center justify-center h-64 gap-4">
             <div className="relative w-16 h-16">
               <div className="absolute inset-0 rounded-full border-2 border-amber-200"></div>
@@ -139,7 +139,7 @@ const FeaturedProducts = () => {
         <div className="absolute bottom-20 left-10 w-96 h-96 bg-amber-100/30 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative px-3 sm:px-6 lg:px-12 xl:px-16">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -189,7 +189,7 @@ const FeaturedProducts = () => {
             </div>
             <div className="hidden sm:block w-px h-8 bg-stone-200" />
             <a
-              href="mailto:sarena.carolija2025@gmail.com"
+              href="tel:+38765905254"
               className="text-amber-600 hover:text-amber-700 font-medium transition-colors"
             >
               Posebna narudžba? Kontaktirajte nas

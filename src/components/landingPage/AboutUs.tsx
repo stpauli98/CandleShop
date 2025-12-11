@@ -142,10 +142,10 @@ export default function AboutUs() {
               <div className="absolute -inset-4 border-2 border-amber-500/20 rounded-3xl -z-10" />
 
               {/* Floating Accent */}
-              <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center shadow-warm-lg">
+              <div className="absolute -bottom-4 -right-4 sm:-bottom-6 sm:-right-6 w-16 h-16 sm:w-24 sm:h-24 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-warm-lg">
                 <div className="text-center text-white">
-                  <div className="text-2xl font-bold">3+</div>
-                  <div className="text-xs opacity-80">godine</div>
+                  <div className="text-xl sm:text-2xl font-bold">3+</div>
+                  <div className="text-2xs sm:text-xs opacity-80">godine</div>
                 </div>
               </div>
 
