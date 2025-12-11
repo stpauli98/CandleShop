@@ -4,10 +4,11 @@ import { useState, useEffect, useRef } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
+import { ArrowLeft } from "lucide-react"
 import toast from "react-hot-toast"
 import  Button  from "../ui/button"
-import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form"
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group"
 import { Label } from "../ui/label"
 import { Input } from "../ui/input"
@@ -174,7 +175,42 @@ export default function PaymentInput() {
 
   return (
     <div className="max-w-2xl mx-auto p-4 sm:p-6">
+      {/* Back to shopping link */}
+      <Link
+        to="/"
+        className="inline-flex items-center gap-2 text-amber-600 hover:text-amber-700 text-sm font-medium mb-4 transition-colors"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Nazad na kupovinu
+      </Link>
+
       <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">Informacije za dostavu</h1>
+
+      {/* Product list */}
+      <div className="mb-6 p-4 bg-white border border-gray-200 rounded-lg">
+        <h3 className="font-semibold text-gray-900 mb-3">
+          Vaša narudžba ({cart.length} {cart.length === 1 ? 'artikal' : cart.length < 5 ? 'artikla' : 'artikala'})
+        </h3>
+        <div className="space-y-2">
+          {cart.map((item, index) => (
+            <div key={`${item.id}-${item.selectedMiris}-${item.selectedBoja}-${index}`} className="flex justify-between items-start text-sm py-2 border-b border-gray-100 last:border-0">
+              <div className="flex-1">
+                <span className="text-gray-800">{item.naziv}</span>
+                {(item.selectedMiris || item.selectedBoja) && (
+                  <span className="text-gray-500 text-xs ml-1">
+                    ({item.selectedMiris || item.selectedBoja})
+                  </span>
+                )}
+                <span className="text-gray-500 ml-1">x{item.quantity}</span>
+              </div>
+              <span className="text-gray-700 font-medium">
+                {formatCurrency(Number(item.cijena) * item.quantity)}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
           <FormField
@@ -219,6 +255,7 @@ export default function PaymentInput() {
                   <FormControl>
                     <Input placeholder="Vaše ime" className="h-11 text-base" {...field} />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -232,6 +269,7 @@ export default function PaymentInput() {
                   <FormControl>
                     <Input placeholder="Vaše prezime" className="h-11 text-base" {...field} />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -246,6 +284,7 @@ export default function PaymentInput() {
                 <FormControl>
                   <Input placeholder="vasa@email.com" className="h-11 text-base" {...field} />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -260,6 +299,7 @@ export default function PaymentInput() {
                   <FormControl>
                     <Input placeholder="Naziv ulice" className="h-11 text-base" {...field} />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -273,6 +313,7 @@ export default function PaymentInput() {
                   <FormControl>
                     <Input placeholder="Broj kuće/stana" className="h-11 text-base" {...field} />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -288,6 +329,7 @@ export default function PaymentInput() {
                   <FormControl>
                     <Input placeholder="Naziv grada" className="h-11 text-base" {...field} />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -301,6 +343,7 @@ export default function PaymentInput() {
                   <FormControl>
                     <Input placeholder="npr. 71000" className="h-11 text-base" {...field} />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -315,6 +358,7 @@ export default function PaymentInput() {
                 <FormControl>
                   <Input placeholder="Vaš kontakt telefon" className="h-11 text-base" {...field} />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />

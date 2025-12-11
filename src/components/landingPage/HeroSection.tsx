@@ -73,7 +73,7 @@ export default function HeroSection() {
                         className="max-w-2xl"
                     >
                         {/* Accent Label */}
-                        <motion.div variants={itemAnimation} className="mb-6">
+                        <motion.div variants={itemAnimation} className="mb-6 mt-8">
                             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/20 backdrop-blur-sm border border-amber-400/30">
                                 <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
                                 <span className="text-amber-200 text-sm font-medium tracking-wide">
