@@ -1,28 +1,35 @@
-import { motion, useMotionValueEvent } from 'framer-motion';
+import { motion, useMotionValueEvent, useTransform } from 'framer-motion';
 import { useMemo, useRef, useEffect, useState, useCallback } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 import { useFramePreloader } from './hooks/useFramePreloader';
 import { useScrollFrame } from './hooks/useScrollFrame';
 
 // Fallback image for reduced motion or errors
 import heroImage from '@/assets/HeroSection.jpg';
 
+// Helper to get initial mobile state (SSR-safe)
+const getInitialMobileState = () => {
+  if (typeof window === 'undefined') return false;
+  return window.innerWidth < 768;
+};
+
 export default function HeroSection() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [currentFrame, setCurrentFrame] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(getInitialMobileState);
 
   // Check for reduced motion preference
   const prefersReducedMotion =
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Detect mobile device
+  // Setup resize listener
   useEffect(() => {
+    setIsMobile(window.innerWidth < 768);
+
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
@@ -86,15 +93,15 @@ export default function HeroSection() {
     }
   });
 
-  // Animation variants - reduced motion on mobile
+  // Animation variants
   const containerAnimation = useMemo(
     () => ({
       hidden: { opacity: 0 },
       visible: {
         opacity: 1,
         transition: {
-          staggerChildren: isMobile ? 0.1 : 0.2,
-          delayChildren: isMobile ? 0.1 : 0.3,
+          staggerChildren: isMobile ? 0.1 : 0.15,
+          delayChildren: isMobile ? 0.1 : 0.2,
         },
       },
     }),
@@ -103,11 +110,11 @@ export default function HeroSection() {
 
   const itemAnimation = useMemo(
     () => ({
-      hidden: { opacity: 0, y: isMobile ? 15 : 30 },
+      hidden: { opacity: 0, y: isMobile ? 15 : 20 },
       visible: {
         opacity: 1,
         y: 0,
-        transition: { duration: isMobile ? 0.5 : 0.8, ease: [0.25, 0.46, 0.45, 0.94] },
+        transition: { duration: isMobile ? 0.5 : 0.6, ease: [0.25, 0.46, 0.45, 0.94] },
       },
     }),
     [isMobile]
@@ -123,16 +130,142 @@ export default function HeroSection() {
   // Render fallback for reduced motion or errors
   const shouldShowFallback = prefersReducedMotion || error;
 
+  // Fade out text overlay as user scrolls (0% scroll = full opacity, 50% scroll = invisible)
+  const textOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+
+  // Desktop split layout - fullscreen canvas with split text
+  if (!isMobile) {
+    return (
+      <div ref={containerRef} className="relative h-[200vh]">
+        <div className="sticky top-0 h-screen overflow-hidden">
+          <section className="relative h-full">
+            {/* Fullscreen Background - Canvas or Fallback */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#f5e6d3] via-[#f0ddd0] to-[#e8d4c4]">
+              {shouldShowFallback ? (
+                <motion.img
+                  initial={{ scale: 1.05 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 1.5, ease: 'easeOut' }}
+                  src={heroImage}
+                  alt="Ručno izrađene svijeće"
+                  className="w-full h-full object-cover"
+                  loading="eager"
+                  decoding="async"
+                />
+              ) : (
+                <>
+                  <canvas
+                    ref={canvasRef}
+                    className="w-full h-full object-cover"
+                    style={{ display: isReady ? 'block' : 'none' }}
+                  />
+                  {/* Loading state */}
+                  {!isReady && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="w-16 h-16 border-4 border-amber-500/30 border-t-amber-500 rounded-full animate-spin mb-4 mx-auto" />
+                        <p className="text-stone-500 text-sm">
+                          Učitavanje... {progress.percentage}%
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+
+            {/* Text Overlay with Backdrop - Fades on scroll */}
+            <motion.div
+              className="relative z-10 h-full flex items-center"
+              style={{ opacity: textOpacity }}
+            >
+              {/* Main Content Area - Left Aligned */}
+              <div className="w-full max-w-7xl mx-auto px-8 lg:px-16">
+                <motion.div
+                  variants={containerAnimation}
+                  initial="hidden"
+                  animate="visible"
+                  className="max-w-xl bg-white/70 backdrop-blur-md rounded-3xl p-8 lg:p-10 shadow-lg"
+                >
+                  <motion.h1
+                    variants={itemAnimation}
+                    className="font-display text-4xl lg:text-5xl xl:text-6xl font-bold text-charcoal-900 leading-[1.1] mb-6"
+                  >
+                    Pretvorite svoj dom u{' '}
+                    <span className="relative inline-block">
+                      <span className="text-gradient-warm">oazu mira</span>
+                      <svg
+                        className="absolute -bottom-1 left-0 w-full"
+                        viewBox="0 0 200 12"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M2 8.5C47.5 3.5 95.5 2 198 8.5"
+                          stroke="url(#paint0_linear_desktop)"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                        <defs>
+                          <linearGradient
+                            id="paint0_linear_desktop"
+                            x1="2"
+                            y1="8"
+                            x2="198"
+                            y2="8"
+                          >
+                            <stop stopColor="#F59E0B" />
+                            <stop offset="1" stopColor="#D97706" />
+                          </linearGradient>
+                        </defs>
+                      </svg>
+                    </span>
+                  </motion.h1>
+
+                  <motion.p
+                    variants={itemAnimation}
+                    className="text-lg lg:text-xl text-stone-600 leading-relaxed mb-8"
+                  >
+                    Naše ručno izrađene svijeće unose toplinu, mir i ljubav u svaki trenutak.
+                  </motion.p>
+
+                  {/* CTA Buttons - Inside card */}
+                  <motion.div
+                    variants={itemAnimation}
+                    className="flex flex-row gap-3"
+                  >
+                    <button
+                      onClick={scrollToProducts}
+                      className="group inline-flex items-center justify-center gap-2 px-6 py-3 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-charcoal-900 font-semibold rounded-full transition-all duration-300"
+                    >
+                      Pogledaj kolekciju
+                      <ChevronDown className="w-5 h-5 group-hover:translate-y-0.5 transition-transform" />
+                    </button>
+                    <a
+                      href="tel:+38765905254"
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3 hover:bg-charcoal-900/5 text-charcoal-900 font-semibold rounded-full border border-charcoal-900/20 transition-all duration-300"
+                    >
+                      Kontaktiraj nas
+                    </a>
+                  </motion.div>
+                </motion.div>
+              </div>
+            </motion.div>
+
+          </section>
+        </div>
+      </div>
+    );
+  }
+
+  // Mobile layout - fullscreen animation with overlay
   return (
-    // Outer container - shorter scroll space on mobile
-    <div ref={containerRef} className="relative h-[150vh] md:h-[200vh]">
-      {/* Sticky container - uses dvh for mobile browser chrome */}
+    <div ref={containerRef} className="relative h-[150vh]">
       <div className="sticky top-0 h-[100dvh] overflow-hidden">
         <section className="relative hero-section h-full overflow-hidden">
           {/* Background - Canvas or Fallback Image */}
           <div className="absolute inset-0 bg-charcoal-900">
             {shouldShowFallback ? (
-              // Fallback static image
               <motion.img
                 initial={{ scale: 1.05 }}
                 animate={{ scale: 1 }}
@@ -144,19 +277,17 @@ export default function HeroSection() {
                 decoding="async"
               />
             ) : (
-              // Canvas for frame animation
               <>
                 <canvas
                   ref={canvasRef}
                   className="w-full h-full object-cover"
                   style={{ display: isReady ? 'block' : 'none' }}
                 />
-                {/* Loading state */}
                 {!isReady && (
                   <div className="absolute inset-0 flex items-center justify-center bg-charcoal-900">
                     <div className="text-center">
-                      <div className="w-12 h-12 md:w-16 md:h-16 border-4 border-amber-500/30 border-t-amber-500 rounded-full animate-spin mb-3 md:mb-4 mx-auto" />
-                      <p className="text-stone-400 text-xs md:text-sm">
+                      <div className="w-12 h-12 border-4 border-amber-500/30 border-t-amber-500 rounded-full animate-spin mb-3 mx-auto" />
+                      <p className="text-stone-400 text-xs">
                         Učitavanje... {progress.percentage}%
                       </p>
                     </div>
@@ -166,18 +297,21 @@ export default function HeroSection() {
             )}
           </div>
 
-          {/* Gradient Overlay - stronger on mobile for better text readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-charcoal-900/90 via-charcoal-900/50 to-charcoal-900/30 md:hero-gradient" />
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-charcoal-900/90 via-charcoal-900/50 to-charcoal-900/30" />
 
-          {/* Decorative Elements - smaller on mobile */}
+          {/* Decorative Elements */}
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute -bottom-16 -left-16 md:-bottom-32 md:-left-32 w-48 h-48 md:w-96 md:h-96 bg-amber-500/10 rounded-full blur-2xl md:blur-3xl" />
-            <div className="absolute top-1/4 right-0 w-32 h-32 md:w-64 md:h-64 bg-amber-400/5 rounded-full blur-xl md:blur-2xl" />
+            <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-amber-500/10 rounded-full blur-2xl" />
+            <div className="absolute top-1/4 right-0 w-32 h-32 bg-amber-400/5 rounded-full blur-xl" />
           </div>
 
-          {/* Main Content */}
-          <div className="relative h-full z-10">
-            <div className="h-full max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 flex flex-col justify-center pt-20 sm:pt-24 md:pt-20">
+          {/* Main Content - Fades on scroll */}
+          <motion.div
+            className="relative h-full z-10"
+            style={{ opacity: textOpacity }}
+          >
+            <div className="h-full max-w-7xl mx-auto px-5 sm:px-6 flex flex-col justify-center pt-20 sm:pt-24">
               <motion.div
                 variants={containerAnimation}
                 initial="hidden"
@@ -185,7 +319,7 @@ export default function HeroSection() {
                 className="max-w-2xl"
               >
                 {/* Accent Label */}
-                <motion.div variants={itemAnimation} className="mb-4 md:mb-6">
+                <motion.div variants={itemAnimation} className="mb-4">
                   <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/20 backdrop-blur-sm border border-amber-400/30">
                     <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
                     <span className="text-amber-200 text-sm font-medium tracking-wide">
@@ -194,29 +328,29 @@ export default function HeroSection() {
                   </span>
                 </motion.div>
 
-                {/* Main Heading - responsive text sizes */}
+                {/* Main Heading */}
                 <motion.h1
                   variants={itemAnimation}
-                  className="font-display text-[2.5rem] leading-[1.1] sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white md:leading-[1.1] mb-4 md:mb-6"
+                  className="font-display text-[2.5rem] leading-[1.1] sm:text-5xl font-bold text-white mb-4"
                 >
                   Pretvorite svoj dom u{' '}
                   <span className="relative inline-block">
                     <span className="text-gradient-warm">oazu mira</span>
                     <svg
-                      className="absolute -bottom-1 md:-bottom-2 left-0 w-full"
+                      className="absolute -bottom-1 left-0 w-full"
                       viewBox="0 0 200 12"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <path
                         d="M2 8.5C47.5 3.5 95.5 2 198 8.5"
-                        stroke="url(#paint0_linear)"
+                        stroke="url(#paint0_linear_mobile)"
                         strokeWidth="2"
                         strokeLinecap="round"
                       />
                       <defs>
                         <linearGradient
-                          id="paint0_linear"
+                          id="paint0_linear_mobile"
                           x1="2"
                           y1="8"
                           x2="198"
@@ -230,29 +364,29 @@ export default function HeroSection() {
                   </span>
                 </motion.h1>
 
-                {/* Subtitle - visible on all screens */}
+                {/* Subtitle */}
                 <motion.p
                   variants={itemAnimation}
-                  className="text-base sm:text-lg md:text-xl text-stone-300 leading-relaxed mb-8 md:mb-10 max-w-md md:max-w-lg"
+                  className="text-base sm:text-lg text-stone-300 leading-relaxed mb-8 max-w-md"
                 >
                   Naše ručno izrađene svijeće unose toplinu, mir i ljubav u svaki trenutak.
                 </motion.p>
 
-                {/* CTA Buttons - stacked on mobile */}
+                {/* CTA Buttons */}
                 <motion.div
                   variants={itemAnimation}
-                  className="flex flex-col sm:flex-row gap-3 md:gap-4"
+                  className="flex flex-col sm:flex-row gap-3"
                 >
                   <button
                     onClick={scrollToProducts}
-                    className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 md:px-8 md:py-4 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-charcoal-900 font-semibold rounded-full shadow-warm-lg hover:shadow-glow transition-all duration-300 transform hover:-translate-y-0.5 text-base md:text-base"
+                    className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-charcoal-900 font-semibold rounded-full shadow-warm-lg hover:shadow-glow transition-all duration-300 transform hover:-translate-y-0.5 text-base"
                   >
                     Pogledaj kolekciju
                     <ChevronDown className="w-5 h-5 group-hover:translate-y-0.5 transition-transform" />
                   </button>
                   <a
                     href="tel:+38765905254"
-                    className="inline-flex items-center justify-center gap-2 px-7 py-3.5 md:px-8 md:py-4 bg-white/10 hover:bg-white/20 active:bg-white/30 text-white font-semibold rounded-full border border-white/20 backdrop-blur-sm transition-all duration-300 text-base md:text-base"
+                    className="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-white/10 hover:bg-white/20 active:bg-white/30 text-white font-semibold rounded-full border border-white/20 backdrop-blur-sm transition-all duration-300 text-base"
                   >
                     Kontaktiraj nas
                   </a>
@@ -261,9 +395,9 @@ export default function HeroSection() {
                 {/* Trust Indicators */}
                 <motion.div
                   variants={itemAnimation}
-                  className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-white/10"
+                  className="mt-8 pt-6 border-t border-white/10"
                 >
-                  <div className="flex flex-wrap items-center gap-x-5 gap-y-3 md:gap-8 text-stone-300 text-sm md:text-sm">
+                  <div className="flex flex-wrap items-center gap-x-5 gap-y-3 text-stone-300 text-sm">
                     <div className="flex items-center gap-2">
                       <svg
                         className="w-5 h-5 text-amber-400 flex-shrink-0"
@@ -310,24 +444,24 @@ export default function HeroSection() {
                 </motion.div>
               </motion.div>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Scroll indicator - smaller and repositioned on mobile */}
+          {/* Scroll indicator */}
           {isReady && !shouldShowFallback && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.5 }}
-              className="absolute bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 md:gap-2 text-white/60"
+              className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-white/60"
             >
-              <span className="text-[10px] md:text-xs uppercase tracking-widest">
+              <span className="text-[10px] uppercase tracking-widest">
                 Skrolaj
               </span>
               <motion.div
                 animate={{ y: [0, 6, 0] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
               >
-                <ChevronDown className="w-5 h-5 md:w-6 md:h-6" />
+                <ChevronDown className="w-5 h-5" />
               </motion.div>
             </motion.div>
           )}

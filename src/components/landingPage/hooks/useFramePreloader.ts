@@ -9,7 +9,7 @@ const CHUNK_SIZE = 20;
 // Generate frame URLs based on device type
 const generateFrameUrls = (isMobile: boolean): string[] => {
   const frameCount = isMobile ? MOBILE_FRAME_COUNT : DESKTOP_FRAME_COUNT;
-  const folder = isMobile ? 'ezgif-split (1)' : 'ezgif-split';
+  const folder = isMobile ? 'mobile' : 'desktop';
 
   return Array.from({ length: frameCount }, (_, i) => {
     const paddedIndex = String(i).padStart(3, '0');
@@ -60,9 +60,7 @@ export function useFramePreloader(isMobile: boolean): PreloaderState {
   const [error, setError] = useState<Error | null>(null);
 
   const mountedRef = useRef(true);
-  const loadedImagesRef = useRef<HTMLImageElement[]>(
-    new Array(frameCount).fill(null)
-  );
+  const loadedImagesRef = useRef<HTMLImageElement[]>([]);
 
   const updateProgress = useCallback(
     (loaded: number, phase: PreloadProgress['phase']) => {
@@ -78,8 +76,20 @@ export function useFramePreloader(isMobile: boolean): PreloaderState {
   );
 
   useEffect(() => {
+    // Reset state for new load
     mountedRef.current = true;
     loadedImagesRef.current = new Array(frameCount).fill(null);
+    setImages([]);
+    setIsReady(false);
+    setIsLoaded(false);
+    setError(null);
+    setProgress({
+      loaded: 0,
+      total: frameCount,
+      percentage: 0,
+      phase: 'critical',
+    });
+
     const frameUrls = generateFrameUrls(isMobile);
 
     const loadFrames = async () => {
