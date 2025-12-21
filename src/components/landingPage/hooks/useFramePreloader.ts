@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useEffect, useCallback, useRef, useMemo, useReducer } from 'react';
 import type { PreloaderState, PreloadProgress } from '@/types/frameSequence';
 
 const DESKTOP_FRAME_COUNT = 192;
@@ -44,53 +44,108 @@ const loadImageWithRetry = async (
   throw new Error(`Failed to load after ${retries} retries: ${src}`);
 };
 
-export function useFramePreloader(isMobile: boolean): PreloaderState {
-  const frameCount = isMobile ? MOBILE_FRAME_COUNT : DESKTOP_FRAME_COUNT;
-  const progressiveFrames = isMobile ? 40 : 50;
+// State and action types for reducer
+interface State {
+  images: HTMLImageElement[];
+  progress: PreloadProgress;
+  isLoaded: boolean;
+  isReady: boolean;
+  error: Error | null;
+}
 
-  const [images, setImages] = useState<HTMLImageElement[]>([]);
-  const [progress, setProgress] = useState<PreloadProgress>({
-    loaded: 0,
-    total: frameCount,
-    percentage: 0,
-    phase: 'critical',
-  });
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [isReady, setIsReady] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+type Action =
+  | { type: 'RESET'; frameCount: number }
+  | { type: 'SET_IMAGES'; images: HTMLImageElement[] }
+  | { type: 'SET_PROGRESS'; progress: PreloadProgress }
+  | { type: 'SET_READY' }
+  | { type: 'SET_LOADED' }
+  | { type: 'SET_ERROR'; error: Error };
 
-  const mountedRef = useRef(true);
-  const loadedImagesRef = useRef<HTMLImageElement[]>([]);
-
-  const updateProgress = useCallback(
-    (loaded: number, phase: PreloadProgress['phase']) => {
-      if (!mountedRef.current) return;
-      setProgress({
-        loaded,
-        total: frameCount,
-        percentage: Math.round((loaded / frameCount) * 100),
-        phase,
-      });
-    },
-    [frameCount]
-  );
-
-  useEffect(() => {
-    // Reset state for new load
-    mountedRef.current = true;
-    loadedImagesRef.current = new Array(frameCount).fill(null);
-    setImages([]);
-    setIsReady(false);
-    setIsLoaded(false);
-    setError(null);
-    setProgress({
+function createInitialState(frameCount: number): State {
+  return {
+    images: [],
+    progress: {
       loaded: 0,
       total: frameCount,
       percentage: 0,
       phase: 'critical',
-    });
+    },
+    isLoaded: false,
+    isReady: false,
+    error: null,
+  };
+}
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case 'RESET':
+      return createInitialState(action.frameCount);
+    case 'SET_IMAGES':
+      return { ...state, images: action.images };
+    case 'SET_PROGRESS':
+      return { ...state, progress: action.progress };
+    case 'SET_READY':
+      return { ...state, isReady: true };
+    case 'SET_LOADED':
+      return { ...state, isLoaded: true };
+    case 'SET_ERROR':
+      return { ...state, error: action.error };
+    default:
+      return state;
+  }
+}
+
+export function useFramePreloader(isMobile: boolean): PreloaderState {
+  // Memoize config to ensure stable references
+  const config = useMemo(
+    () => ({
+      frameCount: isMobile ? MOBILE_FRAME_COUNT : DESKTOP_FRAME_COUNT,
+      progressiveFrames: isMobile ? 40 : 50,
+      deviceKey: isMobile ? 'mobile' : 'desktop',
+    }),
+    [isMobile]
+  );
+
+  const [state, dispatch] = useReducer(
+    reducer,
+    config.frameCount,
+    createInitialState
+  );
+
+  const mountedRef = useRef(true);
+  const loadedImagesRef = useRef<HTMLImageElement[]>([]);
+  const currentDeviceKeyRef = useRef(config.deviceKey);
+
+  const updateProgress = useCallback(
+    (loaded: number, phase: PreloadProgress['phase']) => {
+      if (!mountedRef.current) return;
+      dispatch({
+        type: 'SET_PROGRESS',
+        progress: {
+          loaded,
+          total: config.frameCount,
+          percentage: Math.round((loaded / config.frameCount) * 100),
+          phase,
+        },
+      });
+    },
+    [config.frameCount]
+  );
+
+  useEffect(() => {
+    // Check if device type changed - if so, reset state
+    const deviceChanged = currentDeviceKeyRef.current !== config.deviceKey;
+    if (deviceChanged) {
+      currentDeviceKeyRef.current = config.deviceKey;
+      dispatch({ type: 'RESET', frameCount: config.frameCount });
+    }
+
+    // Reset refs for new load
+    mountedRef.current = true;
+    loadedImagesRef.current = new Array(config.frameCount).fill(null);
 
     const frameUrls = generateFrameUrls(isMobile);
+    const { frameCount, progressiveFrames } = config;
 
     const loadFrames = async () => {
       try {
@@ -108,8 +163,8 @@ export function useFramePreloader(isMobile: boolean): PreloaderState {
 
         if (!mountedRef.current) return;
         updateProgress(CRITICAL_FRAMES, 'progressive');
-        setIsReady(true);
-        setImages([...loadedImagesRef.current]);
+        dispatch({ type: 'SET_READY' });
+        dispatch({ type: 'SET_IMAGES', images: [...loadedImagesRef.current] });
 
         // Phase 2: Progressive frames (10-39 mobile, 10-49 desktop)
         let loadedCount = CRITICAL_FRAMES;
@@ -122,13 +177,16 @@ export function useFramePreloader(isMobile: boolean): PreloaderState {
 
           if (loadedCount % 5 === 0) {
             updateProgress(loadedCount, 'progressive');
-            setImages([...loadedImagesRef.current]);
+            dispatch({
+              type: 'SET_IMAGES',
+              images: [...loadedImagesRef.current],
+            });
           }
         }
 
         if (!mountedRef.current) return;
         updateProgress(progressiveFrames, 'background');
-        setImages([...loadedImagesRef.current]);
+        dispatch({ type: 'SET_IMAGES', images: [...loadedImagesRef.current] });
 
         // Phase 3: Background frames - chunked loading
         const remainingUrls = frameUrls.slice(progressiveFrames);
@@ -161,16 +219,19 @@ export function useFramePreloader(isMobile: boolean): PreloaderState {
 
           if (!mountedRef.current) return;
           updateProgress(loadedCount, 'background');
-          setImages([...loadedImagesRef.current]);
+          dispatch({ type: 'SET_IMAGES', images: [...loadedImagesRef.current] });
         }
 
         if (!mountedRef.current) return;
         updateProgress(frameCount, 'complete');
-        setIsLoaded(true);
-        setImages([...loadedImagesRef.current]);
+        dispatch({ type: 'SET_LOADED' });
+        dispatch({ type: 'SET_IMAGES', images: [...loadedImagesRef.current] });
       } catch (err) {
         if (!mountedRef.current) return;
-        setError(err instanceof Error ? err : new Error('Unknown error'));
+        dispatch({
+          type: 'SET_ERROR',
+          error: err instanceof Error ? err : new Error('Unknown error'),
+        });
       }
     };
 
@@ -179,7 +240,13 @@ export function useFramePreloader(isMobile: boolean): PreloaderState {
     return () => {
       mountedRef.current = false;
     };
-  }, [updateProgress, isMobile, frameCount, progressiveFrames]);
+  }, [updateProgress, isMobile, config]);
 
-  return { images, progress, isLoaded, isReady, error };
+  return {
+    images: state.images,
+    progress: state.progress,
+    isLoaded: state.isLoaded,
+    isReady: state.isReady,
+    error: state.error,
+  };
 }

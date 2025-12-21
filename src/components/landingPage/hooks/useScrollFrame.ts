@@ -5,7 +5,6 @@ import type { MotionValue } from 'framer-motion';
 interface UseScrollFrameReturn {
   containerRef: React.RefObject<HTMLDivElement>;
   scrollYProgress: MotionValue<number>;
-  currentFrame: number;
   renderFrame: (
     ctx: CanvasRenderingContext2D,
     images: HTMLImageElement[],
@@ -94,7 +93,6 @@ export function useScrollFrame(
   return {
     containerRef: containerRef as React.RefObject<HTMLDivElement>,
     scrollYProgress,
-    currentFrame: lastFrameRef.current,
     renderFrame,
   };
 }

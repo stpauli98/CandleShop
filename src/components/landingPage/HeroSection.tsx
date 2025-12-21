@@ -1,6 +1,6 @@
 import { motion, useMotionValueEvent, useTransform } from 'framer-motion';
 import { useMemo, useRef, useEffect, useState, useCallback } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { useFramePreloader } from './hooks/useFramePreloader';
 import { useScrollFrame } from './hooks/useScrollFrame';
 
@@ -25,8 +25,6 @@ export default function HeroSection() {
 
   // Setup resize listener
   useEffect(() => {
-    setIsMobile(window.innerWidth < 768);
-
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
