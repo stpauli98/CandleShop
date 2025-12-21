@@ -1,175 +1,338 @@
-import { motion } from 'framer-motion'
-import { useMemo } from 'react'
-import { ChevronDown } from 'lucide-react'
-import heroImage from '@/assets/HeroSection.jpg'
-import { error } from '../../lib/logger'
+import { motion, useMotionValueEvent } from 'framer-motion';
+import { useMemo, useRef, useEffect, useState, useCallback } from 'react';
+import { ChevronDown } from 'lucide-react';
+import { useFramePreloader } from './hooks/useFramePreloader';
+import { useScrollFrame } from './hooks/useScrollFrame';
+
+// Fallback image for reduced motion or errors
+import heroImage from '@/assets/HeroSection.jpg';
 
 export default function HeroSection() {
-    // Animation variants
-    const containerAnimation = useMemo(() => ({
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.2,
-                delayChildren: 0.3
-            }
-        }
-    }), []);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [currentFrame, setCurrentFrame] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
-    const itemAnimation = useMemo(() => ({
-        hidden: { opacity: 0, y: 30 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }
-        }
-    }), []);
+  // Check for reduced motion preference
+  const prefersReducedMotion =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    const scrollToProducts = () => {
-        const productsSection = document.getElementById('featured-products');
-        if (productsSection) {
-            productsSection.scrollIntoView({ behavior: 'smooth' });
-        }
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Frame counts for different devices
+  const frameCount = isMobile ? 153 : 192;
+
+  // Preload frames based on device type
+  const { images, progress, isReady, error } = useFramePreloader(isMobile);
+
+  // Scroll-to-frame mapping with device-specific frame count
+  const { containerRef, scrollYProgress, renderFrame } = useScrollFrame(
+    setCurrentFrame,
+    frameCount
+  );
+
+  // Canvas setup and rendering
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || !isReady || images.length === 0 || prefersReducedMotion)
+      return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Set canvas size with devicePixelRatio for sharp rendering
+    const updateCanvasSize = () => {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
+      // Render current frame after resize
+      renderFrame(ctx, images, currentFrame, rect.width, rect.height);
     };
 
-    return (
-        <section className="relative hero-section min-h-screen pb-8 overflow-hidden">
-            {/* Background Image */}
-            <div className="absolute inset-0 bg-charcoal-900">
-                <motion.img
-                    initial={{ scale: 1.1 }}
-                    animate={{ scale: 1 }}
-                    transition={{ duration: 1.5, ease: 'easeOut' }}
-                    src={heroImage}
-                    alt="Ručno izrađene svijeće"
-                    className="w-full h-full object-cover"
-                    loading="eager"
-                    decoding="async"
-                    onError={(e) => {
-                        error('Hero image failed to load', { imagePath: heroImage }, 'IMAGE');
-                        e.currentTarget.style.display = 'none';
-                    }}
+    updateCanvasSize();
+    window.addEventListener('resize', updateCanvasSize);
+
+    return () => {
+      window.removeEventListener('resize', updateCanvasSize);
+    };
+  }, [isReady, images, currentFrame, renderFrame, prefersReducedMotion]);
+
+  // Update canvas on scroll
+  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
+    const canvas = canvasRef.current;
+    if (!canvas || !isReady || images.length === 0 || prefersReducedMotion)
+      return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const frameIndex = Math.round(latest * (images.length - 1));
+    const rect = canvas.getBoundingClientRect();
+
+    // Only render if we have the image loaded
+    if (images[frameIndex]) {
+      renderFrame(ctx, images, frameIndex, rect.width, rect.height);
+    }
+  });
+
+  // Animation variants - reduced motion on mobile
+  const containerAnimation = useMemo(
+    () => ({
+      hidden: { opacity: 0 },
+      visible: {
+        opacity: 1,
+        transition: {
+          staggerChildren: isMobile ? 0.1 : 0.2,
+          delayChildren: isMobile ? 0.1 : 0.3,
+        },
+      },
+    }),
+    [isMobile]
+  );
+
+  const itemAnimation = useMemo(
+    () => ({
+      hidden: { opacity: 0, y: isMobile ? 15 : 30 },
+      visible: {
+        opacity: 1,
+        y: 0,
+        transition: { duration: isMobile ? 0.5 : 0.8, ease: [0.25, 0.46, 0.45, 0.94] },
+      },
+    }),
+    [isMobile]
+  );
+
+  const scrollToProducts = useCallback(() => {
+    const productsSection = document.getElementById('featured-products');
+    if (productsSection) {
+      productsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, []);
+
+  // Render fallback for reduced motion or errors
+  const shouldShowFallback = prefersReducedMotion || error;
+
+  return (
+    // Outer container - shorter scroll space on mobile
+    <div ref={containerRef} className="relative h-[150vh] md:h-[200vh]">
+      {/* Sticky container - uses dvh for mobile browser chrome */}
+      <div className="sticky top-0 h-[100dvh] overflow-hidden">
+        <section className="relative hero-section h-full overflow-hidden">
+          {/* Background - Canvas or Fallback Image */}
+          <div className="absolute inset-0 bg-charcoal-900">
+            {shouldShowFallback ? (
+              // Fallback static image
+              <motion.img
+                initial={{ scale: 1.05 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 1.5, ease: 'easeOut' }}
+                src={heroImage}
+                alt="Ručno izrađene svijeće"
+                className="w-full h-full object-cover"
+                loading="eager"
+                decoding="async"
+              />
+            ) : (
+              // Canvas for frame animation
+              <>
+                <canvas
+                  ref={canvasRef}
+                  className="w-full h-full object-cover"
+                  style={{ display: isReady ? 'block' : 'none' }}
                 />
-            </div>
+                {/* Loading state */}
+                {!isReady && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-charcoal-900">
+                    <div className="text-center">
+                      <div className="w-12 h-12 md:w-16 md:h-16 border-4 border-amber-500/30 border-t-amber-500 rounded-full animate-spin mb-3 md:mb-4 mx-auto" />
+                      <p className="text-stone-400 text-xs md:text-sm">
+                        Učitavanje... {progress.percentage}%
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
 
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 hero-gradient" />
+          {/* Gradient Overlay - stronger on mobile for better text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-charcoal-900/90 via-charcoal-900/50 to-charcoal-900/30 md:hero-gradient" />
 
-            {/* Decorative Elements */}
-            <div className="absolute inset-0 pointer-events-none">
-                {/* Subtle warm glow in corner */}
-                <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl" />
-                <div className="absolute top-1/4 right-0 w-64 h-64 bg-amber-400/5 rounded-full blur-2xl" />
-            </div>
+          {/* Decorative Elements - smaller on mobile */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute -bottom-16 -left-16 md:-bottom-32 md:-left-32 w-48 h-48 md:w-96 md:h-96 bg-amber-500/10 rounded-full blur-2xl md:blur-3xl" />
+            <div className="absolute top-1/4 right-0 w-32 h-32 md:w-64 md:h-64 bg-amber-400/5 rounded-full blur-xl md:blur-2xl" />
+          </div>
 
-            {/* Main Content */}
-            <div className="relative h-full z-10">
-                <div className="h-full max-w-7xl mx-auto px-6 lg:px-8 flex flex-col justify-center pt-24 sm:pt-20">
-                    <motion.div
-                        variants={containerAnimation}
-                        initial="hidden"
-                        animate="visible"
-                        className="max-w-2xl"
+          {/* Main Content */}
+          <div className="relative h-full z-10">
+            <div className="h-full max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 flex flex-col justify-center pt-20 sm:pt-24 md:pt-20">
+              <motion.div
+                variants={containerAnimation}
+                initial="hidden"
+                animate="visible"
+                className="max-w-2xl"
+              >
+                {/* Accent Label */}
+                <motion.div variants={itemAnimation} className="mb-4 md:mb-6">
+                  <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/20 backdrop-blur-sm border border-amber-400/30">
+                    <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                    <span className="text-amber-200 text-sm font-medium tracking-wide">
+                      Ručna izrada
+                    </span>
+                  </span>
+                </motion.div>
+
+                {/* Main Heading - responsive text sizes */}
+                <motion.h1
+                  variants={itemAnimation}
+                  className="font-display text-[2.5rem] leading-[1.1] sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white md:leading-[1.1] mb-4 md:mb-6"
+                >
+                  Pretvorite svoj dom u{' '}
+                  <span className="relative inline-block">
+                    <span className="text-gradient-warm">oazu mira</span>
+                    <svg
+                      className="absolute -bottom-1 md:-bottom-2 left-0 w-full"
+                      viewBox="0 0 200 12"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
                     >
-                        {/* Accent Label */}
-                        <motion.div variants={itemAnimation} className="mb-6 mt-8">
-                            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/20 backdrop-blur-sm border border-amber-400/30">
-                                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                                <span className="text-amber-200 text-sm font-medium tracking-wide">
-                                    Ručna izrada
-                                </span>
-                            </span>
-                        </motion.div>
-
-                        {/* Main Heading */}
-                        <motion.h1
-                            variants={itemAnimation}
-                            className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.1] mb-6"
+                      <path
+                        d="M2 8.5C47.5 3.5 95.5 2 198 8.5"
+                        stroke="url(#paint0_linear)"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                      />
+                      <defs>
+                        <linearGradient
+                          id="paint0_linear"
+                          x1="2"
+                          y1="8"
+                          x2="198"
+                          y2="8"
                         >
-                            Pretvorite svoj dom u{' '}
-                            <span className="relative">
-                                <span className="text-gradient-warm">oazu mira</span>
-                                <svg
-                                    className="absolute -bottom-2 left-0 w-full"
-                                    viewBox="0 0 200 12"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        d="M2 8.5C47.5 3.5 95.5 2 198 8.5"
-                                        stroke="url(#paint0_linear)"
-                                        strokeWidth="3"
-                                        strokeLinecap="round"
-                                    />
-                                    <defs>
-                                        <linearGradient id="paint0_linear" x1="2" y1="8" x2="198" y2="8">
-                                            <stop stopColor="#F59E0B" />
-                                            <stop offset="1" stopColor="#D97706" />
-                                        </linearGradient>
-                                    </defs>
-                                </svg>
-                            </span>
-                        </motion.h1>
+                          <stop stopColor="#F59E0B" />
+                          <stop offset="1" stopColor="#D97706" />
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                  </span>
+                </motion.h1>
 
-                        {/* Subtitle */}
-                        <motion.p
-                            variants={itemAnimation}
-                            className="text-lg md:text-xl text-stone-300 leading-relaxed mb-10 max-w-lg"
-                        >
-                            Naše ručno izrađene svijeće su više od dekoracije – one unose toplinu, mir i ljubav u svaki trenutak.
-                        </motion.p>
+                {/* Subtitle - visible on all screens */}
+                <motion.p
+                  variants={itemAnimation}
+                  className="text-base sm:text-lg md:text-xl text-stone-300 leading-relaxed mb-8 md:mb-10 max-w-md md:max-w-lg"
+                >
+                  Naše ručno izrađene svijeće unose toplinu, mir i ljubav u svaki trenutak.
+                </motion.p>
 
-                        {/* CTA Buttons */}
-                        <motion.div
-                            variants={itemAnimation}
-                            className="flex flex-wrap gap-4"
-                        >
-                            <button
-                                onClick={scrollToProducts}
-                                className="group inline-flex items-center gap-2 px-8 py-4 bg-amber-500 hover:bg-amber-400 text-charcoal-900 font-semibold rounded-full shadow-warm-lg hover:shadow-glow transition-all duration-300 transform hover:-translate-y-0.5"
-                            >
-                                Pogledaj kolekciju
-                                <ChevronDown className="w-5 h-5 group-hover:translate-y-0.5 transition-transform" />
-                            </button>
-                            <a
-                                href="tel:+38765905254"
-                                className="inline-flex items-center gap-2 px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-full border border-white/20 backdrop-blur-sm transition-all duration-300"
-                            >
-                                Kontaktiraj nas
-                            </a>
-                        </motion.div>
+                {/* CTA Buttons - stacked on mobile */}
+                <motion.div
+                  variants={itemAnimation}
+                  className="flex flex-col sm:flex-row gap-3 md:gap-4"
+                >
+                  <button
+                    onClick={scrollToProducts}
+                    className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 md:px-8 md:py-4 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-charcoal-900 font-semibold rounded-full shadow-warm-lg hover:shadow-glow transition-all duration-300 transform hover:-translate-y-0.5 text-base md:text-base"
+                  >
+                    Pogledaj kolekciju
+                    <ChevronDown className="w-5 h-5 group-hover:translate-y-0.5 transition-transform" />
+                  </button>
+                  <a
+                    href="tel:+38765905254"
+                    className="inline-flex items-center justify-center gap-2 px-7 py-3.5 md:px-8 md:py-4 bg-white/10 hover:bg-white/20 active:bg-white/30 text-white font-semibold rounded-full border border-white/20 backdrop-blur-sm transition-all duration-300 text-base md:text-base"
+                  >
+                    Kontaktiraj nas
+                  </a>
+                </motion.div>
 
-                        {/* Trust Indicators */}
-                        <motion.div
-                            variants={itemAnimation}
-                            className="mt-12 pt-8 pb-4 border-t border-white/10"
-                        >
-                            <div className="flex flex-wrap items-center gap-8 text-stone-300 text-sm bg-black/40 backdrop-blur-sm rounded-xl px-6 py-4">
-                                <div className="flex items-center gap-2">
-                                    <svg className="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                    </svg>
-                                    <span>100% prirodni sastojci</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <span>30-50 sati gorenja</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                    </svg>
-                                    <span>Besplatna dostava 50+ KM</span>
-                                </div>
-                            </div>
-                        </motion.div>
-                    </motion.div>
-                </div>
+                {/* Trust Indicators */}
+                <motion.div
+                  variants={itemAnimation}
+                  className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-white/10"
+                >
+                  <div className="flex flex-wrap items-center gap-x-5 gap-y-3 md:gap-8 text-stone-300 text-sm md:text-sm">
+                    <div className="flex items-center gap-2">
+                      <svg
+                        className="w-5 h-5 text-amber-400 flex-shrink-0"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                      <span>100% prirodno</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <svg
+                        className="w-5 h-5 text-amber-400 flex-shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span>30-50h gorenja</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <svg
+                        className="w-5 h-5 text-amber-400 flex-shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                      <span>Besplatna dostava</span>
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
             </div>
+          </div>
 
+          {/* Scroll indicator - smaller and repositioned on mobile */}
+          {isReady && !shouldShowFallback && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.5 }}
+              className="absolute bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 md:gap-2 text-white/60"
+            >
+              <span className="text-[10px] md:text-xs uppercase tracking-widest">
+                Skrolaj
+              </span>
+              <motion.div
+                animate={{ y: [0, 6, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                <ChevronDown className="w-5 h-5 md:w-6 md:h-6" />
+              </motion.div>
+            </motion.div>
+          )}
         </section>
-    );
+      </div>
+    </div>
+  );
 }
