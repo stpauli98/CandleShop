@@ -18,8 +18,8 @@ export const generateLocalBusinessSchema = () => ({
   "name": "Šarena Čarolija",
   "description": "Ručno izrađene mirisne svijeće i dekoracije za dom od prirodnih materijala. Specijaliziramo se za sojin vosak, esencijalna ulja i pamučne fitiljeve.",
   "url": "https://www.sarenacarolija.com",
-  "logo": "https://i.imgur.com/8k7dh0m.jpeg",
-  "image": "https://i.imgur.com/8k7dh0m.jpeg",
+  "logo": "https://www.sarenacarolija.com/images/logo.jpeg",
+  "image": "https://www.sarenacarolija.com/images/logo.jpeg",
   "telephone": "+387 65 905 254",
   "email": "sarena.carolija2025@gmail.com",
   "address": {
@@ -99,11 +99,11 @@ export const generateProductSchema = (product: Product) => ({
   "@type": "Product",
   "name": product.naziv || 'Ručno Izrađena Svijeća',
   "description": product.opis || 'Ručno izrađena mirisna svijeća od prirodnog sojin voska sa esencijalnim uljima.',
-  "image": product.slika || 'https://i.imgur.com/8k7dh0m.jpeg',
+  "image": product.slika || 'https://www.sarenacarolija.com/images/logo.jpeg',
   "brand": {
     "@type": "Brand",
     "name": "Šarena Čarolija",
-    "logo": "https://i.imgur.com/8k7dh0m.jpeg"
+    "logo": "https://www.sarenacarolija.com/images/logo.jpeg"
   },
   "manufacturer": {
     "@type": "Organization",
@@ -181,12 +181,13 @@ export const generateWebsiteSchema = () => ({
     "name": "Šarena Čarolija",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://i.imgur.com/8k7dh0m.jpeg"
+      "url": "https://www.sarenacarolija.com/images/logo.jpeg"
     }
   },
   "sameAs": [
     "https://www.instagram.com/sarena_carolijaa_"
-  ]
+  ],
+  "hasMap": "https://maps.google.com/?q=Gradiška,Bosnia+and+Herzegovina"
 });
 
 // Breadcrumb Schema
@@ -199,6 +200,39 @@ export const generateBreadcrumbSchema = (breadcrumbs: Array<{name: string, url: 
     "name": crumb.name,
     "item": crumb.url
   }))
+});
+
+// WebPage Schema for individual pages
+export const generateWebPageSchema = (options: {
+  name: string;
+  description: string;
+  url: string;
+  image?: string;
+}) => ({
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${options.url}#webpage`,
+  "url": options.url,
+  "name": options.name,
+  "description": options.description,
+  "isPartOf": {
+    "@id": "https://www.sarenacarolija.com/#website"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Šarena Čarolija",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://www.sarenacarolija.com/images/logo.jpeg"
+    }
+  },
+  ...(options.image && {
+    "primaryImageOfPage": {
+      "@type": "ImageObject",
+      "url": options.image
+    }
+  }),
+  "inLanguage": "bs"
 });
 
 // FAQ Schema for FAQ pages

@@ -2,20 +2,21 @@
 <html lang="bs">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="https://i.imgur.com/8k7dh0m.jpeg" />
-    <link rel="apple-touch-icon" href="https://i.imgur.com/8k7dh0m.jpeg" />
+    <link rel="icon" type="image/png" href="/images/logo.jpeg" />
+    <link rel="apple-touch-icon" href="/images/logo.jpeg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#D4A574" />
     <meta name="msapplication-TileColor" content="#D4A574" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="format-detection" content="telephone=no" />
+    <meta http-equiv="content-language" content="bs" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
 
     <!-- Preconnect for Performance -->
     <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
     <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin />
     <link rel="preconnect" href="https://www.google-analytics.com" crossorigin />
-    <link rel="dns-prefetch" href="https://i.imgur.com" />
     <link rel="manifest" href="/manifest.json" />
 
     <!-- Primary Meta Tags -->
@@ -26,13 +27,15 @@
     <meta name="author" content="Šarena Čarolija" />
     <meta name="language" content="Bosnian" />
     <link rel="canonical" href="https://www.sarenacarolija.com/" />
+    <link rel="alternate" hreflang="bs" href="https://www.sarenacarolija.com/" />
+    <link rel="alternate" hreflang="x-default" href="https://www.sarenacarolija.com/" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.sarenacarolija.com/" />
     <meta property="og:title" content="Mirisne Svijeće Ručni Rad BiH | Šarena Čarolija" />
     <meta property="og:description" content="Kupite ručno pravljene mirisne svijeće od prirodnog sojin voska. Esencijalna ulja, pamučni fitilj, ekološke svijeće. Besplatna dostava 50+ KM. Proizvod BiH!" />
-    <meta property="og:image" content="https://i.imgur.com/8k7dh0m.jpeg" />
+    <meta property="og:image" content="/images/logo.jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:type" content="image/jpeg" />
@@ -45,7 +48,7 @@
     <meta property="twitter:url" content="https://www.sarenacarolija.com/" />
     <meta property="twitter:title" content="Mirisne Svijeće Ručni Rad BiH | Šarena Čarolija" />
     <meta property="twitter:description" content="Kupite ručno pravljene mirisne svijeće od prirodnog sojin voska. Esencijalna ulja, pamučni fitilj, ekološke svijeće. Besplatna dostava 50+ KM. Proizvod BiH!" />
-    <meta property="twitter:image" content="https://i.imgur.com/8k7dh0m.jpeg" />
+    <meta property="twitter:image" content="/images/logo.jpeg" />
     <meta name="twitter:image:alt" content="Šarena Čarolija - ručno pravljene mirisne svijeće" />
 
     <!-- Geo Tags for Local SEO -->
@@ -61,8 +64,8 @@
       "@id": "https://www.sarenacarolija.com/#organization",
       "name": "Šarena Čarolija",
       "url": "https://www.sarenacarolija.com",
-      "logo": "https://i.imgur.com/8k7dh0m.jpeg",
-      "image": "https://i.imgur.com/8k7dh0m.jpeg",
+      "logo": "/images/logo.jpeg",
+      "image": "/images/logo.jpeg",
       "description": "Ručno pravljene mirisne svijeće od prirodnog sojin voska sa esencijalnim uljima. Online shop za Bosnu i Hercegovinu.",
       "telephone": "+387 65 905 254",
       "email": "sarena.carolija2025@gmail.com",
@@ -94,6 +97,7 @@
       "sameAs": [
         "https://www.instagram.com/sarena.carolija"
       ],
+      "hasMap": "https://maps.google.com/?q=Gradiška,Bosnia+and+Herzegovina",
       "hasOfferCatalog": {
         "@type": "OfferCatalog",
         "name": "Proizvodi Šarena Čarolija",
@@ -131,15 +135,8 @@
     }
     </script>
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CS3VSD0XT6"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-CS3VSD0XT6');
-    </script>
+    <!-- Google Analytics - loaded conditionally by CookieConsent component after user consent (GDPR) -->
+    <!-- GA is initialized dynamically in src/components/CookieConsent.tsx -->
   </head>
   <body>
     <noscript>

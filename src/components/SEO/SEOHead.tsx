@@ -42,12 +42,19 @@ const SEOHead = ({
       
       {/* Canonical URL */}
       <link rel="canonical" href={url} />
-      
+
+      {/* Hreflang for language targeting */}
+      <link rel="alternate" hreflang="bs" href={url} />
+      <link rel="alternate" hreflang="x-default" href={url} />
+
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={type} />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={image} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:image:alt" content={`${title} - Šarena Čarolija`} />
       <meta property="og:url" content={url} />
       <meta property="og:site_name" content="Šarena Čarolija" />
       <meta property="og:locale" content="bs_BA" />
@@ -57,7 +64,8 @@ const SEOHead = ({
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={image} />
-      
+      <meta name="twitter:image:alt" content={`${title} - Šarena Čarolija`} />
+
       {/* Additional Meta Tags for E-commerce */}
       <meta name="author" content="Šarena Čarolija" />
       <meta name="copyright" content="Šarena Čarolija" />

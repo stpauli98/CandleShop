@@ -11,6 +11,7 @@ import PaymentInput from "./components/payment/PaymentInput";
 import OrderConfirmation from "./components/payment/OrderConfirmation";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/adminPanel/ProtectedRoute";
+import CookieConsent from "./components/CookieConsent";
 
 // Lazy load Admin components for better performance
 const AdminPanel = lazy(() => import("./components/adminPanel/AdminPanel"));
@@ -37,6 +38,7 @@ function App() {
         <ErrorBoundary>
           <div className="min-h-screen bg-gray-50">
             <Toaster position="top-center" />
+            <CookieConsent />
             {location.pathname !== '/admin-panel' &&
              location.pathname !== '/admin-login' &&
              location.pathname !== '/placanje' &&

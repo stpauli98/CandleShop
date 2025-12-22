@@ -55,11 +55,11 @@ export default function LandingPage() {
     <>
       <SEOHead
         title="Mirisne Svijeće Ručni Rad BiH | Šarena Čarolija"
-        description="Kupite ručno pravljene mirisne svijeće od prirodnog sojin voska. Esencijalna ulja, pamučni fitilj, ekološke svijeće. Besplatna dostava 50+ KM. Proizvod BiH! 🕯️"
+        description="Kupite ručno pravljene mirisne svijeće od prirodnog sojin voska. Esencijalna ulja, pamučni fitilj, ekološke svijeće. Besplatna dostava 50+ KM. Proizvod BiH!"
         keywords="mirisne svijeće bosna, ručno izrađene svijeće, sojin vosak svijeće, prirodne svijeće bih, svijeće online shop, ekološke svijeće, aromaterapija svijeće, dekorativne svijeće, mirisni voskovi, wax melts bih, svijeće sarajevo, domaće svijeće"
         url="https://www.sarenacarolija.com"
         type="website"
-        image="https://i.imgur.com/8k7dh0m.jpeg"
+        image="https://www.sarenacarolija.com/images/logo.jpeg"
         structuredData={structuredData}
       />
 
@@ -68,7 +68,15 @@ export default function LandingPage() {
         {showSplash && <SplashScreen progress={progress.percentage} />}
       </AnimatePresence>
 
-      <main style={{ position: 'relative' }}>
+      {/* Skip to content link for accessibility */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-amber-600 focus:text-white focus:rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+      >
+        Preskoči na sadržaj
+      </a>
+
+      <main id="main-content" style={{ position: 'relative' }}>
         <HeroSection images={images} isReady={isReady} isMobile={isMobile} />
         <FeaturedProducts />
         <Advantages />

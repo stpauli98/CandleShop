@@ -17,7 +17,7 @@ const testimonials: Testimonial[] = [
     name: "Ana Marić",
     role: "Redovni kupac",
     content: "Svijeće su prekrasne i mirisi su nevjerovatni. Svaka koju sam kupila je bila savršena za stvaranje ugodne atmosfere u mom domu.",
-    imageUrl: "https://i.imgur.com/WFOtnWN.jpeg",
+    imageUrl: "/images/avatar1.jpeg",
     rating: 5
   },
   {
@@ -25,7 +25,7 @@ const testimonials: Testimonial[] = [
     name: "Miloš Kovač",
     role: "Ljubitelj svijeća",
     content: "Kvaliteta ovih svijeća je izvanredna. Dugo gore i miris se lijepo širi kroz cijelu prostoriju. Definitivno ću opet kupovati.",
-    imageUrl: "https://i.imgur.com/ZiYEejB.jpeg",
+    imageUrl: "/images/avatar2.jpeg",
     rating: 5
   },
   {
@@ -33,7 +33,7 @@ const testimonials: Testimonial[] = [
     name: "Sara Novak",
     role: "Interior dizajner",
     content: "Kao dizajner interijera, često preporučujem ove svijeće svojim klijentima. Kvaliteta i dizajn su na najvišem nivou.",
-    imageUrl: "https://i.imgur.com/WFOtnWN.jpeg",
+    imageUrl: "/images/avatar1.jpeg",
     rating: 5
   },
   {
@@ -41,7 +41,7 @@ const testimonials: Testimonial[] = [
     name: "Ivana Petrović",
     role: "Poklon entuzijasta",
     content: "Kupila sam svijeće kao poklone za prijatelje i porodicu. Svi su oduševljeni i pitaju me gdje sam ih našla!",
-    imageUrl: "https://i.imgur.com/nJN9g28.jpeg",
+    imageUrl: "/images/avatar3.jpeg",
     rating: 5
   },
   {
@@ -49,7 +49,7 @@ const testimonials: Testimonial[] = [
     name: "Luka Matić",
     role: "Ljubitelj prirodnih proizvoda",
     content: "Cijenim što su svijeće napravljene od prirodnih sastojaka. Bez štetnih hemikalija i mirisi su autentični.",
-    imageUrl: "https://i.imgur.com/ZiYEejB.jpeg",
+    imageUrl: "/images/avatar2.jpeg",
     rating: 5
   },
   {
@@ -57,7 +57,7 @@ const testimonials: Testimonial[] = [
     name: "Maja Horvat",
     role: "Vlasnica salona",
     content: "Koristim ove svijeće u svom salonu i klijenti ih obožavaju. Pomažu u stvaranju opuštajuće atmosfere.",
-    imageUrl: "https://i.imgur.com/nJN9g28.jpeg",
+    imageUrl: "/images/avatar3.jpeg",
     rating: 5
   }
 ];
