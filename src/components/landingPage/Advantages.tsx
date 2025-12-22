@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Truck, Heart, Sparkles, Leaf } from 'lucide-react';
+import { Truck, Heart, Leaf, Flame, Hourglass, Banknote } from 'lucide-react';
 
 const advantages = [
   {
@@ -15,16 +15,28 @@ const advantages = [
     accent: 'from-rose-400 to-rose-500'
   },
   {
-    icon: Sparkles,
-    title: 'Premium kvaliteta',
-    description: 'Najbolji prirodni materijali',
-    accent: 'from-amber-500 to-orange-500'
+    icon: Leaf,
+    title: 'Prirodni sastojci',
+    description: '100% sojin vosak i esencijalna ulja',
+    accent: 'from-emerald-400 to-emerald-500'
   },
   {
-    icon: Leaf,
-    title: 'Eco-friendly',
-    description: '100% prirodni sastojci',
-    accent: 'from-emerald-400 to-emerald-500'
+    icon: Flame,
+    title: 'Pamučni fitilj',
+    description: 'Čisto i ravnomjerno gorenje',
+    accent: 'from-orange-400 to-orange-500'
+  },
+  {
+    icon: Hourglass,
+    title: 'Dugo gorenje',
+    description: '20-60 sati po svijeći',
+    accent: 'from-amber-500 to-amber-600'
+  },
+  {
+    icon: Banknote,
+    title: 'Sigurna kupovina',
+    description: 'Plaćanje pouzećem',
+    accent: 'from-amber-400 to-orange-500'
   }
 ];
 
@@ -83,7 +95,7 @@ export default function Advantages() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
         >
           {advantages.map((advantage, index) => (
             <motion.div
@@ -116,7 +128,7 @@ export default function Advantages() {
           ))}
         </motion.div>
 
-        {/* Bottom CTA */}
+        {/* Bottom Badge */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -124,9 +136,18 @@ export default function Advantages() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="mt-16 text-center"
         >
-          <div className="inline-flex items-center gap-3 px-6 py-3 bg-charcoal-800 text-cream-50 rounded-full">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-sm font-medium">Više od 500+ zadovoljnih kupaca</span>
+          <div className="inline-flex items-center gap-3 px-6 py-3 bg-white rounded-full shadow-warm border border-stone-100">
+            <div className="flex items-center gap-1">
+              <Leaf className="w-5 h-5 text-green-600" />
+              <span className="text-sm font-medium text-charcoal-800">Ekološki</span>
+            </div>
+            <div className="w-px h-4 bg-stone-200" />
+            <div className="flex items-center gap-1">
+              <Heart className="w-5 h-5 text-red-500" />
+              <span className="text-sm font-medium text-charcoal-800">Ručni rad</span>
+            </div>
+            <div className="w-px h-4 bg-stone-200" />
+            <span className="text-sm font-medium text-charcoal-800">🇧🇦 Proizvod BiH</span>
           </div>
         </motion.div>
       </div>

@@ -3,7 +3,6 @@ import { AnimatePresence } from 'framer-motion'
 import HeroSection from './HeroSection'
 import FeaturedProducts from './FeaturedProducts'
 import AboutUs from './AboutUs'
-import Testimonials from './Testimonials'
 import Advantages from './Advantages'
 import Footer from './Footer'
 import FrequentlyAskedQuestions from './FrequentlyAskedQuestions'
@@ -82,7 +81,6 @@ export default function LandingPage() {
         <Advantages />
         <AboutUs />
         <FrequentlyAskedQuestions path="/faq" />
-        <Testimonials />
         <Footer />
       </main>
     </>
