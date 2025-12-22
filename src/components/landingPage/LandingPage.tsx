@@ -75,7 +75,6 @@ export default function LandingPage() {
         <AboutUs />
         <FrequentlyAskedQuestions path="/faq" />
         <Testimonials />
-        {/* <CallToAction /> */}
         <Footer />
       </main>
     </>
