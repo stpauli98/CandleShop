@@ -3,7 +3,7 @@ import type { PreloaderState, PreloadProgress } from '@/types/frameSequence';
 
 const DESKTOP_FRAME_COUNT = 192;
 const MOBILE_FRAME_COUNT = 153;
-const CRITICAL_FRAMES = 10;
+const CRITICAL_FRAMES = 100;
 const CHUNK_SIZE = 20;
 
 // Generate frame URLs based on device type
