@@ -1,0 +1,26 @@
+{
+  "name": "Šarena Čarolija - Mirisne Svijeće",
+  "short_name": "Šarena Čarolija",
+  "description": "Ručno pravljene mirisne svijeće od prirodnog sojin voska. Online shop za Bosnu i Hercegovinu.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#D4A574",
+  "orientation": "portrait-primary",
+  "lang": "bs",
+  "categories": ["shopping", "lifestyle"],
+  "icons": [
+    {
+      "src": "https://i.imgur.com/8k7dh0m.jpeg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "https://i.imgur.com/8k7dh0m.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

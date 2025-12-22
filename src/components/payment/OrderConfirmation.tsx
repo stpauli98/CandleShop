@@ -7,6 +7,7 @@ import { useEffect, useState } from "react"
 import { getOrderById, Order } from "../../lib/firebase/orders"
 import toast from "react-hot-toast"
 import { error as logError } from "../../lib/logger"
+import SEOHead from "@/components/SEO/SEOHead"
 
 export default function OrderConfirmation() {
   const navigate = useNavigate()
@@ -74,16 +75,22 @@ export default function OrderConfirmation() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Card className="max-w-2xl mx-auto">
-        <CardHeader>
-          <div className="flex items-center justify-center mb-4">
-            <div className="bg-green-100 rounded-full p-3">
-              <Check className="h-8 w-8 text-green-600" />
+    <>
+      <SEOHead
+        title="Potvrda Narudžbe"
+        description="Vaša narudžba je uspješno zaprimljena."
+        noindex={true}
+      />
+      <div className="container mx-auto px-4 py-8">
+        <Card className="max-w-2xl mx-auto">
+          <CardHeader>
+            <div className="flex items-center justify-center mb-4">
+              <div className="bg-green-100 rounded-full p-3">
+                <Check className="h-8 w-8 text-green-600" />
+              </div>
             </div>
-          </div>
-          <CardTitle className="text-2xl font-bold text-center">Narudžba Potvrđena</CardTitle>
-        </CardHeader>
+            <CardTitle className="text-2xl font-bold text-center">Narudžba Potvrđena</CardTitle>
+          </CardHeader>
         <CardContent>
           <p className="text-center mb-6">
             Hvala vam na kupovini! Broj vaše narudžbe je <span className="font-semibold">{order.orderNumber}</span>.
@@ -154,5 +161,6 @@ export default function OrderConfirmation() {
         </CardFooter>
       </Card>
     </div>
+    </>
   )
 }

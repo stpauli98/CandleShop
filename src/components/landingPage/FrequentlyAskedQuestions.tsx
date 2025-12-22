@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { Mail, Plus, Minus } from 'lucide-react';
 import { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
+import { generateFAQSchema } from '@/utils/structuredData';
 
 interface FAQProps {
   path?: string;
@@ -36,8 +38,19 @@ const FrequentlyAskedQuestions = ({ path }: FAQProps) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
+  // Generate FAQ structured data for SEO
+  const faqSchema = generateFAQSchema(faqs);
+
   return (
-    <section id={path?.replace('/', '') || 'faq'} className="py-20 md:py-28 bg-charcoal-900 relative overflow-hidden">
+    <>
+      {/* FAQ Schema for Rich Snippets */}
+      <Helmet>
+        <script type="application/ld+json">
+          {JSON.stringify(faqSchema)}
+        </script>
+      </Helmet>
+
+      <section id={path?.replace('/', '') || 'faq'} className="py-20 md:py-28 bg-charcoal-900 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
@@ -154,6 +167,7 @@ const FrequentlyAskedQuestions = ({ path }: FAQProps) => {
         </motion.div>
       </div>
     </section>
+    </>
   );
 };
 

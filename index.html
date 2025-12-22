@@ -5,11 +5,23 @@
     <link rel="icon" type="image/png" href="https://i.imgur.com/8k7dh0m.jpeg" />
     <link rel="apple-touch-icon" href="https://i.imgur.com/8k7dh0m.jpeg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#D4A574" />
+    <meta name="msapplication-TileColor" content="#D4A574" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- Preconnect for Performance -->
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://www.google-analytics.com" crossorigin />
+    <link rel="dns-prefetch" href="https://i.imgur.com" />
+    <link rel="manifest" href="/manifest.json" />
 
     <!-- Primary Meta Tags -->
     <title>Mirisne Svijeće Ručni Rad BiH | Šarena Čarolija</title>
     <meta name="title" content="Mirisne Svijeće Ručni Rad BiH | Šarena Čarolija" />
-    <meta name="description" content="Kupite ručno pravljene mirisne svijeće od prirodnog sojin voska. Esencijalna ulja, pamučni fitilj, ekološke svijeće. Besplatna dostava 50+ KM. Proizvod BiH! 🕯️" />
+    <meta name="description" content="Kupite ručno pravljene mirisne svijeće od prirodnog sojin voska. Esencijalna ulja, pamučni fitilj, ekološke svijeće. Besplatna dostava 50+ KM. Proizvod BiH!" />
     <meta name="keywords" content="mirisne svijeće bosna, ručno izrađene svijeće, sojin vosak svijeće, prirodne svijeće bih, svijeće online shop, ekološke svijeće, aromaterapija svijeće, dekorativne svijeće, mirisni voskovi, wax melts bih, svijeće sarajevo, domaće svijeće" />
     <meta name="author" content="Šarena Čarolija" />
     <meta name="language" content="Bosnian" />
@@ -19,8 +31,12 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.sarenacarolija.com/" />
     <meta property="og:title" content="Mirisne Svijeće Ručni Rad BiH | Šarena Čarolija" />
-    <meta property="og:description" content="Kupite ručno pravljene mirisne svijeće od prirodnog sojin voska. Esencijalna ulja, pamučni fitilj, ekološke svijeće. Besplatna dostava 50+ KM. Proizvod BiH! 🕯️" />
+    <meta property="og:description" content="Kupite ručno pravljene mirisne svijeće od prirodnog sojin voska. Esencijalna ulja, pamučni fitilj, ekološke svijeće. Besplatna dostava 50+ KM. Proizvod BiH!" />
     <meta property="og:image" content="https://i.imgur.com/8k7dh0m.jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:alt" content="Šarena Čarolija - ručno pravljene mirisne svijeće od sojin voska" />
     <meta property="og:site_name" content="Šarena Čarolija" />
     <meta property="og:locale" content="bs_BA" />
 
@@ -28,8 +44,9 @@
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://www.sarenacarolija.com/" />
     <meta property="twitter:title" content="Mirisne Svijeće Ručni Rad BiH | Šarena Čarolija" />
-    <meta property="twitter:description" content="Kupite ručno pravljene mirisne svijeće od prirodnog sojin voska. Esencijalna ulja, pamučni fitilj, ekološke svijeće. Besplatna dostava 50+ KM. Proizvod BiH! 🕯️" />
+    <meta property="twitter:description" content="Kupite ručno pravljene mirisne svijeće od prirodnog sojin voska. Esencijalna ulja, pamučni fitilj, ekološke svijeće. Besplatna dostava 50+ KM. Proizvod BiH!" />
     <meta property="twitter:image" content="https://i.imgur.com/8k7dh0m.jpeg" />
+    <meta name="twitter:image:alt" content="Šarena Čarolija - ručno pravljene mirisne svijeće" />
 
     <!-- Geo Tags for Local SEO -->
     <meta name="geo.region" content="BA" />
@@ -49,12 +66,11 @@
       "description": "Ručno pravljene mirisne svijeće od prirodnog sojin voska sa esencijalnim uljima. Online shop za Bosnu i Hercegovinu.",
       "telephone": "+387 65 905 254",
       "email": "sarena.carolija2025@gmail.com",
+      "foundingDate": "2024",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "",
         "addressLocality": "Gradiška",
         "addressRegion": "Republika Srpska",
-        "postalCode": "",
         "addressCountry": "BA"
       },
       "geo": {
@@ -74,6 +90,18 @@
       "areaServed": {
         "@type": "Country",
         "name": "Bosnia and Herzegovina"
+      },
+      "sameAs": [
+        "https://www.instagram.com/sarena.carolija"
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Proizvodi Šarena Čarolija",
+        "itemListElement": [
+          {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Mirisne svijeće"}},
+          {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Mirisni voskovi"}},
+          {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Dekoracije"}}
+        ]
       }
     }
     </script>
@@ -86,11 +114,20 @@
       "@id": "https://www.sarenacarolija.com/#website",
       "url": "https://www.sarenacarolija.com",
       "name": "Šarena Čarolija",
+      "alternateName": ["Sarena Carolija", "Šarena Čarolija svijeće"],
       "description": "Online shop za ručno pravljene mirisne svijeće i dekoracije",
       "publisher": {
         "@id": "https://www.sarenacarolija.com/#organization"
       },
-      "inLanguage": "bs"
+      "inLanguage": "bs",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://www.sarenacarolija.com/?search={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
     }
     </script>
 
@@ -102,7 +139,6 @@
       gtag('js', new Date());
 
       gtag('config', 'G-CS3VSD0XT6');
-      gtag('config', 'G-Y5LM1PHT8H');
     </script>
   </head>
   <body>

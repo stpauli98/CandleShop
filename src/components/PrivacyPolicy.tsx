@@ -1,9 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import SEOHead from '@/components/SEO/SEOHead';
 
 const PrivacyPolicy: React.FC = () => {
   return (
-    <div className="min-h-screen bg-cream-50 py-16">
+    <>
+      <SEOHead
+        title="Politika Privatnosti"
+        description="Politika privatnosti Šarena Čarolija. Saznajte kako prikupljamo, koristimo i štitimo vaše osobne podatke."
+        keywords="politika privatnosti, zaštita podataka, GDPR, Šarena Čarolija"
+        url="https://www.sarenacarolija.com/privacy-policy"
+      />
+      <div className="min-h-screen bg-cream-50 py-16">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
@@ -219,6 +227,7 @@ const PrivacyPolicy: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
