@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react'
+import { AnimatePresence } from 'framer-motion'
 import HeroSection from './HeroSection'
 import FeaturedProducts from './FeaturedProducts'
 import AboutUs from './AboutUs'
@@ -6,9 +8,44 @@ import Advantages from './Advantages'
 import Footer from './Footer'
 import FrequentlyAskedQuestions from './FrequentlyAskedQuestions'
 import SEOHead from '../SEO/SEOHead'
+import SplashScreen from '../SplashScreen'
+import { useFramePreloader } from './hooks/useFramePreloader'
 import { generateLocalBusinessSchema, generateWebsiteSchema } from '../../utils/structuredData'
 
+// Helper to get initial mobile state (SSR-safe)
+const getInitialMobileState = () => {
+  if (typeof window === 'undefined') return false;
+  return window.innerWidth < 768;
+};
+
 export default function LandingPage() {
+  const [isMobile, setIsMobile] = useState(getInitialMobileState);
+  const [showSplash, setShowSplash] = useState(true);
+
+  // Setup resize listener for mobile detection
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Preload frames at LandingPage level
+  const { images, progress, isReady } = useFramePreloader(isMobile);
+
+  // Hide splash when ready (with minimum display time)
+  useEffect(() => {
+    if (isReady) {
+      // Minimum splash time of 1.5s for branding
+      const minDisplayTime = 1500;
+      const timer = setTimeout(() => {
+        setShowSplash(false);
+      }, minDisplayTime);
+      return () => clearTimeout(timer);
+    }
+  }, [isReady]);
+
   const structuredData = [
     generateLocalBusinessSchema(),
     generateWebsiteSchema()
@@ -25,8 +62,14 @@ export default function LandingPage() {
         image="https://i.imgur.com/8k7dh0m.jpeg"
         structuredData={structuredData}
       />
+
+      {/* Splash Screen */}
+      <AnimatePresence>
+        {showSplash && <SplashScreen progress={progress.percentage} />}
+      </AnimatePresence>
+
       <main style={{ position: 'relative' }}>
-        <HeroSection />
+        <HeroSection images={images} isReady={isReady} isMobile={isMobile} />
         <FeaturedProducts />
         <Advantages />
         <AboutUs />

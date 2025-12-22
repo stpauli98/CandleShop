@@ -1,42 +1,28 @@
 import { motion, useMotionValueEvent, useTransform } from 'framer-motion';
 import { useMemo, useRef, useEffect, useState, useCallback } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { useFramePreloader } from './hooks/useFramePreloader';
 import { useScrollFrame } from './hooks/useScrollFrame';
 
 // Fallback image for reduced motion or errors
 import heroImage from '@/assets/HeroSection.jpg';
 
-// Helper to get initial mobile state (SSR-safe)
-const getInitialMobileState = () => {
-  if (typeof window === 'undefined') return false;
-  return window.innerWidth < 768;
-};
+interface HeroSectionProps {
+  images: HTMLImageElement[];
+  isReady: boolean;
+  isMobile: boolean;
+}
 
-export default function HeroSection() {
+export default function HeroSection({ images, isReady, isMobile }: HeroSectionProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [currentFrame, setCurrentFrame] = useState(0);
-  const [isMobile, setIsMobile] = useState(getInitialMobileState);
 
   // Check for reduced motion preference
   const prefersReducedMotion =
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Setup resize listener
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
   // Frame counts for different devices
   const frameCount = isMobile ? 153 : 192;
-
-  // Preload frames based on device type
-  const { images, progress, isReady, error } = useFramePreloader(isMobile);
 
   // Scroll-to-frame mapping with device-specific frame count
   const { containerRef, scrollYProgress, renderFrame } = useScrollFrame(
@@ -125,8 +111,8 @@ export default function HeroSection() {
     }
   }, []);
 
-  // Render fallback for reduced motion or errors
-  const shouldShowFallback = prefersReducedMotion || error;
+  // Render fallback for reduced motion preference
+  const shouldShowFallback = prefersReducedMotion;
 
   // Fade out text overlay as user scrolls (0% scroll = full opacity, 50% scroll = invisible)
   const textOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
@@ -151,24 +137,10 @@ export default function HeroSection() {
                   decoding="async"
                 />
               ) : (
-                <>
-                  <canvas
-                    ref={canvasRef}
-                    className="w-full h-full object-cover"
-                    style={{ display: isReady ? 'block' : 'none' }}
-                  />
-                  {/* Loading state */}
-                  {!isReady && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="w-16 h-16 border-4 border-amber-500/30 border-t-amber-500 rounded-full animate-spin mb-4 mx-auto" />
-                        <p className="text-stone-500 text-sm">
-                          Učitavanje... {progress.percentage}%
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </>
+                <canvas
+                  ref={canvasRef}
+                  className="w-full h-full object-cover"
+                />
               )}
             </div>
 
@@ -275,23 +247,10 @@ export default function HeroSection() {
                 decoding="async"
               />
             ) : (
-              <>
-                <canvas
-                  ref={canvasRef}
-                  className="w-full h-full object-cover"
-                  style={{ display: isReady ? 'block' : 'none' }}
-                />
-                {!isReady && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-charcoal-900">
-                    <div className="text-center">
-                      <div className="w-12 h-12 border-4 border-amber-500/30 border-t-amber-500 rounded-full animate-spin mb-3 mx-auto" />
-                      <p className="text-stone-400 text-xs">
-                        Učitavanje... {progress.percentage}%
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </>
+              <canvas
+                ref={canvasRef}
+                className="w-full h-full object-cover"
+              />
             )}
           </div>
 
